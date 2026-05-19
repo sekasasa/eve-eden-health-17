@@ -131,6 +131,7 @@ function RootComponent() {
       <DemoBanner />
       <Outlet />
       <InstallPrompt />
+      <Toaster position="top-right" richColors closeButton />
     </QueryClientProvider>
   );
 }
