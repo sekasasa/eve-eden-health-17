@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { DemoBanner } from "@/components/ui/DemoBanner";
 
 function NotFoundComponent() {
   return (
