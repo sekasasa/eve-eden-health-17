@@ -298,9 +298,8 @@ function WeekView({
           ))}
 
           {HOURS.map((h) => (
-            <>
+            <Fragment key={`row-${h}`}>
               <div
-                key={`l-${h}`}
                 className="h-16 border-b border-r border-gray-100 px-2 py-1 text-right font-sans text-[11px] text-gray-500"
               >
                 {h}:00
