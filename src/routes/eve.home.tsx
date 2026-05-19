@@ -10,18 +10,14 @@ import {
   Users,
   ChevronDown,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { EveShell } from "@/components/shells/EveShell";
 import { StageRing } from "@/components/ui/StageRing";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { AICard } from "@/components/ui/AICard";
 import { GuidanceCard } from "@/components/ui/GuidanceCard";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  babySizeFor,
-  trimesterFor,
-  greetingFor,
-  askSuggestionFor,
-} from "@/lib/babySize";
+import { babySizeFor, trimesterFor } from "@/lib/babySize";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/home")({
