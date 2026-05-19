@@ -12,13 +12,42 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProgramReportsRouteImport } from './routes/program.reports'
+import { Route as ProgramOverviewRouteImport } from './routes/program.overview'
+import { Route as ProgramMothersRouteImport } from './routes/program.mothers'
+import { Route as ProgramChwRouteImport } from './routes/program.chw'
+import { Route as EveVendorsRouteImport } from './routes/eve.vendors'
+import { Route as EveProvidersRouteImport } from './routes/eve.providers'
 import { Route as EveProfileRouteImport } from './routes/eve.profile'
 import { Route as EveOnboardingRouteImport } from './routes/eve.onboarding'
-import { Route as EveMyCareRouteImport } from './routes/eve.my-care'
 import { Route as EveHomeRouteImport } from './routes/eve.home'
-import { Route as EveDiscoverRouteImport } from './routes/eve.discover'
+import { Route as EveGuidanceRouteImport } from './routes/eve.guidance'
+import { Route as EveCommunityRouteImport } from './routes/eve.community'
 import { Route as EveAskRouteImport } from './routes/eve.ask'
+import { Route as EveAppointmentsRouteImport } from './routes/eve.appointments'
+import { Route as EdenProfileRouteImport } from './routes/eden.profile'
+import { Route as EdenPatientsRouteImport } from './routes/eden.patients'
+import { Route as EdenOnboardingRouteImport } from './routes/eden.onboarding'
 import { Route as EdenLoginRouteImport } from './routes/eden.login'
+import { Route as EdenDashboardRouteImport } from './routes/eden.dashboard'
+import { Route as EdenAppointmentsRouteImport } from './routes/eden.appointments'
+import { Route as EdenAnalyticsRouteImport } from './routes/eden.analytics'
+import { Route as ChwRegisterRouteImport } from './routes/chw.register'
+import { Route as ChwMothersRouteImport } from './routes/chw.mothers'
+import { Route as ChwHomeRouteImport } from './routes/chw.home'
+import { Route as ChwFlagRouteImport } from './routes/chw.flag'
+import { Route as AdminVendorsRouteImport } from './routes/admin.vendors'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
+import { Route as AdminGuidanceRouteImport } from './routes/admin.guidance'
+import { Route as EveVendorsIdRouteImport } from './routes/eve.vendors.$id'
+import { Route as EveProvidersIdRouteImport } from './routes/eve.providers.$id'
+import { Route as EdenVendorProductsRouteImport } from './routes/eden.vendor.products'
+import { Route as EdenVendorOrdersRouteImport } from './routes/eden.vendor.orders'
+import { Route as EdenVendorOnboardingRouteImport } from './routes/eden.vendor.onboarding'
+import { Route as EdenVendorListingRouteImport } from './routes/eden.vendor.listing'
+import { Route as EdenPatientsIdRouteImport } from './routes/eden.patients.$id'
+import { Route as ChwMothersIdVisitRouteImport } from './routes/chw.mothers.$id.visit'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -35,6 +64,36 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProgramReportsRoute = ProgramReportsRouteImport.update({
+  id: '/program/reports',
+  path: '/program/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramOverviewRoute = ProgramOverviewRouteImport.update({
+  id: '/program/overview',
+  path: '/program/overview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramMothersRoute = ProgramMothersRouteImport.update({
+  id: '/program/mothers',
+  path: '/program/mothers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramChwRoute = ProgramChwRouteImport.update({
+  id: '/program/chw',
+  path: '/program/chw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EveVendorsRoute = EveVendorsRouteImport.update({
+  id: '/eve/vendors',
+  path: '/eve/vendors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EveProvidersRoute = EveProvidersRouteImport.update({
+  id: '/eve/providers',
+  path: '/eve/providers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EveProfileRoute = EveProfileRouteImport.update({
   id: '/eve/profile',
   path: '/eve/profile',
@@ -45,19 +104,19 @@ const EveOnboardingRoute = EveOnboardingRouteImport.update({
   path: '/eve/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EveMyCareRoute = EveMyCareRouteImport.update({
-  id: '/eve/my-care',
-  path: '/eve/my-care',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const EveHomeRoute = EveHomeRouteImport.update({
   id: '/eve/home',
   path: '/eve/home',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EveDiscoverRoute = EveDiscoverRouteImport.update({
-  id: '/eve/discover',
-  path: '/eve/discover',
+const EveGuidanceRoute = EveGuidanceRouteImport.update({
+  id: '/eve/guidance',
+  path: '/eve/guidance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EveCommunityRoute = EveCommunityRouteImport.update({
+  id: '/eve/community',
+  path: '/eve/community',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EveAskRoute = EveAskRouteImport.update({
@@ -65,48 +124,250 @@ const EveAskRoute = EveAskRouteImport.update({
   path: '/eve/ask',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EveAppointmentsRoute = EveAppointmentsRouteImport.update({
+  id: '/eve/appointments',
+  path: '/eve/appointments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenProfileRoute = EdenProfileRouteImport.update({
+  id: '/eden/profile',
+  path: '/eden/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenPatientsRoute = EdenPatientsRouteImport.update({
+  id: '/eden/patients',
+  path: '/eden/patients',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenOnboardingRoute = EdenOnboardingRouteImport.update({
+  id: '/eden/onboarding',
+  path: '/eden/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EdenLoginRoute = EdenLoginRouteImport.update({
   id: '/eden/login',
   path: '/eden/login',
   getParentRoute: () => rootRouteImport,
+} as any)
+const EdenDashboardRoute = EdenDashboardRouteImport.update({
+  id: '/eden/dashboard',
+  path: '/eden/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenAppointmentsRoute = EdenAppointmentsRouteImport.update({
+  id: '/eden/appointments',
+  path: '/eden/appointments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenAnalyticsRoute = EdenAnalyticsRouteImport.update({
+  id: '/eden/analytics',
+  path: '/eden/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChwRegisterRoute = ChwRegisterRouteImport.update({
+  id: '/chw/register',
+  path: '/chw/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChwMothersRoute = ChwMothersRouteImport.update({
+  id: '/chw/mothers',
+  path: '/chw/mothers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChwHomeRoute = ChwHomeRouteImport.update({
+  id: '/chw/home',
+  path: '/chw/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChwFlagRoute = ChwFlagRouteImport.update({
+  id: '/chw/flag',
+  path: '/chw/flag',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVendorsRoute = AdminVendorsRouteImport.update({
+  id: '/admin/vendors',
+  path: '/admin/vendors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProvidersRoute = AdminProvidersRouteImport.update({
+  id: '/admin/providers',
+  path: '/admin/providers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminGuidanceRoute = AdminGuidanceRouteImport.update({
+  id: '/admin/guidance',
+  path: '/admin/guidance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EveVendorsIdRoute = EveVendorsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => EveVendorsRoute,
+} as any)
+const EveProvidersIdRoute = EveProvidersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => EveProvidersRoute,
+} as any)
+const EdenVendorProductsRoute = EdenVendorProductsRouteImport.update({
+  id: '/eden/vendor/products',
+  path: '/eden/vendor/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenVendorOrdersRoute = EdenVendorOrdersRouteImport.update({
+  id: '/eden/vendor/orders',
+  path: '/eden/vendor/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenVendorOnboardingRoute = EdenVendorOnboardingRouteImport.update({
+  id: '/eden/vendor/onboarding',
+  path: '/eden/vendor/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenVendorListingRoute = EdenVendorListingRouteImport.update({
+  id: '/eden/vendor/listing',
+  path: '/eden/vendor/listing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenPatientsIdRoute = EdenPatientsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => EdenPatientsRoute,
+} as any)
+const ChwMothersIdVisitRoute = ChwMothersIdVisitRouteImport.update({
+  id: '/$id/visit',
+  path: '/$id/visit',
+  getParentRoute: () => ChwMothersRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/admin/guidance': typeof AdminGuidanceRoute
+  '/admin/providers': typeof AdminProvidersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/vendors': typeof AdminVendorsRoute
+  '/chw/flag': typeof ChwFlagRoute
+  '/chw/home': typeof ChwHomeRoute
+  '/chw/mothers': typeof ChwMothersRouteWithChildren
+  '/chw/register': typeof ChwRegisterRoute
+  '/eden/analytics': typeof EdenAnalyticsRoute
+  '/eden/appointments': typeof EdenAppointmentsRoute
+  '/eden/dashboard': typeof EdenDashboardRoute
   '/eden/login': typeof EdenLoginRoute
+  '/eden/onboarding': typeof EdenOnboardingRoute
+  '/eden/patients': typeof EdenPatientsRouteWithChildren
+  '/eden/profile': typeof EdenProfileRoute
+  '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
-  '/eve/discover': typeof EveDiscoverRoute
+  '/eve/community': typeof EveCommunityRoute
+  '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
-  '/eve/my-care': typeof EveMyCareRoute
   '/eve/onboarding': typeof EveOnboardingRoute
   '/eve/profile': typeof EveProfileRoute
+  '/eve/providers': typeof EveProvidersRouteWithChildren
+  '/eve/vendors': typeof EveVendorsRouteWithChildren
+  '/program/chw': typeof ProgramChwRoute
+  '/program/mothers': typeof ProgramMothersRoute
+  '/program/overview': typeof ProgramOverviewRoute
+  '/program/reports': typeof ProgramReportsRoute
+  '/eden/patients/$id': typeof EdenPatientsIdRoute
+  '/eden/vendor/listing': typeof EdenVendorListingRoute
+  '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
+  '/eden/vendor/orders': typeof EdenVendorOrdersRoute
+  '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/providers/$id': typeof EveProvidersIdRoute
+  '/eve/vendors/$id': typeof EveVendorsIdRoute
+  '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/admin/guidance': typeof AdminGuidanceRoute
+  '/admin/providers': typeof AdminProvidersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/vendors': typeof AdminVendorsRoute
+  '/chw/flag': typeof ChwFlagRoute
+  '/chw/home': typeof ChwHomeRoute
+  '/chw/mothers': typeof ChwMothersRouteWithChildren
+  '/chw/register': typeof ChwRegisterRoute
+  '/eden/analytics': typeof EdenAnalyticsRoute
+  '/eden/appointments': typeof EdenAppointmentsRoute
+  '/eden/dashboard': typeof EdenDashboardRoute
   '/eden/login': typeof EdenLoginRoute
+  '/eden/onboarding': typeof EdenOnboardingRoute
+  '/eden/patients': typeof EdenPatientsRouteWithChildren
+  '/eden/profile': typeof EdenProfileRoute
+  '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
-  '/eve/discover': typeof EveDiscoverRoute
+  '/eve/community': typeof EveCommunityRoute
+  '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
-  '/eve/my-care': typeof EveMyCareRoute
   '/eve/onboarding': typeof EveOnboardingRoute
   '/eve/profile': typeof EveProfileRoute
+  '/eve/providers': typeof EveProvidersRouteWithChildren
+  '/eve/vendors': typeof EveVendorsRouteWithChildren
+  '/program/chw': typeof ProgramChwRoute
+  '/program/mothers': typeof ProgramMothersRoute
+  '/program/overview': typeof ProgramOverviewRoute
+  '/program/reports': typeof ProgramReportsRoute
+  '/eden/patients/$id': typeof EdenPatientsIdRoute
+  '/eden/vendor/listing': typeof EdenVendorListingRoute
+  '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
+  '/eden/vendor/orders': typeof EdenVendorOrdersRoute
+  '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/providers/$id': typeof EveProvidersIdRoute
+  '/eve/vendors/$id': typeof EveVendorsIdRoute
+  '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/admin/guidance': typeof AdminGuidanceRoute
+  '/admin/providers': typeof AdminProvidersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/vendors': typeof AdminVendorsRoute
+  '/chw/flag': typeof ChwFlagRoute
+  '/chw/home': typeof ChwHomeRoute
+  '/chw/mothers': typeof ChwMothersRouteWithChildren
+  '/chw/register': typeof ChwRegisterRoute
+  '/eden/analytics': typeof EdenAnalyticsRoute
+  '/eden/appointments': typeof EdenAppointmentsRoute
+  '/eden/dashboard': typeof EdenDashboardRoute
   '/eden/login': typeof EdenLoginRoute
+  '/eden/onboarding': typeof EdenOnboardingRoute
+  '/eden/patients': typeof EdenPatientsRouteWithChildren
+  '/eden/profile': typeof EdenProfileRoute
+  '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
-  '/eve/discover': typeof EveDiscoverRoute
+  '/eve/community': typeof EveCommunityRoute
+  '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
-  '/eve/my-care': typeof EveMyCareRoute
   '/eve/onboarding': typeof EveOnboardingRoute
   '/eve/profile': typeof EveProfileRoute
+  '/eve/providers': typeof EveProvidersRouteWithChildren
+  '/eve/vendors': typeof EveVendorsRouteWithChildren
+  '/program/chw': typeof ProgramChwRoute
+  '/program/mothers': typeof ProgramMothersRoute
+  '/program/overview': typeof ProgramOverviewRoute
+  '/program/reports': typeof ProgramReportsRoute
+  '/eden/patients/$id': typeof EdenPatientsIdRoute
+  '/eden/vendor/listing': typeof EdenVendorListingRoute
+  '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
+  '/eden/vendor/orders': typeof EdenVendorOrdersRoute
+  '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/providers/$id': typeof EveProvidersIdRoute
+  '/eve/vendors/$id': typeof EveVendorsIdRoute
+  '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -114,50 +375,162 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/admin/guidance'
+    | '/admin/providers'
+    | '/admin/users'
+    | '/admin/vendors'
+    | '/chw/flag'
+    | '/chw/home'
+    | '/chw/mothers'
+    | '/chw/register'
+    | '/eden/analytics'
+    | '/eden/appointments'
+    | '/eden/dashboard'
     | '/eden/login'
+    | '/eden/onboarding'
+    | '/eden/patients'
+    | '/eden/profile'
+    | '/eve/appointments'
     | '/eve/ask'
-    | '/eve/discover'
+    | '/eve/community'
+    | '/eve/guidance'
     | '/eve/home'
-    | '/eve/my-care'
     | '/eve/onboarding'
     | '/eve/profile'
+    | '/eve/providers'
+    | '/eve/vendors'
+    | '/program/chw'
+    | '/program/mothers'
+    | '/program/overview'
+    | '/program/reports'
+    | '/eden/patients/$id'
+    | '/eden/vendor/listing'
+    | '/eden/vendor/onboarding'
+    | '/eden/vendor/orders'
+    | '/eden/vendor/products'
+    | '/eve/providers/$id'
+    | '/eve/vendors/$id'
+    | '/chw/mothers/$id/visit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/signup'
+    | '/admin/guidance'
+    | '/admin/providers'
+    | '/admin/users'
+    | '/admin/vendors'
+    | '/chw/flag'
+    | '/chw/home'
+    | '/chw/mothers'
+    | '/chw/register'
+    | '/eden/analytics'
+    | '/eden/appointments'
+    | '/eden/dashboard'
     | '/eden/login'
+    | '/eden/onboarding'
+    | '/eden/patients'
+    | '/eden/profile'
+    | '/eve/appointments'
     | '/eve/ask'
-    | '/eve/discover'
+    | '/eve/community'
+    | '/eve/guidance'
     | '/eve/home'
-    | '/eve/my-care'
     | '/eve/onboarding'
     | '/eve/profile'
+    | '/eve/providers'
+    | '/eve/vendors'
+    | '/program/chw'
+    | '/program/mothers'
+    | '/program/overview'
+    | '/program/reports'
+    | '/eden/patients/$id'
+    | '/eden/vendor/listing'
+    | '/eden/vendor/onboarding'
+    | '/eden/vendor/orders'
+    | '/eden/vendor/products'
+    | '/eve/providers/$id'
+    | '/eve/vendors/$id'
+    | '/chw/mothers/$id/visit'
   id:
     | '__root__'
     | '/'
     | '/login'
     | '/signup'
+    | '/admin/guidance'
+    | '/admin/providers'
+    | '/admin/users'
+    | '/admin/vendors'
+    | '/chw/flag'
+    | '/chw/home'
+    | '/chw/mothers'
+    | '/chw/register'
+    | '/eden/analytics'
+    | '/eden/appointments'
+    | '/eden/dashboard'
     | '/eden/login'
+    | '/eden/onboarding'
+    | '/eden/patients'
+    | '/eden/profile'
+    | '/eve/appointments'
     | '/eve/ask'
-    | '/eve/discover'
+    | '/eve/community'
+    | '/eve/guidance'
     | '/eve/home'
-    | '/eve/my-care'
     | '/eve/onboarding'
     | '/eve/profile'
+    | '/eve/providers'
+    | '/eve/vendors'
+    | '/program/chw'
+    | '/program/mothers'
+    | '/program/overview'
+    | '/program/reports'
+    | '/eden/patients/$id'
+    | '/eden/vendor/listing'
+    | '/eden/vendor/onboarding'
+    | '/eden/vendor/orders'
+    | '/eden/vendor/products'
+    | '/eve/providers/$id'
+    | '/eve/vendors/$id'
+    | '/chw/mothers/$id/visit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  AdminGuidanceRoute: typeof AdminGuidanceRoute
+  AdminProvidersRoute: typeof AdminProvidersRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminVendorsRoute: typeof AdminVendorsRoute
+  ChwFlagRoute: typeof ChwFlagRoute
+  ChwHomeRoute: typeof ChwHomeRoute
+  ChwMothersRoute: typeof ChwMothersRouteWithChildren
+  ChwRegisterRoute: typeof ChwRegisterRoute
+  EdenAnalyticsRoute: typeof EdenAnalyticsRoute
+  EdenAppointmentsRoute: typeof EdenAppointmentsRoute
+  EdenDashboardRoute: typeof EdenDashboardRoute
   EdenLoginRoute: typeof EdenLoginRoute
+  EdenOnboardingRoute: typeof EdenOnboardingRoute
+  EdenPatientsRoute: typeof EdenPatientsRouteWithChildren
+  EdenProfileRoute: typeof EdenProfileRoute
+  EveAppointmentsRoute: typeof EveAppointmentsRoute
   EveAskRoute: typeof EveAskRoute
-  EveDiscoverRoute: typeof EveDiscoverRoute
+  EveCommunityRoute: typeof EveCommunityRoute
+  EveGuidanceRoute: typeof EveGuidanceRoute
   EveHomeRoute: typeof EveHomeRoute
-  EveMyCareRoute: typeof EveMyCareRoute
   EveOnboardingRoute: typeof EveOnboardingRoute
   EveProfileRoute: typeof EveProfileRoute
+  EveProvidersRoute: typeof EveProvidersRouteWithChildren
+  EveVendorsRoute: typeof EveVendorsRouteWithChildren
+  ProgramChwRoute: typeof ProgramChwRoute
+  ProgramMothersRoute: typeof ProgramMothersRoute
+  ProgramOverviewRoute: typeof ProgramOverviewRoute
+  ProgramReportsRoute: typeof ProgramReportsRoute
+  EdenVendorListingRoute: typeof EdenVendorListingRoute
+  EdenVendorOnboardingRoute: typeof EdenVendorOnboardingRoute
+  EdenVendorOrdersRoute: typeof EdenVendorOrdersRoute
+  EdenVendorProductsRoute: typeof EdenVendorProductsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -183,6 +556,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/program/reports': {
+      id: '/program/reports'
+      path: '/program/reports'
+      fullPath: '/program/reports'
+      preLoaderRoute: typeof ProgramReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/program/overview': {
+      id: '/program/overview'
+      path: '/program/overview'
+      fullPath: '/program/overview'
+      preLoaderRoute: typeof ProgramOverviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/program/mothers': {
+      id: '/program/mothers'
+      path: '/program/mothers'
+      fullPath: '/program/mothers'
+      preLoaderRoute: typeof ProgramMothersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/program/chw': {
+      id: '/program/chw'
+      path: '/program/chw'
+      fullPath: '/program/chw'
+      preLoaderRoute: typeof ProgramChwRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eve/vendors': {
+      id: '/eve/vendors'
+      path: '/eve/vendors'
+      fullPath: '/eve/vendors'
+      preLoaderRoute: typeof EveVendorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eve/providers': {
+      id: '/eve/providers'
+      path: '/eve/providers'
+      fullPath: '/eve/providers'
+      preLoaderRoute: typeof EveProvidersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eve/profile': {
       id: '/eve/profile'
       path: '/eve/profile'
@@ -197,13 +612,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveOnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/eve/my-care': {
-      id: '/eve/my-care'
-      path: '/eve/my-care'
-      fullPath: '/eve/my-care'
-      preLoaderRoute: typeof EveMyCareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/eve/home': {
       id: '/eve/home'
       path: '/eve/home'
@@ -211,11 +619,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveHomeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/eve/discover': {
-      id: '/eve/discover'
-      path: '/eve/discover'
-      fullPath: '/eve/discover'
-      preLoaderRoute: typeof EveDiscoverRouteImport
+    '/eve/guidance': {
+      id: '/eve/guidance'
+      path: '/eve/guidance'
+      fullPath: '/eve/guidance'
+      preLoaderRoute: typeof EveGuidanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eve/community': {
+      id: '/eve/community'
+      path: '/eve/community'
+      fullPath: '/eve/community'
+      preLoaderRoute: typeof EveCommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eve/ask': {
@@ -225,6 +640,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveAskRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eve/appointments': {
+      id: '/eve/appointments'
+      path: '/eve/appointments'
+      fullPath: '/eve/appointments'
+      preLoaderRoute: typeof EveAppointmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/profile': {
+      id: '/eden/profile'
+      path: '/eden/profile'
+      fullPath: '/eden/profile'
+      preLoaderRoute: typeof EdenProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/patients': {
+      id: '/eden/patients'
+      path: '/eden/patients'
+      fullPath: '/eden/patients'
+      preLoaderRoute: typeof EdenPatientsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/onboarding': {
+      id: '/eden/onboarding'
+      path: '/eden/onboarding'
+      fullPath: '/eden/onboarding'
+      preLoaderRoute: typeof EdenOnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eden/login': {
       id: '/eden/login'
       path: '/eden/login'
@@ -232,20 +675,226 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EdenLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eden/dashboard': {
+      id: '/eden/dashboard'
+      path: '/eden/dashboard'
+      fullPath: '/eden/dashboard'
+      preLoaderRoute: typeof EdenDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/appointments': {
+      id: '/eden/appointments'
+      path: '/eden/appointments'
+      fullPath: '/eden/appointments'
+      preLoaderRoute: typeof EdenAppointmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/analytics': {
+      id: '/eden/analytics'
+      path: '/eden/analytics'
+      fullPath: '/eden/analytics'
+      preLoaderRoute: typeof EdenAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chw/register': {
+      id: '/chw/register'
+      path: '/chw/register'
+      fullPath: '/chw/register'
+      preLoaderRoute: typeof ChwRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chw/mothers': {
+      id: '/chw/mothers'
+      path: '/chw/mothers'
+      fullPath: '/chw/mothers'
+      preLoaderRoute: typeof ChwMothersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chw/home': {
+      id: '/chw/home'
+      path: '/chw/home'
+      fullPath: '/chw/home'
+      preLoaderRoute: typeof ChwHomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chw/flag': {
+      id: '/chw/flag'
+      path: '/chw/flag'
+      fullPath: '/chw/flag'
+      preLoaderRoute: typeof ChwFlagRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/vendors': {
+      id: '/admin/vendors'
+      path: '/admin/vendors'
+      fullPath: '/admin/vendors'
+      preLoaderRoute: typeof AdminVendorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/providers': {
+      id: '/admin/providers'
+      path: '/admin/providers'
+      fullPath: '/admin/providers'
+      preLoaderRoute: typeof AdminProvidersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/guidance': {
+      id: '/admin/guidance'
+      path: '/admin/guidance'
+      fullPath: '/admin/guidance'
+      preLoaderRoute: typeof AdminGuidanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eve/vendors/$id': {
+      id: '/eve/vendors/$id'
+      path: '/$id'
+      fullPath: '/eve/vendors/$id'
+      preLoaderRoute: typeof EveVendorsIdRouteImport
+      parentRoute: typeof EveVendorsRoute
+    }
+    '/eve/providers/$id': {
+      id: '/eve/providers/$id'
+      path: '/$id'
+      fullPath: '/eve/providers/$id'
+      preLoaderRoute: typeof EveProvidersIdRouteImport
+      parentRoute: typeof EveProvidersRoute
+    }
+    '/eden/vendor/products': {
+      id: '/eden/vendor/products'
+      path: '/eden/vendor/products'
+      fullPath: '/eden/vendor/products'
+      preLoaderRoute: typeof EdenVendorProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/vendor/orders': {
+      id: '/eden/vendor/orders'
+      path: '/eden/vendor/orders'
+      fullPath: '/eden/vendor/orders'
+      preLoaderRoute: typeof EdenVendorOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/vendor/onboarding': {
+      id: '/eden/vendor/onboarding'
+      path: '/eden/vendor/onboarding'
+      fullPath: '/eden/vendor/onboarding'
+      preLoaderRoute: typeof EdenVendorOnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/vendor/listing': {
+      id: '/eden/vendor/listing'
+      path: '/eden/vendor/listing'
+      fullPath: '/eden/vendor/listing'
+      preLoaderRoute: typeof EdenVendorListingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/patients/$id': {
+      id: '/eden/patients/$id'
+      path: '/$id'
+      fullPath: '/eden/patients/$id'
+      preLoaderRoute: typeof EdenPatientsIdRouteImport
+      parentRoute: typeof EdenPatientsRoute
+    }
+    '/chw/mothers/$id/visit': {
+      id: '/chw/mothers/$id/visit'
+      path: '/$id/visit'
+      fullPath: '/chw/mothers/$id/visit'
+      preLoaderRoute: typeof ChwMothersIdVisitRouteImport
+      parentRoute: typeof ChwMothersRoute
+    }
   }
 }
+
+interface ChwMothersRouteChildren {
+  ChwMothersIdVisitRoute: typeof ChwMothersIdVisitRoute
+}
+
+const ChwMothersRouteChildren: ChwMothersRouteChildren = {
+  ChwMothersIdVisitRoute: ChwMothersIdVisitRoute,
+}
+
+const ChwMothersRouteWithChildren = ChwMothersRoute._addFileChildren(
+  ChwMothersRouteChildren,
+)
+
+interface EdenPatientsRouteChildren {
+  EdenPatientsIdRoute: typeof EdenPatientsIdRoute
+}
+
+const EdenPatientsRouteChildren: EdenPatientsRouteChildren = {
+  EdenPatientsIdRoute: EdenPatientsIdRoute,
+}
+
+const EdenPatientsRouteWithChildren = EdenPatientsRoute._addFileChildren(
+  EdenPatientsRouteChildren,
+)
+
+interface EveProvidersRouteChildren {
+  EveProvidersIdRoute: typeof EveProvidersIdRoute
+}
+
+const EveProvidersRouteChildren: EveProvidersRouteChildren = {
+  EveProvidersIdRoute: EveProvidersIdRoute,
+}
+
+const EveProvidersRouteWithChildren = EveProvidersRoute._addFileChildren(
+  EveProvidersRouteChildren,
+)
+
+interface EveVendorsRouteChildren {
+  EveVendorsIdRoute: typeof EveVendorsIdRoute
+}
+
+const EveVendorsRouteChildren: EveVendorsRouteChildren = {
+  EveVendorsIdRoute: EveVendorsIdRoute,
+}
+
+const EveVendorsRouteWithChildren = EveVendorsRoute._addFileChildren(
+  EveVendorsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  AdminGuidanceRoute: AdminGuidanceRoute,
+  AdminProvidersRoute: AdminProvidersRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminVendorsRoute: AdminVendorsRoute,
+  ChwFlagRoute: ChwFlagRoute,
+  ChwHomeRoute: ChwHomeRoute,
+  ChwMothersRoute: ChwMothersRouteWithChildren,
+  ChwRegisterRoute: ChwRegisterRoute,
+  EdenAnalyticsRoute: EdenAnalyticsRoute,
+  EdenAppointmentsRoute: EdenAppointmentsRoute,
+  EdenDashboardRoute: EdenDashboardRoute,
   EdenLoginRoute: EdenLoginRoute,
+  EdenOnboardingRoute: EdenOnboardingRoute,
+  EdenPatientsRoute: EdenPatientsRouteWithChildren,
+  EdenProfileRoute: EdenProfileRoute,
+  EveAppointmentsRoute: EveAppointmentsRoute,
   EveAskRoute: EveAskRoute,
-  EveDiscoverRoute: EveDiscoverRoute,
+  EveCommunityRoute: EveCommunityRoute,
+  EveGuidanceRoute: EveGuidanceRoute,
   EveHomeRoute: EveHomeRoute,
-  EveMyCareRoute: EveMyCareRoute,
   EveOnboardingRoute: EveOnboardingRoute,
   EveProfileRoute: EveProfileRoute,
+  EveProvidersRoute: EveProvidersRouteWithChildren,
+  EveVendorsRoute: EveVendorsRouteWithChildren,
+  ProgramChwRoute: ProgramChwRoute,
+  ProgramMothersRoute: ProgramMothersRoute,
+  ProgramOverviewRoute: ProgramOverviewRoute,
+  ProgramReportsRoute: ProgramReportsRoute,
+  EdenVendorListingRoute: EdenVendorListingRoute,
+  EdenVendorOnboardingRoute: EdenVendorOnboardingRoute,
+  EdenVendorOrdersRoute: EdenVendorOrdersRoute,
+  EdenVendorProductsRoute: EdenVendorProductsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

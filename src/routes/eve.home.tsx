@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BottomNav } from "@/components/ui/BottomNav";
+import { EveShell } from "@/components/shells/EveShell";
 import { StageRing } from "@/components/ui/StageRing";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { EveCard } from "@/components/ui/EveCard";
@@ -13,38 +13,35 @@ export const Route = createFileRoute("/eve/home")({
 
 function EveHome() {
   return (
-    <div className="min-h-screen bg-eve-sand pb-28">
-      <div className="mx-auto max-w-sm px-5 pt-8">
-        <SectionLabel>This week</SectionLabel>
-        <h1 className="mt-1 font-serif text-2xl text-eve-teal-dark">
-          Good morning, Amara
-        </h1>
-        <div className="mt-6 flex justify-center">
-          <StageRing week={22} />
-        </div>
-        <div className="mt-6 space-y-3">
-          <GuidanceCard>
-            <SectionLabel>Guidance</SectionLabel>
-            <p className="mt-1 font-sans text-sm text-eve-teal-dark">
-              Iron-rich meals reviewed by Lagos nutritionists.
-            </p>
-          </GuidanceCard>
-          <AICard>
-            <p className="font-sans text-sm">
-              Ask Eve anything about your week 22 symptoms.
-            </p>
-          </AICard>
-          <EveCard>
-            <p className="font-sans text-sm text-eve-teal-dark">
-              Dr. Adaeze Okeke — Antenatal review on Thursday.
-            </p>
-            <div className="mt-2">
-              <TrustBadge />
-            </div>
-          </EveCard>
-        </div>
+    <EveShell>
+      <SectionLabel>This week</SectionLabel>
+      <h1 className="mt-1 font-serif text-2xl text-eve-teal-dark">
+        Good morning, Amara
+      </h1>
+      <div className="mt-6 flex justify-center">
+        <StageRing week={22} />
       </div>
-      <BottomNav />
-    </div>
+      <div className="mt-6 space-y-3">
+        <GuidanceCard>
+          <SectionLabel>Guidance</SectionLabel>
+          <p className="mt-1 font-sans text-sm text-eve-teal-dark">
+            Iron-rich meals reviewed by Lagos nutritionists.
+          </p>
+        </GuidanceCard>
+        <AICard>
+          <p className="font-sans text-sm">
+            Ask Eve anything about your week 22 symptoms.
+          </p>
+        </AICard>
+        <EveCard>
+          <p className="font-sans text-sm text-eve-teal-dark">
+            Dr. Adaeze Okeke — Antenatal review on Thursday.
+          </p>
+          <div className="mt-2">
+            <TrustBadge />
+          </div>
+        </EveCard>
+      </div>
+    </EveShell>
   );
 }

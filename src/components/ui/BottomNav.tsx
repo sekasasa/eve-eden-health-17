@@ -1,23 +1,24 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Compass, Sparkles, HeartPulse, User } from "lucide-react";
+import { Home, BookOpen, Sparkles, Calendar, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const items = [
+const left = [
   { to: "/eve/home", label: "Home", icon: Home },
-  { to: "/eve/discover", label: "Discover", icon: Compass },
-  { to: "/eve/my-care", label: "My Care", icon: HeartPulse },
+  { to: "/eve/guidance", label: "Guidance", icon: BookOpen },
+] as const;
+
+const right = [
+  { to: "/eve/appointments", label: "Care", icon: Calendar },
   { to: "/eve/profile", label: "Profile", icon: User },
 ] as const;
 
 export function BottomNav() {
-  const pathname = useRouterState({
-    select: (s) => s.location.pathname,
-  });
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3 pb-3">
       <div className="relative flex items-center justify-around rounded-2xl bg-eve-cream px-2 py-2 shadow-[0_-2px_20px_rgba(0,0,0,0.04)]">
-        {items.slice(0, 2).map((item) => (
+        {left.map((item) => (
           <NavItem key={item.to} {...item} active={pathname === item.to} />
         ))}
 
@@ -29,8 +30,8 @@ export function BottomNav() {
           <Sparkles className="h-6 w-6" />
         </Link>
 
-        {items.slice(2).map((item) => (
-          <NavItem key={item.to} {...item} active={pathname === item.to} />
+        {right.map((item) => (
+          <NavItem key={item.to} {...item} active={pathname.startsWith(item.to)} />
         ))}
       </div>
     </nav>
