@@ -5,8 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
   Area,
   AreaChart,
   XAxis,
