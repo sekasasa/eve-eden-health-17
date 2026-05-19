@@ -184,21 +184,21 @@ async function seedDemo() {
       category: "nutrition",
       title: "Aliments riches en fer pour le deuxième trimestre",
       body: "Au deuxième trimestre, vos besoins en fer doublent. Privilégiez les lentilles, les épinards cuits, la viande rouge maigre et associez à de la vitamine C pour mieux absorber.",
-      reviewed_by: DEMO_PROVIDERS[0].user_id,
+      reviewed_by: DEMO_PROVIDERS[0].id,
     },
     {
       id: DEMO_GUIDANCE_IDS[1],
       category: "exercise",
       title: "Mouvements sûrs au deuxième trimestre",
       body: "Marche quotidienne de 20 minutes, natation, et yoga prénatal doux. Évitez les exercices sur le dos après la semaine 20.",
-      reviewed_by: DEMO_PROVIDERS[0].user_id,
+      reviewed_by: DEMO_PROVIDERS[0].id,
     },
     {
       id: DEMO_GUIDANCE_IDS[2],
       category: "preparation",
       title: "Que mettre dans votre valise de maternité",
       body: "Documents d'identité, carnet de grossesse, chemises de nuit confortables, articles de toilette, vêtements pour bébé taille naissance, et une tenue de sortie pour vous.",
-      reviewed_by: DEMO_PROVIDERS[0].user_id,
+      reviewed_by: DEMO_PROVIDERS[0].id,
     },
   ];
   for (const g of guidance) {
