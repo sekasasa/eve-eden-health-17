@@ -18,7 +18,10 @@ export function BottomNav() {
   const { t } = useTranslation();
 
   return (
-    <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3 pb-3">
+    <nav
+      className="fixed bottom-0 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-3"
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
+    >
       <div className="relative flex items-center justify-around rounded-2xl bg-eve-cream px-2 py-2 shadow-[0_-2px_20px_rgba(0,0,0,0.04)]">
         {left.map((item) => (
           <NavItem
@@ -67,7 +70,7 @@ function NavItem({
     <Link
       to={to}
       className={cn(
-        "flex flex-1 flex-col items-center gap-1 py-1 font-sans text-[10px]",
+        "flex min-h-[44px] min-w-[44px] flex-1 flex-col items-center justify-center gap-1 py-1 font-sans text-[10px]",
         active ? "text-eve-teal" : "text-eve-muted",
       )}
     >
