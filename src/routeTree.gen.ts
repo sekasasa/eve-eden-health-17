@@ -48,6 +48,7 @@ import { Route as EdenVendorProductsRouteImport } from './routes/eden.vendor.pro
 import { Route as EdenVendorOrdersRouteImport } from './routes/eden.vendor.orders'
 import { Route as EdenVendorOnboardingRouteImport } from './routes/eden.vendor.onboarding'
 import { Route as EdenVendorListingRouteImport } from './routes/eden.vendor.listing'
+import { Route as EdenVendorDashboardRouteImport } from './routes/eden.vendor.dashboard'
 import { Route as EdenPatientsIdRouteImport } from './routes/eden.patients.$id'
 import { Route as EveProvidersIdBookRouteImport } from './routes/eve.providers.$id.book'
 import { Route as ChwMothersIdVisitRouteImport } from './routes/chw.mothers.$id.visit'
@@ -247,6 +248,11 @@ const EdenVendorListingRoute = EdenVendorListingRouteImport.update({
   path: '/eden/vendor/listing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EdenVendorDashboardRoute = EdenVendorDashboardRouteImport.update({
+  id: '/eden/vendor/dashboard',
+  path: '/eden/vendor/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EdenPatientsIdRoute = EdenPatientsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -298,6 +304,7 @@ export interface FileRoutesByFullPath {
   '/program/reports': typeof ProgramReportsRoute
   '/program/settings': typeof ProgramSettingsRoute
   '/eden/patients/$id': typeof EdenPatientsIdRoute
+  '/eden/vendor/dashboard': typeof EdenVendorDashboardRoute
   '/eden/vendor/listing': typeof EdenVendorListingRoute
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
@@ -342,6 +349,7 @@ export interface FileRoutesByTo {
   '/program/reports': typeof ProgramReportsRoute
   '/program/settings': typeof ProgramSettingsRoute
   '/eden/patients/$id': typeof EdenPatientsIdRoute
+  '/eden/vendor/dashboard': typeof EdenVendorDashboardRoute
   '/eden/vendor/listing': typeof EdenVendorListingRoute
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
@@ -387,6 +395,7 @@ export interface FileRoutesById {
   '/program/reports': typeof ProgramReportsRoute
   '/program/settings': typeof ProgramSettingsRoute
   '/eden/patients/$id': typeof EdenPatientsIdRoute
+  '/eden/vendor/dashboard': typeof EdenVendorDashboardRoute
   '/eden/vendor/listing': typeof EdenVendorListingRoute
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
@@ -433,6 +442,7 @@ export interface FileRouteTypes {
     | '/program/reports'
     | '/program/settings'
     | '/eden/patients/$id'
+    | '/eden/vendor/dashboard'
     | '/eden/vendor/listing'
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
@@ -477,6 +487,7 @@ export interface FileRouteTypes {
     | '/program/reports'
     | '/program/settings'
     | '/eden/patients/$id'
+    | '/eden/vendor/dashboard'
     | '/eden/vendor/listing'
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
@@ -521,6 +532,7 @@ export interface FileRouteTypes {
     | '/program/reports'
     | '/program/settings'
     | '/eden/patients/$id'
+    | '/eden/vendor/dashboard'
     | '/eden/vendor/listing'
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
@@ -565,6 +577,7 @@ export interface RootRouteChildren {
   ProgramOverviewRoute: typeof ProgramOverviewRoute
   ProgramReportsRoute: typeof ProgramReportsRoute
   ProgramSettingsRoute: typeof ProgramSettingsRoute
+  EdenVendorDashboardRoute: typeof EdenVendorDashboardRoute
   EdenVendorListingRoute: typeof EdenVendorListingRoute
   EdenVendorOnboardingRoute: typeof EdenVendorOnboardingRoute
   EdenVendorOrdersRoute: typeof EdenVendorOrdersRoute
@@ -846,6 +859,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EdenVendorListingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eden/vendor/dashboard': {
+      id: '/eden/vendor/dashboard'
+      path: '/eden/vendor/dashboard'
+      fullPath: '/eden/vendor/dashboard'
+      preLoaderRoute: typeof EdenVendorDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eden/patients/$id': {
       id: '/eden/patients/$id'
       path: '/$id'
@@ -964,6 +984,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProgramOverviewRoute: ProgramOverviewRoute,
   ProgramReportsRoute: ProgramReportsRoute,
   ProgramSettingsRoute: ProgramSettingsRoute,
+  EdenVendorDashboardRoute: EdenVendorDashboardRoute,
   EdenVendorListingRoute: EdenVendorListingRoute,
   EdenVendorOnboardingRoute: EdenVendorOnboardingRoute,
   EdenVendorOrdersRoute: EdenVendorOrdersRoute,
