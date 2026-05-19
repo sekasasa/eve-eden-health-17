@@ -42,12 +42,12 @@ export async function flush(): Promise<{ flushed: number; failed: number }> {
   let flushed = 0;
   for (const item of items) {
     try {
-      const { error } = await supabase.from(item.table).insert(item.payload);
+      const { error } = await (supabase.from(item.table) as unknown as { insert: (p: unknown) => Promise<{ error: unknown }> }).insert(item.payload);
       if (error) throw error;
       if (item.follow_up) {
         const motherId = (item.payload as Record<string, unknown>).mother_id as string | undefined;
         if (motherId) {
-          await supabase.from(item.follow_up.table).update(item.follow_up.patch).eq("id", motherId);
+          await (supabase.from(item.follow_up.table) as unknown as { update: (p: unknown) => { eq: (k: string, v: string) => Promise<unknown> } }).update(item.follow_up.patch).eq("id", motherId);
         }
       }
       flushed++;
