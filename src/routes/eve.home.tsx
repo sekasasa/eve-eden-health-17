@@ -205,11 +205,11 @@ function EveHome() {
             <button
               type="button"
               onClick={() => setExpanded((v) => !v)}
-              className="block w-full text-left"
+              className="block w-full text-left rtl:text-right"
             >
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start justify-between gap-2 rtl:flex-row-reverse">
                 <SectionLabel className="!text-eve-terra">
-                  Today's guidance
+                  {t("home.todaysGuidance")}
                 </SectionLabel>
                 <ChevronDown
                   className={cn(
@@ -241,7 +241,7 @@ function EveHome() {
                   style={{ fontSize: "11px" }}
                 >
                   <Check className="h-3 w-3" strokeWidth={3} />
-                  Reviewed by Dr. {reviewerName}
+                  {t("home.reviewedBy", { name: reviewerName })}
                 </span>
               )}
             </button>
@@ -249,45 +249,45 @@ function EveHome() {
         ) : (
           <GuidanceCard>
             <SectionLabel className="!text-eve-terra">
-              Today's guidance
+              {t("home.todaysGuidance")}
             </SectionLabel>
             <p
-              className="mt-1 font-sans text-eve-muted"
+              className="mt-1 font-sans text-eve-muted rtl:text-right"
               style={{ fontSize: "12px" }}
             >
-              New guidance for week {week} is on the way.
+              {t("home.guidanceComing", { week })}
             </p>
           </GuidanceCard>
         )}
       </div>
 
       {/* Quick actions */}
-      <div className="mt-5 px-3">
-        <SectionLabel>Quick actions</SectionLabel>
+      <div className="mt-5 px-3 rtl:text-right">
+        <SectionLabel>{t("home.quickActions")}</SectionLabel>
         <div className="mt-2 grid grid-cols-2 gap-2">
           <QuickAction
             to="/eve/providers"
             icon={<Stethoscope className="h-[18px] w-[18px] text-eve-teal" />}
-            label="Find a doctor"
-            sub="Verified providers"
+            label={t("home.findDoctor")}
+            sub={t("home.verifiedProviders")}
           />
           <QuickAction
             to="/eve/vendors"
             icon={<ShoppingBag className="h-[18px] w-[18px] text-eve-terra" />}
-            label="Shop vendors"
-            sub="Mama essentials"
+            label={t("home.shopVendors")}
+            sub={t("home.mamaEssentials")}
           />
           <QuickAction
             to="/eve/appointments"
             icon={<Calendar className="h-[18px] w-[18px] text-eve-forest" />}
-            label="My bookings"
-            sub="Upcoming visits"
+            label={t("home.myBookings")}
+            sub={t("home.upcomingVisits")}
           />
           <QuickAction
             to="/eve/community"
             icon={<Users className="h-[18px] w-[18px] text-eve-rose" />}
-            label="Community"
-            sub="Mothers near you"
+            label={t("home.community")}
+            sub={t("home.mothersNearYou")}
           />
         </div>
       </div>
