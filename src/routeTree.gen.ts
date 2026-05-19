@@ -24,6 +24,7 @@ import { Route as EveProfileRouteImport } from './routes/eve.profile'
 import { Route as EveOnboardingRouteImport } from './routes/eve.onboarding'
 import { Route as EveHomeRouteImport } from './routes/eve.home'
 import { Route as EveGuidanceRouteImport } from './routes/eve.guidance'
+import { Route as EveEventsRouteImport } from './routes/eve.events'
 import { Route as EveCommunityRouteImport } from './routes/eve.community'
 import { Route as EveAskRouteImport } from './routes/eve.ask'
 import { Route as EveAppointmentsRouteImport } from './routes/eve.appointments'
@@ -127,6 +128,11 @@ const EveHomeRoute = EveHomeRouteImport.update({
 const EveGuidanceRoute = EveGuidanceRouteImport.update({
   id: '/eve/guidance',
   path: '/eve/guidance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EveEventsRoute = EveEventsRouteImport.update({
+  id: '/eve/events',
+  path: '/eve/events',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EveCommunityRoute = EveCommunityRouteImport.update({
@@ -298,6 +304,7 @@ export interface FileRoutesByFullPath {
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
   '/eve/community': typeof EveCommunityRoute
+  '/eve/events': typeof EveEventsRoute
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
   '/eve/onboarding': typeof EveOnboardingRoute
@@ -344,6 +351,7 @@ export interface FileRoutesByTo {
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
   '/eve/community': typeof EveCommunityRoute
+  '/eve/events': typeof EveEventsRoute
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
   '/eve/onboarding': typeof EveOnboardingRoute
@@ -391,6 +399,7 @@ export interface FileRoutesById {
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
   '/eve/community': typeof EveCommunityRoute
+  '/eve/events': typeof EveEventsRoute
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
   '/eve/onboarding': typeof EveOnboardingRoute
@@ -439,6 +448,7 @@ export interface FileRouteTypes {
     | '/eve/appointments'
     | '/eve/ask'
     | '/eve/community'
+    | '/eve/events'
     | '/eve/guidance'
     | '/eve/home'
     | '/eve/onboarding'
@@ -485,6 +495,7 @@ export interface FileRouteTypes {
     | '/eve/appointments'
     | '/eve/ask'
     | '/eve/community'
+    | '/eve/events'
     | '/eve/guidance'
     | '/eve/home'
     | '/eve/onboarding'
@@ -531,6 +542,7 @@ export interface FileRouteTypes {
     | '/eve/appointments'
     | '/eve/ask'
     | '/eve/community'
+    | '/eve/events'
     | '/eve/guidance'
     | '/eve/home'
     | '/eve/onboarding'
@@ -578,6 +590,7 @@ export interface RootRouteChildren {
   EveAppointmentsRoute: typeof EveAppointmentsRoute
   EveAskRoute: typeof EveAskRoute
   EveCommunityRoute: typeof EveCommunityRoute
+  EveEventsRoute: typeof EveEventsRoute
   EveGuidanceRoute: typeof EveGuidanceRoute
   EveHomeRoute: typeof EveHomeRoute
   EveOnboardingRoute: typeof EveOnboardingRoute
@@ -702,6 +715,13 @@ declare module '@tanstack/react-router' {
       path: '/eve/guidance'
       fullPath: '/eve/guidance'
       preLoaderRoute: typeof EveGuidanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eve/events': {
+      id: '/eve/events'
+      path: '/eve/events'
+      fullPath: '/eve/events'
+      preLoaderRoute: typeof EveEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eve/community': {
@@ -993,6 +1013,7 @@ const rootRouteChildren: RootRouteChildren = {
   EveAppointmentsRoute: EveAppointmentsRoute,
   EveAskRoute: EveAskRoute,
   EveCommunityRoute: EveCommunityRoute,
+  EveEventsRoute: EveEventsRoute,
   EveGuidanceRoute: EveGuidanceRoute,
   EveHomeRoute: EveHomeRoute,
   EveOnboardingRoute: EveOnboardingRoute,
