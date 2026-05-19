@@ -490,7 +490,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_user_type: { Args: { _user_id: string }; Returns: string }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
