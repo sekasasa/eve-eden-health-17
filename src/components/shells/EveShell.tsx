@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { Bell, User } from "lucide-react";
 import { BottomNav } from "@/components/ui/BottomNav";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { LanguageToggle } from "@/components/ui/LanguageToggle";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface Props {
   children: ReactNode;
@@ -13,14 +15,18 @@ interface Props {
 }
 
 export function EveShell({ children, hideNav, unprotected }: Props) {
+  // Initialise language from profile for every Eve page
+  useLanguage();
+
   const content = (
     <div className="min-h-screen bg-eve-sand">
       <div className="mx-auto max-w-sm">
-        <header className="flex items-center justify-between px-5 pt-6">
+        <header className="flex items-center justify-between px-5 pt-6 rtl:flex-row-reverse">
           <Link to="/eve/home" className="font-serif text-2xl text-eve-teal">
             eve.
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 rtl:flex-row-reverse">
+            <LanguageToggle />
             <button
               aria-label="Notifications"
               className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-cream text-eve-teal-dark"
