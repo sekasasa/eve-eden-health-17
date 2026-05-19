@@ -1,0 +1,19 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { BottomNav } from "@/components/ui/BottomNav";
+import { StageRing } from "@/components/ui/StageRing";
+import { SectionLabel } from "@/components/ui/SectionLabel";
+
+export const Route = createFileRoute("/eve/profile")({
+  component: () => (
+    <div className="min-h-screen bg-eve-sand pb-28">
+      <div className="mx-auto max-w-sm px-5 pt-10 text-center">
+        <SectionLabel>Profile</SectionLabel>
+        <h1 className="mt-2 font-serif text-3xl text-eve-teal-dark">Amara</h1>
+        <div className="mt-6 flex justify-center">
+          <StageRing week={22} />
+        </div>
+      </div>
+      <BottomNav />
+    </div>
+  ),
+});
