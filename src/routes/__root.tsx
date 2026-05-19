@@ -8,8 +8,11 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 
+import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import { DemoBanner } from "@/components/ui/DemoBanner";
+import { InstallPrompt } from "@/components/ui/InstallPrompt";
+import { initPwaInstall } from "@/lib/pwa-install";
 import "@/i18n";
 
 function NotFoundComponent() {
@@ -73,21 +76,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1",
+      },
+      { title: "Eve & Eden Health" },
+      { name: "description", content: "Maternal health companion." },
+      { name: "theme-color", content: "#0E7C7B" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: "Eve" },
+      { property: "og:title", content: "Eve & Eden Health" },
+      { property: "og:description", content: "Maternal health companion." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -113,10 +121,15 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    initPwaInstall();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <DemoBanner />
       <Outlet />
+      <InstallPrompt />
     </QueryClientProvider>
   );
 }
