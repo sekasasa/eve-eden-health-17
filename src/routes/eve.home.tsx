@@ -291,6 +291,12 @@ function EveHome() {
             label={t("home.community")}
             sub={t("home.mothersNearYou")}
           />
+          <QuickAction
+            to="/eve/events"
+            icon={<Calendar className="h-[18px] w-[18px] text-eve-teal" />}
+            label="Events"
+            sub="Workshops & meetups"
+          />
         </div>
       </div>
       </PullToRefresh>
