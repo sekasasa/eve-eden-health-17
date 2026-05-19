@@ -23,6 +23,7 @@ const PROVIDER_NAV = [
 ];
 
 const VENDOR_NAV = [
+  { to: "/eden/vendor/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/eden/vendor/products", label: "Products", icon: Package },
   { to: "/eden/vendor/orders", label: "Orders", icon: ShoppingBag },
   { to: "/eden/vendor/listing", label: "My Listing", icon: Star },
