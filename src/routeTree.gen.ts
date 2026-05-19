@@ -42,6 +42,7 @@ import { Route as AdminVendorsRouteImport } from './routes/admin.vendors'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
 import { Route as AdminGuidanceRouteImport } from './routes/admin.guidance'
+import { Route as AdminAlertsRouteImport } from './routes/admin.alerts'
 import { Route as EveVendorsIdRouteImport } from './routes/eve.vendors.$id'
 import { Route as EveProvidersIdRouteImport } from './routes/eve.providers.$id'
 import { Route as EdenVendorProductsRouteImport } from './routes/eden.vendor.products'
@@ -218,6 +219,11 @@ const AdminGuidanceRoute = AdminGuidanceRouteImport.update({
   path: '/admin/guidance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAlertsRoute = AdminAlertsRouteImport.update({
+  id: '/admin/alerts',
+  path: '/admin/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EveVendorsIdRoute = EveVendorsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -273,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/users': typeof AdminUsersRoute
@@ -318,6 +325,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/users': typeof AdminUsersRoute
@@ -364,6 +372,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/users': typeof AdminUsersRoute
@@ -411,6 +420,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/admin/alerts'
     | '/admin/guidance'
     | '/admin/providers'
     | '/admin/users'
@@ -456,6 +466,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/admin/alerts'
     | '/admin/guidance'
     | '/admin/providers'
     | '/admin/users'
@@ -501,6 +512,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/admin/alerts'
     | '/admin/guidance'
     | '/admin/providers'
     | '/admin/users'
@@ -547,6 +559,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  AdminAlertsRoute: typeof AdminAlertsRoute
   AdminGuidanceRoute: typeof AdminGuidanceRoute
   AdminProvidersRoute: typeof AdminProvidersRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -817,6 +830,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGuidanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/alerts': {
+      id: '/admin/alerts'
+      path: '/admin/alerts'
+      fullPath: '/admin/alerts'
+      preLoaderRoute: typeof AdminAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eve/vendors/$id': {
       id: '/eve/vendors/$id'
       path: '/$id'
@@ -954,6 +974,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  AdminAlertsRoute: AdminAlertsRoute,
   AdminGuidanceRoute: AdminGuidanceRoute,
   AdminProvidersRoute: AdminProvidersRoute,
   AdminUsersRoute: AdminUsersRoute,
