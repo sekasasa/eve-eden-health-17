@@ -3,6 +3,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, UserPlus, Users, Flag } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { cn } from "@/lib/utils";
+import { OfflineBanner } from "@/components/ui/OfflineBanner";
 
 const NAV = [
   { to: "/chw/home", label: "Home", icon: Home },
@@ -17,6 +18,7 @@ export function CHWShell({ children }: { children: ReactNode }) {
     <ProtectedRoute requiredType="chw">
       <div className="min-h-screen bg-white">
         <div className="mx-auto max-w-md">
+          <OfflineBanner />
           <header className="border-b border-gray-100 px-5 py-4">
             <span className="font-serif text-xl text-eve-teal">chw.</span>
           </header>

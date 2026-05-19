@@ -65,6 +65,36 @@ export type Database = {
           },
         ]
       }
+      chw_alerts: {
+        Row: {
+          chw_id: string
+          created_at: string
+          id: string
+          mother_id: string
+          note: string | null
+          resolved: boolean
+          risk_type: string
+        }
+        Insert: {
+          chw_id: string
+          created_at?: string
+          id?: string
+          mother_id: string
+          note?: string | null
+          resolved?: boolean
+          risk_type: string
+        }
+        Update: {
+          chw_id?: string
+          created_at?: string
+          id?: string
+          mother_id?: string
+          note?: string | null
+          resolved?: boolean
+          risk_type?: string
+        }
+        Relationships: []
+      }
       chw_mothers: {
         Row: {
           chw_id: string
@@ -511,6 +541,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      visits: {
+        Row: {
+          action_notes: string | null
+          blood_pressure: string | null
+          chw_id: string
+          concerns: string | null
+          created_at: string
+          duration_minutes: number | null
+          feeling_scale: number | null
+          fetal_heartbeat: string | null
+          fundal_height_cm: number | null
+          id: string
+          medications: string | null
+          mother_id: string
+          next_visit_date: string | null
+          oedema: string | null
+          referral_destination: string | null
+          referred: boolean
+          services: Json
+          updated_at: string
+          visit_date: string
+          visit_type: string
+          weight_kg: number | null
+        }
+        Insert: {
+          action_notes?: string | null
+          blood_pressure?: string | null
+          chw_id: string
+          concerns?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          feeling_scale?: number | null
+          fetal_heartbeat?: string | null
+          fundal_height_cm?: number | null
+          id?: string
+          medications?: string | null
+          mother_id: string
+          next_visit_date?: string | null
+          oedema?: string | null
+          referral_destination?: string | null
+          referred?: boolean
+          services?: Json
+          updated_at?: string
+          visit_date?: string
+          visit_type?: string
+          weight_kg?: number | null
+        }
+        Update: {
+          action_notes?: string | null
+          blood_pressure?: string | null
+          chw_id?: string
+          concerns?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          feeling_scale?: number | null
+          fetal_heartbeat?: string | null
+          fundal_height_cm?: number | null
+          id?: string
+          medications?: string | null
+          mother_id?: string
+          next_visit_date?: string | null
+          oedema?: string | null
+          referral_destination?: string | null
+          referred?: boolean
+          services?: Json
+          updated_at?: string
+          visit_date?: string
+          visit_type?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
       }
     }
     Views: {
