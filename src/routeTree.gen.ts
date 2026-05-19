@@ -47,6 +47,7 @@ import { Route as EdenVendorOrdersRouteImport } from './routes/eden.vendor.order
 import { Route as EdenVendorOnboardingRouteImport } from './routes/eden.vendor.onboarding'
 import { Route as EdenVendorListingRouteImport } from './routes/eden.vendor.listing'
 import { Route as EdenPatientsIdRouteImport } from './routes/eden.patients.$id'
+import { Route as EveProvidersIdBookRouteImport } from './routes/eve.providers.$id.book'
 import { Route as ChwMothersIdVisitRouteImport } from './routes/chw.mothers.$id.visit'
 
 const SignupRoute = SignupRouteImport.update({
@@ -239,6 +240,11 @@ const EdenPatientsIdRoute = EdenPatientsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => EdenPatientsRoute,
 } as any)
+const EveProvidersIdBookRoute = EveProvidersIdBookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => EveProvidersIdRoute,
+} as any)
 const ChwMothersIdVisitRoute = ChwMothersIdVisitRouteImport.update({
   id: '/$id/visit',
   path: '/$id/visit',
@@ -282,9 +288,10 @@ export interface FileRoutesByFullPath {
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
-  '/eve/providers/$id': typeof EveProvidersIdRoute
+  '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
+  '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -323,9 +330,10 @@ export interface FileRoutesByTo {
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
-  '/eve/providers/$id': typeof EveProvidersIdRoute
+  '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
+  '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -365,9 +373,10 @@ export interface FileRoutesById {
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
-  '/eve/providers/$id': typeof EveProvidersIdRoute
+  '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
+  '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -411,6 +420,7 @@ export interface FileRouteTypes {
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
+    | '/eve/providers/$id/book'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -452,6 +462,7 @@ export interface FileRouteTypes {
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
+    | '/eve/providers/$id/book'
   id:
     | '__root__'
     | '/'
@@ -493,6 +504,7 @@ export interface FileRouteTypes {
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
+    | '/eve/providers/$id/book'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -801,6 +813,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EdenPatientsIdRouteImport
       parentRoute: typeof EdenPatientsRoute
     }
+    '/eve/providers/$id/book': {
+      id: '/eve/providers/$id/book'
+      path: '/book'
+      fullPath: '/eve/providers/$id/book'
+      preLoaderRoute: typeof EveProvidersIdBookRouteImport
+      parentRoute: typeof EveProvidersIdRoute
+    }
     '/chw/mothers/$id/visit': {
       id: '/chw/mothers/$id/visit'
       path: '/$id/visit'
@@ -835,12 +854,24 @@ const EdenPatientsRouteWithChildren = EdenPatientsRoute._addFileChildren(
   EdenPatientsRouteChildren,
 )
 
+interface EveProvidersIdRouteChildren {
+  EveProvidersIdBookRoute: typeof EveProvidersIdBookRoute
+}
+
+const EveProvidersIdRouteChildren: EveProvidersIdRouteChildren = {
+  EveProvidersIdBookRoute: EveProvidersIdBookRoute,
+}
+
+const EveProvidersIdRouteWithChildren = EveProvidersIdRoute._addFileChildren(
+  EveProvidersIdRouteChildren,
+)
+
 interface EveProvidersRouteChildren {
-  EveProvidersIdRoute: typeof EveProvidersIdRoute
+  EveProvidersIdRoute: typeof EveProvidersIdRouteWithChildren
 }
 
 const EveProvidersRouteChildren: EveProvidersRouteChildren = {
-  EveProvidersIdRoute: EveProvidersIdRoute,
+  EveProvidersIdRoute: EveProvidersIdRouteWithChildren,
 }
 
 const EveProvidersRouteWithChildren = EveProvidersRoute._addFileChildren(
