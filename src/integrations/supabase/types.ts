@@ -433,6 +433,7 @@ export type Database = {
           created_at: string | null
           full_name: string | null
           id: string
+          is_active: boolean
           language: string | null
           phone: string | null
           user_type: string
@@ -442,6 +443,7 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id: string
+          is_active?: boolean
           language?: string | null
           phone?: string | null
           user_type: string
@@ -451,6 +453,7 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id?: string
+          is_active?: boolean
           language?: string | null
           phone?: string | null
           user_type?: string
@@ -463,6 +466,7 @@ export type Database = {
           avg_rating: number | null
           bio: string | null
           city: string | null
+          clinic_address: string | null
           clinic_name: string | null
           consultation_fee_mad: number | null
           country: string | null
@@ -472,8 +476,11 @@ export type Database = {
           is_verified: boolean | null
           languages: string[] | null
           lat: number | null
+          license_number: string | null
           lng: number | null
+          rejection_reason: string | null
           review_count: number | null
+          review_status: string
           specialty: string | null
           user_id: string
         }
@@ -482,6 +489,7 @@ export type Database = {
           avg_rating?: number | null
           bio?: string | null
           city?: string | null
+          clinic_address?: string | null
           clinic_name?: string | null
           consultation_fee_mad?: number | null
           country?: string | null
@@ -491,8 +499,11 @@ export type Database = {
           is_verified?: boolean | null
           languages?: string[] | null
           lat?: number | null
+          license_number?: string | null
           lng?: number | null
+          rejection_reason?: string | null
           review_count?: number | null
+          review_status?: string
           specialty?: string | null
           user_id: string
         }
@@ -501,6 +512,7 @@ export type Database = {
           avg_rating?: number | null
           bio?: string | null
           city?: string | null
+          clinic_address?: string | null
           clinic_name?: string | null
           consultation_fee_mad?: number | null
           country?: string | null
@@ -510,8 +522,11 @@ export type Database = {
           is_verified?: boolean | null
           languages?: string[] | null
           lat?: number | null
+          license_number?: string | null
           lng?: number | null
+          rejection_reason?: string | null
           review_count?: number | null
+          review_status?: string
           specialty?: string | null
           user_id?: string
         }
@@ -538,6 +553,8 @@ export type Database = {
           is_featured: boolean | null
           is_verified: boolean | null
           logo_url: string | null
+          rejection_reason: string | null
+          review_status: string
           user_id: string
         }
         Insert: {
@@ -552,6 +569,8 @@ export type Database = {
           is_featured?: boolean | null
           is_verified?: boolean | null
           logo_url?: string | null
+          rejection_reason?: string | null
+          review_status?: string
           user_id: string
         }
         Update: {
@@ -566,6 +585,8 @@ export type Database = {
           is_featured?: boolean | null
           is_verified?: boolean | null
           logo_url?: string | null
+          rejection_reason?: string | null
+          review_status?: string
           user_id?: string
         }
         Relationships: [
