@@ -35,9 +35,16 @@ export function ProtectedRoute({ children, requiredType }: Props) {
         .select("user_type")
         .eq("id", userId)
         .maybeSingle();
-      const userType = data?.user_type ?? null;
+      let userType = data?.user_type ?? null;
+      // Self-heal: signed-in user has no profile row yet (e.g. fresh Google
+      // OAuth without going through signup). Create a default 'mother'
+      // profile so the user lands somewhere sensible instead of a 403.
+      if (!userType) {
+        await supabase.from("profiles").upsert({ id: userId, user_type: "mother" });
+        userType = "mother";
+      }
       const allowed = Array.isArray(requiredType) ? requiredType : [requiredType];
-      if (userType && allowed.includes(userType as UserType)) {
+      if (allowed.includes(userType as UserType)) {
         if (!cancelled) setState({ status: "ok" });
       } else {
         if (!cancelled) setState({ status: "wrong-type", actual: userType });

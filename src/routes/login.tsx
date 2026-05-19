@@ -14,10 +14,10 @@ export const Route = createFileRoute("/login")({
 
 const REDIRECT_BY_TYPE: Record<string, string> = {
   mother: "/eve/home",
-  provider: "/eden/login",
-  vendor: "/eden/login",
-  chw: "/eden/login",
-  admin: "/eden/login",
+  provider: "/eden/dashboard",
+  vendor: "/eden/vendor/dashboard",
+  chw: "/chw/home",
+  admin: "/admin/providers",
 };
 
 function LoginPage() {
@@ -36,16 +36,15 @@ function LoginPage() {
     let userType = data?.user_type as string | undefined;
     if (!userType) {
       const pending = sessionStorage.getItem("eve_pending_user_type");
-      if (pending) {
-        userType = pending;
-        await supabase.from("profiles").upsert({
-          id: userId,
-          user_type: pending,
-        });
-        sessionStorage.removeItem("eve_pending_user_type");
-      }
+      userType = pending || "mother";
+      await supabase.from("profiles").upsert({
+        id: userId,
+        user_type: userType,
+      });
+      sessionStorage.removeItem("eve_pending_user_type");
     }
-    navigate({ to: REDIRECT_BY_TYPE[userType ?? "mother"] ?? "/eve/home" });
+    const dest = REDIRECT_BY_TYPE[userType] ?? "/eve/home";
+    navigate({ to: dest });
   };
 
   // Handle OAuth return: if a session already exists, route the user
