@@ -112,7 +112,7 @@ async function seedDemo() {
     await supabaseAdmin.from("providers").upsert({
       id: p.id,
       user_id: p.user_id,
-      full_name: `Dr. ${p.full_name}`,
+      full_name: p.full_name,
       specialty: p.specialty,
       clinic_name: p.clinic_name,
       city: p.city,
