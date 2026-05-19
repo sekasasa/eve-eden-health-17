@@ -1,15 +1,16 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, BookOpen, Sparkles, Calendar, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 const left = [
-  { to: "/eve/home", label: "Home", icon: Home },
-  { to: "/eve/guidance", label: "Guidance", icon: BookOpen },
+  { to: "/eve/home", key: "home", icon: Home },
+  { to: "/eve/guidance", key: "guidance", icon: BookOpen },
 ] as const;
 
 const right = [
-  { to: "/eve/appointments", label: "Care", icon: Calendar },
-  { to: "/eve/profile", label: "Profile", icon: User },
+  { to: "/eve/appointments", key: "appointments", icon: Calendar },
+  { to: "/eve/profile", key: "profile", icon: User },
 ] as const;
 
 export function BottomNav() {
