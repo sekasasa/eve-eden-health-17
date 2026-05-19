@@ -26,12 +26,12 @@ async function ensureAuthUser(opts: {
   const { data: existing } = await supabaseAdmin.auth.admin.getUserById(opts.id);
   if (!existing?.user) {
     const { error } = await supabaseAdmin.auth.admin.createUser({
-      id: opts.id as never,
+      id: opts.id,
       email: opts.email,
       password: opts.password,
       email_confirm: true,
       user_metadata: { full_name: opts.full_name, user_type: opts.user_type },
-    } as never);
+    });
     // ignore "already registered" race
     if (error && !/already/i.test(error.message)) {
       throw error;
