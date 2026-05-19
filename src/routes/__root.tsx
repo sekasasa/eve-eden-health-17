@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import { DemoBanner } from "@/components/ui/DemoBanner";
 import { InstallPrompt } from "@/components/ui/InstallPrompt";
+import { Toaster } from "@/components/ui/sonner";
 import { initPwaInstall } from "@/lib/pwa-install";
 import "@/i18n";
 
