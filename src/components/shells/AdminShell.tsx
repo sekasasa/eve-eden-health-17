@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Stethoscope, Store, BookOpen, Users } from "lucide-react";
+import { Stethoscope, Store, BookOpen, Users, AlertTriangle } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { cn } from "@/lib/utils";
 
@@ -55,6 +55,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/admin/providers", label: "Providers", icon: Stethoscope },
   { to: "/admin/vendors", label: "Vendors", icon: Store },
   { to: "/admin/guidance", label: "Guidance", icon: BookOpen },
+  { to: "/admin/alerts", label: "Alerts", icon: AlertTriangle },
   { to: "/admin/users", label: "Users", icon: Users },
 ];
 
