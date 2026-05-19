@@ -12,10 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProgramSettingsRouteImport } from './routes/program.settings'
 import { Route as ProgramReportsRouteImport } from './routes/program.reports'
 import { Route as ProgramOverviewRouteImport } from './routes/program.overview'
 import { Route as ProgramMothersRouteImport } from './routes/program.mothers'
 import { Route as ProgramChwRouteImport } from './routes/program.chw'
+import { Route as ProgramAlertsRouteImport } from './routes/program.alerts'
 import { Route as EveVendorsRouteImport } from './routes/eve.vendors'
 import { Route as EveProvidersRouteImport } from './routes/eve.providers'
 import { Route as EveProfileRouteImport } from './routes/eve.profile'
@@ -65,6 +67,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProgramSettingsRoute = ProgramSettingsRouteImport.update({
+  id: '/program/settings',
+  path: '/program/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProgramReportsRoute = ProgramReportsRouteImport.update({
   id: '/program/reports',
   path: '/program/reports',
@@ -83,6 +90,11 @@ const ProgramMothersRoute = ProgramMothersRouteImport.update({
 const ProgramChwRoute = ProgramChwRouteImport.update({
   id: '/program/chw',
   path: '/program/chw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramAlertsRoute = ProgramAlertsRouteImport.update({
+  id: '/program/alerts',
+  path: '/program/alerts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EveVendorsRoute = EveVendorsRouteImport.update({
@@ -279,10 +291,12 @@ export interface FileRoutesByFullPath {
   '/eve/profile': typeof EveProfileRoute
   '/eve/providers': typeof EveProvidersRouteWithChildren
   '/eve/vendors': typeof EveVendorsRouteWithChildren
+  '/program/alerts': typeof ProgramAlertsRoute
   '/program/chw': typeof ProgramChwRoute
   '/program/mothers': typeof ProgramMothersRoute
   '/program/overview': typeof ProgramOverviewRoute
   '/program/reports': typeof ProgramReportsRoute
+  '/program/settings': typeof ProgramSettingsRoute
   '/eden/patients/$id': typeof EdenPatientsIdRoute
   '/eden/vendor/listing': typeof EdenVendorListingRoute
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
@@ -321,10 +335,12 @@ export interface FileRoutesByTo {
   '/eve/profile': typeof EveProfileRoute
   '/eve/providers': typeof EveProvidersRouteWithChildren
   '/eve/vendors': typeof EveVendorsRouteWithChildren
+  '/program/alerts': typeof ProgramAlertsRoute
   '/program/chw': typeof ProgramChwRoute
   '/program/mothers': typeof ProgramMothersRoute
   '/program/overview': typeof ProgramOverviewRoute
   '/program/reports': typeof ProgramReportsRoute
+  '/program/settings': typeof ProgramSettingsRoute
   '/eden/patients/$id': typeof EdenPatientsIdRoute
   '/eden/vendor/listing': typeof EdenVendorListingRoute
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
@@ -364,10 +380,12 @@ export interface FileRoutesById {
   '/eve/profile': typeof EveProfileRoute
   '/eve/providers': typeof EveProvidersRouteWithChildren
   '/eve/vendors': typeof EveVendorsRouteWithChildren
+  '/program/alerts': typeof ProgramAlertsRoute
   '/program/chw': typeof ProgramChwRoute
   '/program/mothers': typeof ProgramMothersRoute
   '/program/overview': typeof ProgramOverviewRoute
   '/program/reports': typeof ProgramReportsRoute
+  '/program/settings': typeof ProgramSettingsRoute
   '/eden/patients/$id': typeof EdenPatientsIdRoute
   '/eden/vendor/listing': typeof EdenVendorListingRoute
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
@@ -408,10 +426,12 @@ export interface FileRouteTypes {
     | '/eve/profile'
     | '/eve/providers'
     | '/eve/vendors'
+    | '/program/alerts'
     | '/program/chw'
     | '/program/mothers'
     | '/program/overview'
     | '/program/reports'
+    | '/program/settings'
     | '/eden/patients/$id'
     | '/eden/vendor/listing'
     | '/eden/vendor/onboarding'
@@ -450,10 +470,12 @@ export interface FileRouteTypes {
     | '/eve/profile'
     | '/eve/providers'
     | '/eve/vendors'
+    | '/program/alerts'
     | '/program/chw'
     | '/program/mothers'
     | '/program/overview'
     | '/program/reports'
+    | '/program/settings'
     | '/eden/patients/$id'
     | '/eden/vendor/listing'
     | '/eden/vendor/onboarding'
@@ -492,10 +514,12 @@ export interface FileRouteTypes {
     | '/eve/profile'
     | '/eve/providers'
     | '/eve/vendors'
+    | '/program/alerts'
     | '/program/chw'
     | '/program/mothers'
     | '/program/overview'
     | '/program/reports'
+    | '/program/settings'
     | '/eden/patients/$id'
     | '/eden/vendor/listing'
     | '/eden/vendor/onboarding'
@@ -535,10 +559,12 @@ export interface RootRouteChildren {
   EveProfileRoute: typeof EveProfileRoute
   EveProvidersRoute: typeof EveProvidersRouteWithChildren
   EveVendorsRoute: typeof EveVendorsRouteWithChildren
+  ProgramAlertsRoute: typeof ProgramAlertsRoute
   ProgramChwRoute: typeof ProgramChwRoute
   ProgramMothersRoute: typeof ProgramMothersRoute
   ProgramOverviewRoute: typeof ProgramOverviewRoute
   ProgramReportsRoute: typeof ProgramReportsRoute
+  ProgramSettingsRoute: typeof ProgramSettingsRoute
   EdenVendorListingRoute: typeof EdenVendorListingRoute
   EdenVendorOnboardingRoute: typeof EdenVendorOnboardingRoute
   EdenVendorOrdersRoute: typeof EdenVendorOrdersRoute
@@ -568,6 +594,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/program/settings': {
+      id: '/program/settings'
+      path: '/program/settings'
+      fullPath: '/program/settings'
+      preLoaderRoute: typeof ProgramSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/program/reports': {
       id: '/program/reports'
       path: '/program/reports'
@@ -594,6 +627,13 @@ declare module '@tanstack/react-router' {
       path: '/program/chw'
       fullPath: '/program/chw'
       preLoaderRoute: typeof ProgramChwRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/program/alerts': {
+      id: '/program/alerts'
+      path: '/program/alerts'
+      fullPath: '/program/alerts'
+      preLoaderRoute: typeof ProgramAlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eve/vendors': {
@@ -918,10 +958,12 @@ const rootRouteChildren: RootRouteChildren = {
   EveProfileRoute: EveProfileRoute,
   EveProvidersRoute: EveProvidersRouteWithChildren,
   EveVendorsRoute: EveVendorsRouteWithChildren,
+  ProgramAlertsRoute: ProgramAlertsRoute,
   ProgramChwRoute: ProgramChwRoute,
   ProgramMothersRoute: ProgramMothersRoute,
   ProgramOverviewRoute: ProgramOverviewRoute,
   ProgramReportsRoute: ProgramReportsRoute,
+  ProgramSettingsRoute: ProgramSettingsRoute,
   EdenVendorListingRoute: EdenVendorListingRoute,
   EdenVendorOnboardingRoute: EdenVendorOnboardingRoute,
   EdenVendorOrdersRoute: EdenVendorOrdersRoute,
@@ -930,13 +972,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
