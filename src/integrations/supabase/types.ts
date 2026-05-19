@@ -14,13 +14,485 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          created_at: string | null
+          id: string
+          mother_id: string
+          notes: string | null
+          provider_id: string
+          reminder_sent: boolean | null
+          scheduled_at: string
+          status: string | null
+          type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          mother_id: string
+          notes?: string | null
+          provider_id: string
+          reminder_sent?: boolean | null
+          scheduled_at: string
+          status?: string | null
+          type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          mother_id?: string
+          notes?: string | null
+          provider_id?: string
+          reminder_sent?: boolean | null
+          scheduled_at?: string
+          status?: string | null
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_mother_id_fkey"
+            columns: ["mother_id"]
+            isOneToOne: false
+            referencedRelation: "mothers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chw_mothers: {
+        Row: {
+          chw_id: string
+          country: string | null
+          created_at: string | null
+          district: string | null
+          due_date: string | null
+          id: string
+          last_visit_date: string | null
+          mother_name: string
+          phone: string | null
+          referred: boolean | null
+          risk_level: string | null
+          total_visits: number | null
+          village: string | null
+        }
+        Insert: {
+          chw_id: string
+          country?: string | null
+          created_at?: string | null
+          district?: string | null
+          due_date?: string | null
+          id?: string
+          last_visit_date?: string | null
+          mother_name: string
+          phone?: string | null
+          referred?: boolean | null
+          risk_level?: string | null
+          total_visits?: number | null
+          village?: string | null
+        }
+        Update: {
+          chw_id?: string
+          country?: string | null
+          created_at?: string | null
+          district?: string | null
+          due_date?: string | null
+          id?: string
+          last_visit_date?: string | null
+          mother_name?: string
+          phone?: string | null
+          referred?: boolean | null
+          risk_level?: string | null
+          total_visits?: number | null
+          village?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chw_mothers_chw_id_fkey"
+            columns: ["chw_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guidance_content: {
+        Row: {
+          body: string | null
+          category: string | null
+          country: string | null
+          created_at: string | null
+          id: string
+          is_published: boolean | null
+          language: string | null
+          reviewed_by: string | null
+          title: string
+          week_max: number | null
+          week_min: number | null
+        }
+        Insert: {
+          body?: string | null
+          category?: string | null
+          country?: string | null
+          created_at?: string | null
+          id?: string
+          is_published?: boolean | null
+          language?: string | null
+          reviewed_by?: string | null
+          title: string
+          week_max?: number | null
+          week_min?: number | null
+        }
+        Update: {
+          body?: string | null
+          category?: string | null
+          country?: string | null
+          created_at?: string | null
+          id?: string
+          is_published?: boolean | null
+          language?: string | null
+          reviewed_by?: string | null
+          title?: string
+          week_max?: number | null
+          week_min?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guidance_content_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mothers: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string | null
+          dietary_notes: string | null
+          due_date: string | null
+          full_name: string | null
+          id: string
+          is_first_pregnancy: boolean | null
+          language: string | null
+          phone: string | null
+          preferred_provider_id: string | null
+          pregnancy_week: number | null
+          religious_pref: string | null
+          user_id: string
+          whatsapp_opt_in: boolean | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          dietary_notes?: string | null
+          due_date?: string | null
+          full_name?: string | null
+          id?: string
+          is_first_pregnancy?: boolean | null
+          language?: string | null
+          phone?: string | null
+          preferred_provider_id?: string | null
+          pregnancy_week?: number | null
+          religious_pref?: string | null
+          user_id: string
+          whatsapp_opt_in?: boolean | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          dietary_notes?: string | null
+          due_date?: string | null
+          full_name?: string | null
+          id?: string
+          is_first_pregnancy?: boolean | null
+          language?: string | null
+          phone?: string | null
+          preferred_provider_id?: string | null
+          pregnancy_week?: number | null
+          religious_pref?: string | null
+          user_id?: string
+          whatsapp_opt_in?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mothers_preferred_provider_id_fkey"
+            columns: ["preferred_provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mothers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          link: string | null
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_available: boolean | null
+          name: string
+          pregnancy_week_max: number | null
+          pregnancy_week_min: number | null
+          price_mad: number | null
+          stock_count: number | null
+          vendor_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean | null
+          name: string
+          pregnancy_week_max?: number | null
+          pregnancy_week_min?: number | null
+          price_mad?: number | null
+          stock_count?: number | null
+          vendor_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean | null
+          name?: string
+          pregnancy_week_max?: number | null
+          pregnancy_week_min?: number | null
+          price_mad?: number | null
+          stock_count?: number | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          country: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string
+          language: string | null
+          phone: string | null
+          user_type: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          language?: string | null
+          phone?: string | null
+          user_type: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          language?: string | null
+          phone?: string | null
+          user_type?: string
+        }
+        Relationships: []
+      }
+      providers: {
+        Row: {
+          accepting_patients: boolean | null
+          avg_rating: number | null
+          bio: string | null
+          city: string | null
+          clinic_name: string | null
+          consultation_fee_mad: number | null
+          country: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string
+          is_verified: boolean | null
+          languages: string[] | null
+          lat: number | null
+          lng: number | null
+          review_count: number | null
+          specialty: string | null
+          user_id: string
+        }
+        Insert: {
+          accepting_patients?: boolean | null
+          avg_rating?: number | null
+          bio?: string | null
+          city?: string | null
+          clinic_name?: string | null
+          consultation_fee_mad?: number | null
+          country?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          is_verified?: boolean | null
+          languages?: string[] | null
+          lat?: number | null
+          lng?: number | null
+          review_count?: number | null
+          specialty?: string | null
+          user_id: string
+        }
+        Update: {
+          accepting_patients?: boolean | null
+          avg_rating?: number | null
+          bio?: string | null
+          city?: string | null
+          clinic_name?: string | null
+          consultation_fee_mad?: number | null
+          country?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          is_verified?: boolean | null
+          languages?: string[] | null
+          lat?: number | null
+          lng?: number | null
+          review_count?: number | null
+          specialty?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "providers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendors: {
+        Row: {
+          business_name: string | null
+          category: string | null
+          city: string | null
+          commission_rate: number | null
+          country: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_featured: boolean | null
+          is_verified: boolean | null
+          logo_url: string | null
+          user_id: string
+        }
+        Insert: {
+          business_name?: string | null
+          category?: string | null
+          city?: string | null
+          commission_rate?: number | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          logo_url?: string | null
+          user_id: string
+        }
+        Update: {
+          business_name?: string | null
+          category?: string | null
+          city?: string | null
+          commission_rate?: number | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          logo_url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_type: { Args: { _user_id: string }; Returns: string }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       [_ in never]: never
