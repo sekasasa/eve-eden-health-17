@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Bell, User } from "lucide-react";
 import { BottomNav } from "@/components/ui/BottomNav";
+import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -17,9 +18,11 @@ interface Props {
 export function EveShell({ children, hideNav, unprotected }: Props) {
   // Initialise language from profile for every Eve page
   useLanguage();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const content = (
-    <div className="min-h-screen bg-eve-sand">
+    <div className="min-h-screen overflow-x-hidden bg-eve-sand">
+      <OfflineBanner />
       <div className="mx-auto max-w-sm">
         <header className="flex items-center justify-between px-5 pt-6 rtl:flex-row-reverse">
           <Link to="/eve/home" className="font-serif text-2xl text-eve-teal">
@@ -29,20 +32,31 @@ export function EveShell({ children, hideNav, unprotected }: Props) {
             <LanguageToggle />
             <button
               aria-label="Notifications"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-cream text-eve-teal-dark"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-eve-cream text-eve-teal-dark"
             >
               <Bell className="h-4 w-4" />
             </button>
             <Link
               to="/eve/profile"
               aria-label="Profile"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-teal text-white"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-eve-teal text-white"
             >
               <User className="h-4 w-4" />
             </Link>
           </div>
         </header>
-        <main className={hideNav ? "px-5 pt-4" : "px-5 pb-28 pt-4"}>
+        <main
+          key={pathname}
+          className={
+            (hideNav ? "px-5 pt-4" : "px-5 pt-4") +
+            " animate-[eve-fade_220ms_ease-out]"
+          }
+          style={{
+            paddingBottom: hideNav
+              ? undefined
+              : "calc(env(safe-area-inset-bottom) + 7rem)",
+          }}
+        >
           {children}
         </main>
       </div>

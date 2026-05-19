@@ -33,14 +33,15 @@ export function OfflineBanner() {
   if (online && pending === 0) return null;
   return (
     <div
+      role="status"
       className={
-        "px-5 py-2 text-center font-sans text-xs " +
+        "fixed inset-x-0 top-0 z-[60] flex h-8 items-center justify-center px-5 font-sans text-xs " +
         (online ? "bg-eve-teal/10 text-eve-teal-dark" : "bg-amber-100 text-amber-900")
       }
     >
       {online
         ? `Syncing ${pending} pending ${pending === 1 ? "entry" : "entries"}…`
-        : "No internet? Your data syncs when you reconnect."}
+        : "You are offline — data syncs when you reconnect."}
     </div>
   );
 }
