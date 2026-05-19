@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EveOnboardingRouteImport } from './routes/eve.onboarding'
+import { Route as EdenLoginRouteImport } from './routes/eden.login'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EveOnboardingRoute = EveOnboardingRouteImport.update({
+  id: '/eve/onboarding',
+  path: '/eve/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenLoginRoute = EdenLoginRouteImport.update({
+  id: '/eden/login',
+  path: '/eden/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/eden/login': typeof EdenLoginRoute
+  '/eve/onboarding': typeof EveOnboardingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/eden/login': typeof EdenLoginRoute
+  '/eve/onboarding': typeof EveOnboardingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/eden/login': typeof EdenLoginRoute
+  '/eve/onboarding': typeof EveOnboardingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/eden/login' | '/eve/onboarding'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/eden/login' | '/eve/onboarding'
+  id: '__root__' | '/' | '/eden/login' | '/eve/onboarding'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EdenLoginRoute: typeof EdenLoginRoute
+  EveOnboardingRoute: typeof EveOnboardingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,12 +68,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eve/onboarding': {
+      id: '/eve/onboarding'
+      path: '/eve/onboarding'
+      fullPath: '/eve/onboarding'
+      preLoaderRoute: typeof EveOnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/login': {
+      id: '/eden/login'
+      path: '/eden/login'
+      fullPath: '/eden/login'
+      preLoaderRoute: typeof EdenLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EdenLoginRoute: EdenLoginRoute,
+  EveOnboardingRoute: EveOnboardingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
