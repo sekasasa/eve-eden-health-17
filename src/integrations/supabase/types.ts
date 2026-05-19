@@ -311,6 +311,42 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          amount_mad: number
+          created_at: string
+          id: string
+          mother_city: string | null
+          mother_id: string
+          product_id: string
+          status: string
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          amount_mad?: number
+          created_at?: string
+          id?: string
+          mother_city?: string | null
+          mother_id: string
+          product_id: string
+          status?: string
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          amount_mad?: number
+          created_at?: string
+          id?: string
+          mother_city?: string | null
+          mother_id?: string
+          product_id?: string
+          status?: string
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: []
+      }
       patient_notes: {
         Row: {
           content: string
