@@ -3,6 +3,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, UserPlus, Users, Flag } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { cn } from "@/lib/utils";
+import { OfflineBanner } from "@/components/ui/OfflineBanner";
 
 const NAV = [
   { to: "/chw/home", label: "Home", icon: Home },
