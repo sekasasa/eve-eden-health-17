@@ -82,12 +82,12 @@ function EveGuidance() {
       if (reviewerIds.length) {
         const { data: provs } = await supabase
           .from("providers")
-          .select("user_id, full_name")
-          .in("user_id", reviewerIds);
+          .select("id, full_name")
+          .in("id", reviewerIds);
         if (!cancelled && provs) {
           const map: Record<string, string> = {};
-          for (const p of provs as { user_id: string; full_name: string | null }[]) {
-            if (p.full_name) map[p.user_id] = p.full_name;
+          for (const p of provs as { id: string; full_name: string | null }[]) {
+            if (p.full_name) map[p.id] = p.full_name;
           }
           setReviewers(map);
         }
