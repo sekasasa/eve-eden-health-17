@@ -126,7 +126,7 @@ function EveHome() {
   return (
     <EveShell>
       <PullToRefresh>
-        <></>
+        <div>
       {/* Greeting */}
       <div className="px-3 rtl:text-right">
         <SectionLabel>
