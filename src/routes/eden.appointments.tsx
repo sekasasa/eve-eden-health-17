@@ -338,7 +338,7 @@ function WeekView({
                   </div>
                 );
               })}
-            </>
+            </Fragment>
           ))}
         </div>
       </div>
