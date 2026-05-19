@@ -104,6 +104,7 @@ function EveAppointments() {
 
   return (
     <EveShell>
+      <PullToRefresh>
       <div className="pt-2">
         <SectionLabel>My care</SectionLabel>
         <h1 className="mt-2 font-serif text-3xl text-eve-teal-dark">My care timeline</h1>
@@ -197,6 +198,7 @@ function EveAppointments() {
           })}
         </ol>
       </section>
+      </PullToRefresh>
     </EveShell>
   );
 }
