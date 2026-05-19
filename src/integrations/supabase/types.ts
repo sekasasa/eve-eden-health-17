@@ -281,6 +281,33 @@ export type Database = {
           },
         ]
       }
+      patient_notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          mother_id: string
+          provider_id: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          mother_id: string
+          provider_id: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          mother_id?: string
+          provider_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string | null
