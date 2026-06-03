@@ -36,7 +36,7 @@ function EditContent() {
 
   if (!row) {
     return (
-      <EdenShell variant="vendor">
+      <EdenShell variant="vendor" allowedTypes={["provider", "vendor"]}>
         <p className="text-sm text-gray-500">Loading…</p>
       </EdenShell>
     );
@@ -83,7 +83,7 @@ function EditContent() {
   }
 
   return (
-    <EdenShell variant="vendor">
+    <EdenShell variant="vendor" allowedTypes={["provider", "vendor"]}>
       <button
         onClick={() => nav({ to: "/eden/vendor/content" })}
         className="mb-3 inline-flex items-center gap-1 text-xs text-gray-500"
