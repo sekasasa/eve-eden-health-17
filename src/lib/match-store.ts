@@ -8,22 +8,35 @@ const ID_KEY = "eve_match_intake_id_v1";
 export type MatchIntake = {
   id?: string;
   stage?: LifeStage;
-  need?: NeedKey;
+  /** Free-form need key. Stage-specific options are defined per pathway. */
+  need?: string;
   city?: string;
+  /** Primary language (first selected) — kept for back-compat */
   language?: string;
+  /** Full multi-select language list */
+  languages?: string[];
+  /** Where care is needed: "near" | "other_city" | "other_country" | "virtual" | "home" | "unsure" */
+  locationMode?: string;
+  /** Care preferences (multi-select) */
+  preferences?: string[];
   payment?: PaymentKey;
   urgency?: Urgency;
+  /** What Eve should help with first */
+  firstTask?: string;
   // payment-specific extras
   localProvider?: string;
   localPlan?: string;
+  localMemberId?: string;
   localCovers?: string[];
   intlProvider?: string;
   intlCountry?: string;
   currentCountry?: string;
   intlNeeds?: string[];
   selfPayPriority?: string;
+  familySupport?: string;
   familyEmail?: string;
 };
+
 
 const TOP_LEVEL = new Set([
   "stage",
