@@ -12,6 +12,7 @@ import {
   Sparkles,
   FlaskConical,
   ShieldCheck,
+  ClipboardList,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { EveShell } from "@/components/shells/EveShell";
@@ -20,9 +21,13 @@ import { StageRing } from "@/components/ui/StageRing";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { AICard } from "@/components/ui/AICard";
 import { GuidanceCard } from "@/components/ui/GuidanceCard";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { supabase } from "@/integrations/supabase/client";
 import { babySizeFor } from "@/lib/babySize";
 import { cn } from "@/lib/utils";
+import { hydrateIntakeFromCloud, type MatchIntake } from "@/lib/match-store";
+import type { LifeStage } from "@/lib/match-data";
 
 export const Route = createFileRoute("/eve/home")({
   component: EveHome,
@@ -43,13 +48,121 @@ type Guidance = {
   reviewed_by: string | null;
 };
 
+const SKIP_KEY = "eve_personalize_skipped_v1";
+
+// Personalized dashboard titles by life stage
+const STAGE_TITLES: Record<string, { en: string; fr: string }> = {
+  ttc: { en: "Your fertility support plan", fr: "Votre plan de fertilité" },
+  ivf: { en: "Your IVF & fertility care plan", fr: "Votre plan de soins FIV" },
+  pregnant: { en: "Your pregnancy care plan", fr: "Votre plan de grossesse" },
+  postpartum: { en: "Your postpartum support plan", fr: "Votre plan post-partum" },
+  newborn: { en: "Your child care support plan", fr: "Votre plan de garde d'enfant" },
+  pcos: { en: "Your hormonal health support plan", fr: "Votre plan de santé hormonale" },
+  mood: { en: "Your mood support plan", fr: "Votre plan de soutien émotionnel" },
+  labs: { en: "Your lab results support plan", fr: "Votre plan d'analyses" },
+  rx: { en: "Your prescription support plan", fr: "Votre plan d'ordonnances" },
+  insurance: { en: "Your insurance & payment options", fr: "Vos options d'assurance" },
+  wellness: { en: "Your wellness care plan", fr: "Votre plan de bien-être" },
+  family: { en: "Your family care coordination plan", fr: "Votre plan de coordination familiale" },
+};
+
+// 6 consolidated Quick Action keys
+type QAKey = "find_care" | "labs_rx" | "insurance" | "care_plan" | "shops" | "community";
+
+const QA_DEFS: Record<QAKey, {
+  to: string;
+  icon: React.ReactNode;
+  en: { label: string; sub: string };
+  fr: { label: string; sub: string };
+  onClick?: () => void;
+}> = {
+  find_care: {
+    to: "/eve/providers",
+    icon: <Stethoscope className="h-[18px] w-[18px] text-eve-teal" />,
+    en: { label: "Find Care", sub: "Doctors, midwives, IVF, pediatrics" },
+    fr: { label: "Trouver des soins", sub: "Médecins, sages-femmes, FIV, pédiatrie" },
+  },
+  labs_rx: {
+    to: "/eve/match/labs",
+    icon: <FlaskConical className="h-[18px] w-[18px] text-eve-teal" />,
+    en: { label: "Labs & Prescriptions", sub: "Results, medications, pharmacies" },
+    fr: { label: "Analyses & ordonnances", sub: "Résultats, médicaments, pharmacies" },
+  },
+  insurance: {
+    to: "/eve/match/insurance",
+    icon: <ShieldCheck className="h-[18px] w-[18px] text-eve-forest" />,
+    en: { label: "Insurance & Payment", sub: "Coverage, IVF, self-pay" },
+    fr: { label: "Assurance & paiement", sub: "Couverture, FIV, paiement direct" },
+  },
+  care_plan: {
+    to: "/eve/match/results",
+    icon: <ClipboardList className="h-[18px] w-[18px] text-eve-forest" />,
+    en: { label: "My Care Plan", sub: "Next steps and appointments" },
+    fr: { label: "Mon plan de soins", sub: "Prochaines étapes et rendez-vous" },
+  },
+  shops: {
+    to: "/eve/vendors",
+    icon: <ShoppingBag className="h-[18px] w-[18px] text-eve-terra" />,
+    en: { label: "Shops & Services", sub: "Essentials, wellness, partners" },
+    fr: { label: "Boutiques & services", sub: "Essentiels, bien-être, partenaires" },
+  },
+  community: {
+    to: "/eve/community",
+    icon: <Users className="h-[18px] w-[18px] text-eve-rose" />,
+    en: { label: "Community & Support", sub: "Navigator, family, women near you" },
+    fr: { label: "Communauté & soutien", sub: "Navigatrice, famille, femmes près de vous" },
+  },
+};
+
+const DEFAULT_ORDER: QAKey[] = ["find_care", "labs_rx", "care_plan", "insurance", "shops", "community"];
+
+function orderForStage(stage?: LifeStage): QAKey[] {
+  const rest = (head: QAKey[]) =>
+    [...head, ...DEFAULT_ORDER.filter((k) => !head.includes(k))] as QAKey[];
+  switch (stage) {
+    case "ivf":
+    case "ttc":
+      return rest(["find_care", "labs_rx", "insurance"]);
+    case "pregnant":
+      return rest(["find_care", "care_plan", "labs_rx"]);
+    case "postpartum":
+      return rest(["care_plan", "community", "shops"]);
+    case "labs":
+      return rest(["labs_rx", "find_care", "care_plan"]);
+    case "rx":
+      return rest(["labs_rx", "find_care", "insurance"]);
+    case "insurance":
+      return rest(["insurance", "find_care", "care_plan"]);
+    case "family":
+      return rest(["community", "insurance", "care_plan"]);
+    case "pcos":
+      return rest(["find_care", "labs_rx", "care_plan"]);
+    case "mood":
+      return rest(["find_care", "community", "care_plan"]);
+    case "wellness":
+      return rest(["find_care", "labs_rx", "shops"]);
+    case "newborn":
+      return rest(["find_care", "shops", "care_plan"]);
+    default:
+      return DEFAULT_ORDER;
+  }
+}
+
 function EveHome() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang: "en" | "fr" = i18n.language?.startsWith("fr") ? "fr" : "en";
   const [loading, setLoading] = useState(true);
   const [mother, setMother] = useState<Mother | null>(null);
   const [guidance, setGuidance] = useState<Guidance | null>(null);
   const [reviewerName, setReviewerName] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [intake, setIntake] = useState<MatchIntake | null>(null);
+  const [intakeChecked, setIntakeChecked] = useState(false);
+  const [skipped, setSkipped] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem(SKIP_KEY) === "1";
+  });
+  const navigate = useNavigate();
 
   useEffect(() => {
     let cancelled = false;
@@ -58,6 +171,7 @@ function EveHome() {
       const uid = session.user?.id;
       if (!uid) {
         setLoading(false);
+        setIntakeChecked(true);
         return;
       }
       const { data: m } = await supabase
@@ -68,15 +182,21 @@ function EveHome() {
       if (cancelled) return;
       setMother(m as Mother | null);
 
+      // Hydrate latest match intake
+      const i = await hydrateIntakeFromCloud();
+      if (cancelled) return;
+      setIntake(i && i.stage ? i : null);
+      setIntakeChecked(true);
+
       const week = m?.pregnancy_week ?? 1;
       const language = m?.language ?? "fr";
 
-      async function fetchGuidance(lang: string) {
+      async function fetchGuidance(l: string) {
         return supabase
           .from("guidance_content")
           .select("id, title, body, reviewed_by")
           .eq("is_published", true)
-          .eq("language", lang)
+          .eq("language", l)
           .lte("week_min", week)
           .gte("week_max", week)
           .limit(1)
@@ -123,214 +243,279 @@ function EveHome() {
       })
     : null;
 
-  const trimesterKey =
-    week <= 13 ? "first" : week <= 27 ? "second" : "third";
+  const trimesterKey = week <= 13 ? "first" : week <= 27 ? "second" : "third";
+
+  // First-time personalization gate
+  const needsPersonalization = intakeChecked && !intake && !skipped;
+  if (needsPersonalization) {
+    return (
+      <EveShell>
+        <div className="mt-6 rounded-2xl border border-eve-teal/20 bg-white p-6">
+          <SectionLabel>
+            {lang === "fr" ? "Bienvenue" : "Welcome"}
+          </SectionLabel>
+          <h1
+            className="mt-2 font-serif text-eve-forest"
+            style={{ fontSize: "22px" }}
+          >
+            {lang === "fr"
+              ? "Personnalisons votre parcours de soins"
+              : "Let's personalize your care"}
+          </h1>
+          <p
+            className="mt-3 font-sans text-eve-muted"
+            style={{ fontSize: "13px" }}
+          >
+            {lang === "fr"
+              ? "Répondez à quelques questions pour qu'Eve & Eden vous propose la langue, les praticiens, le soutien, les options d'assurance et les prochaines étapes qui vous correspondent."
+              : "Answer a few questions so Eve & Eden can show the right language, providers, support, insurance options, and next steps for you."}
+          </p>
+          <div className="mt-5 flex flex-col gap-2">
+            <PrimaryButton
+              onClick={() => navigate({ to: "/eve/match" })}
+              className="w-full"
+            >
+              {lang === "fr" ? "Commencer" : "Start"}
+            </PrimaryButton>
+            <SecondaryButton
+              onClick={() => {
+                sessionStorage.setItem(SKIP_KEY, "1");
+                setSkipped(true);
+              }}
+              className="w-full"
+            >
+              {lang === "fr" ? "Plus tard" : "Skip for now"}
+            </SecondaryButton>
+          </div>
+        </div>
+      </EveShell>
+    );
+  }
+
+  const stage = intake?.stage as LifeStage | undefined;
+  const personalizedTitle =
+    stage && STAGE_TITLES[stage] ? STAGE_TITLES[stage][lang] : null;
+  const qaOrder = orderForStage(stage);
 
   return (
     <EveShell>
       <PullToRefresh>
-      {/* Greeting */}
-      <div className="px-3 rtl:text-right">
-        <SectionLabel>
-          {greeting}
-          {firstName ? `, ${firstName}` : ""} —
-        </SectionLabel>
-        <h1
-          className="mt-1 font-serif text-eve-forest"
-          style={{ fontSize: "22px" }}
-        >
-          {loading ? t("home.loadingWeek") : t("home.weekOf", { week })}
-        </h1>
-      </div>
-
-      {/* Stage card */}
-      <div className="mx-3 mt-4">
-        {loading ? (
-          <SkeletonBlock className="h-32" />
-        ) : (
-          <div className="rounded-2xl border border-eve-teal/20 bg-white p-4">
-            <div className="flex items-center gap-4 rtl:flex-row-reverse">
-              <StageRing week={week} size={58} />
-              <div className="min-w-0 flex-1 rtl:text-right">
-                <SectionLabel>{t(`trimester.${trimesterKey}`)}</SectionLabel>
-                <p
-                  className="mt-1 font-sans text-eve-teal-dark"
-                  style={{ fontSize: "12px" }}
-                >
-                  {t("home.babySize", { size: babySizeFor(week) })}
-                </p>
-                {dueDate && (
-                  <p
-                    className="mt-1 font-sans text-eve-muted"
-                    style={{ fontSize: "10px" }}
-                  >
-                    {t("home.due", { date: dueDate })}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-eve-teal-light">
-              <div
-                className="h-full rounded-full bg-eve-teal transition-all"
-                style={{ width: `${progressPct}%` }}
-              />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Ask Eve */}
-      <Link to="/eve/ask" className="mx-3 mt-3 block">
-        <AICard className="flex items-center gap-3 p-4 rtl:flex-row-reverse">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
-            <MessageCircle className="h-5 w-5 text-white" />
-          </div>
-          <div className="min-w-0 flex-1 rtl:text-right">
+        {/* Skip banner */}
+        {skipped && !intake && (
+          <div className="mx-3 mt-2 flex items-center justify-between gap-3 rounded-xl border border-eve-terra/30 bg-eve-cream px-3 py-2">
             <p
-              className="font-sans uppercase tracking-widest text-white/70"
-              style={{ fontSize: "10px" }}
+              className="font-sans text-eve-teal-dark"
+              style={{ fontSize: "11px" }}
             >
-              {t("ask.title")}
+              {lang === "fr"
+                ? "Personnalisez vos soins pour de meilleures recommandations."
+                : "Personalize your care to get better matches."}
             </p>
-            <p className="mt-0.5 truncate font-sans italic text-white text-sm">
-              "{t("ask.placeholder")}"
-            </p>
-          </div>
-          <ArrowRight className="h-4 w-4 shrink-0 text-white rtl:rotate-180" />
-        </AICard>
-      </Link>
-
-
-      {/* Today's guidance */}
-      <div className="mx-3 mt-3">
-        {loading ? (
-          <SkeletonBlock className="h-24" />
-        ) : guidance ? (
-          <GuidanceCard>
             <button
               type="button"
-              onClick={() => setExpanded((v) => !v)}
-              className="block w-full text-left rtl:text-right"
+              onClick={() => navigate({ to: "/eve/match" })}
+              className="shrink-0 rounded-full bg-eve-teal px-3 py-1 font-sans text-white"
+              style={{ fontSize: "11px" }}
             >
-              <div className="flex items-start justify-between gap-2 rtl:flex-row-reverse">
-                <SectionLabel className="!text-eve-terra">
-                  {t("home.todaysGuidance")}
-                </SectionLabel>
-                <ChevronDown
-                  className={cn(
-                    "h-3 w-3 text-eve-muted transition-transform",
-                    expanded && "rotate-180",
+              {lang === "fr" ? "Compléter" : "Complete profile"}
+            </button>
+          </div>
+        )}
+
+        {/* Greeting */}
+        <div className="px-3 rtl:text-right">
+          <SectionLabel>
+            {greeting}
+            {firstName ? `, ${firstName}` : ""} —
+          </SectionLabel>
+          <h1
+            className="mt-1 font-serif text-eve-forest"
+            style={{ fontSize: "22px" }}
+          >
+            {personalizedTitle ??
+              (loading ? t("home.loadingWeek") : t("home.weekOf", { week }))}
+          </h1>
+        </div>
+
+        {/* Stage card */}
+        <div className="mx-3 mt-4">
+          {loading ? (
+            <SkeletonBlock className="h-32" />
+          ) : (
+            <div className="rounded-2xl border border-eve-teal/20 bg-white p-4">
+              <div className="flex items-center gap-4 rtl:flex-row-reverse">
+                <StageRing week={week} size={58} />
+                <div className="min-w-0 flex-1 rtl:text-right">
+                  <SectionLabel>{t(`trimester.${trimesterKey}`)}</SectionLabel>
+                  <p
+                    className="mt-1 font-sans text-eve-teal-dark"
+                    style={{ fontSize: "12px" }}
+                  >
+                    {t("home.babySize", { size: babySizeFor(week) })}
+                  </p>
+                  {dueDate && (
+                    <p
+                      className="mt-1 font-sans text-eve-muted"
+                      style={{ fontSize: "10px" }}
+                    >
+                      {t("home.due", { date: dueDate })}
+                    </p>
                   )}
+                </div>
+              </div>
+              <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-eve-teal-light">
+                <div
+                  className="h-full rounded-full bg-eve-teal transition-all"
+                  style={{ width: `${progressPct}%` }}
                 />
               </div>
-              <p
-                className="mt-1 font-sans text-eve-teal-dark"
-                style={{ fontSize: "13px" }}
-              >
-                {guidance.title}
-              </p>
-              {guidance.body && (
-                <p
-                  className={cn(
-                    "mt-1 font-sans text-eve-muted",
-                    !expanded && "line-clamp-2",
-                  )}
-                  style={{ fontSize: "12px" }}
-                >
-                  {guidance.body}
-                </p>
-              )}
-              {reviewerName && (
-                <span
-                  className="mt-2 inline-flex items-center gap-1 font-sans text-eve-teal"
-                  style={{ fontSize: "11px" }}
-                >
-                  <Check className="h-3 w-3" strokeWidth={3} />
-                  {t("home.reviewedBy", { name: reviewerName })}
-                </span>
-              )}
-            </button>
-          </GuidanceCard>
-        ) : (
-          <GuidanceCard>
-            <SectionLabel className="!text-eve-terra">
-              {t("home.todaysGuidance")}
+            </div>
+          )}
+        </div>
+
+        {/* Recommended next step (personalized) */}
+        {intake?.stage && (
+          <div className="mx-3 mt-3 rounded-2xl border border-eve-teal/20 bg-white p-4">
+            <SectionLabel>
+              {lang === "fr" ? "Prochaine étape" : "Recommended next step"}
             </SectionLabel>
             <p
-              className="mt-1 font-sans text-eve-muted rtl:text-right"
+              className="mt-1 font-sans text-eve-teal-dark"
+              style={{ fontSize: "13px" }}
+            >
+              {lang === "fr"
+                ? "D'après vos réponses, voici votre meilleure prochaine étape."
+                : "Based on what you shared, here's your best next step."}
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/eve/match/results" })}
+              className="mt-3 inline-flex items-center gap-2 rounded-full bg-eve-teal px-4 py-2 font-sans text-white"
               style={{ fontSize: "12px" }}
             >
-              {t("home.guidanceComing", { week })}
-            </p>
-          </GuidanceCard>
+              {lang === "fr" ? "Voir mon plan" : "View my plan"}
+              <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
         )}
-      </div>
 
-      {/* Quick actions */}
-      <div className="mt-5 px-3 rtl:text-right">
-        <SectionLabel>{t("home.quickActions")}</SectionLabel>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          <QuickAction
-            to="/eve/providers"
-            icon={<Stethoscope className="h-[18px] w-[18px] text-eve-teal" />}
-            label={t("home.findDoctor")}
-            sub={t("home.verifiedProviders")}
-          />
-          <QuickAction
-            to="/eve/match/results"
-            icon={<Sparkles className="h-[18px] w-[18px] text-eve-terra" />}
-            label={t("home.fertility")}
-            sub={t("home.fertilitySub")}
-            onClick={() => {
-              try {
-                sessionStorage.setItem(
-                  "eve_match_intake_v1",
-                  JSON.stringify({ stage: "ivf" }),
-                );
-              } catch {
-                /* ignore */
-              }
-            }}
-          />
+        {/* Ask Eve */}
+        <Link to="/eve/ask" className="mx-3 mt-3 block">
+          <AICard className="flex items-center gap-3 p-4 rtl:flex-row-reverse">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
+              <MessageCircle className="h-5 w-5 text-white" />
+            </div>
+            <div className="min-w-0 flex-1 rtl:text-right">
+              <p
+                className="font-sans uppercase tracking-widest text-white/70"
+                style={{ fontSize: "10px" }}
+              >
+                {t("ask.title")}
+              </p>
+              <p className="mt-0.5 truncate font-sans italic text-white text-sm">
+                "{t("ask.placeholder")}"
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-white rtl:rotate-180" />
+          </AICard>
+        </Link>
 
-          <QuickAction
-            to="/eve/match/labs"
-            icon={<FlaskConical className="h-[18px] w-[18px] text-eve-teal" />}
-            label={t("home.labsRx")}
-            sub={t("home.labsRxSub")}
-          />
-          <QuickAction
-            to="/eve/match/insurance"
-            icon={<ShieldCheck className="h-[18px] w-[18px] text-eve-forest" />}
-            label={t("home.insurance")}
-            sub={t("home.insuranceSub")}
-          />
-          <QuickAction
-            to="/eve/appointments"
-            icon={<Calendar className="h-[18px] w-[18px] text-eve-forest" />}
-            label={t("home.myBookings")}
-            sub={t("home.upcomingVisits")}
-          />
-          <QuickAction
-            to="/eve/vendors"
-            icon={<ShoppingBag className="h-[18px] w-[18px] text-eve-terra" />}
-            label={t("home.shopVendors")}
-            sub={t("home.mamaEssentials")}
-          />
-          <QuickAction
-            to="/eve/community"
-            icon={<Users className="h-[18px] w-[18px] text-eve-rose" />}
-            label={t("home.community")}
-            sub={t("home.mothersNearYou")}
-          />
-          <QuickAction
-            to="/eve/match"
-            icon={<Sparkles className="h-[18px] w-[18px] text-eve-terra" />}
-            label={t("home.findSupport")}
-            sub={t("home.findSupportSub")}
-          />
+        {/* Today's guidance */}
+        <div className="mx-3 mt-3">
+          {loading ? (
+            <SkeletonBlock className="h-24" />
+          ) : guidance ? (
+            <GuidanceCard>
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                className="block w-full text-left rtl:text-right"
+              >
+                <div className="flex items-start justify-between gap-2 rtl:flex-row-reverse">
+                  <SectionLabel className="!text-eve-terra">
+                    {t("home.todaysGuidance")}
+                  </SectionLabel>
+                  <ChevronDown
+                    className={cn(
+                      "h-3 w-3 text-eve-muted transition-transform",
+                      expanded && "rotate-180",
+                    )}
+                  />
+                </div>
+                <p
+                  className="mt-1 font-sans text-eve-teal-dark"
+                  style={{ fontSize: "13px" }}
+                >
+                  {guidance.title}
+                </p>
+                {guidance.body && (
+                  <p
+                    className={cn(
+                      "mt-1 font-sans text-eve-muted",
+                      !expanded && "line-clamp-2",
+                    )}
+                    style={{ fontSize: "12px" }}
+                  >
+                    {guidance.body}
+                  </p>
+                )}
+                {reviewerName && (
+                  <span
+                    className="mt-2 inline-flex items-center gap-1 font-sans text-eve-teal"
+                    style={{ fontSize: "11px" }}
+                  >
+                    <Check className="h-3 w-3" strokeWidth={3} />
+                    {t("home.reviewedBy", { name: reviewerName })}
+                  </span>
+                )}
+              </button>
+            </GuidanceCard>
+          ) : (
+            <GuidanceCard>
+              <SectionLabel className="!text-eve-terra">
+                {t("home.todaysGuidance")}
+              </SectionLabel>
+              <p
+                className="mt-1 font-sans text-eve-muted rtl:text-right"
+                style={{ fontSize: "12px" }}
+              >
+                {t("home.guidanceComing", { week })}
+              </p>
+            </GuidanceCard>
+          )}
         </div>
-      </div>
+
+        {/* Quick actions — 6 consolidated cards, ordered by stage */}
+        <div className="mt-5 px-3 rtl:text-right">
+          <SectionLabel>{t("home.quickActions")}</SectionLabel>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {qaOrder.map((k) => {
+              const def = QA_DEFS[k];
+              const copy = def[lang];
+              return (
+                <QuickAction
+                  key={k}
+                  to={def.to}
+                  icon={def.icon}
+                  label={copy.label}
+                  sub={copy.sub}
+                  onClick={def.onClick}
+                />
+              );
+            })}
+          </div>
+
+          {/* Update care profile entry */}
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/eve/match" })}
+            className="mt-3 inline-flex items-center gap-1 font-sans text-eve-teal underline-offset-2 hover:underline"
+            style={{ fontSize: "12px" }}
+          >
+            <Sparkles className="h-3 w-3" />
+            {lang === "fr" ? "Mettre à jour mon profil de soins" : "Update my care profile"}
+          </button>
+        </div>
       </PullToRefresh>
     </EveShell>
   );
@@ -359,7 +544,6 @@ function QuickAction({
       }}
       className="flex flex-col items-start gap-2 rounded-xl border border-eve-muted/20 bg-white p-3 text-left transition-transform active:scale-[0.98]"
     >
-
       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-eve-cream">
         {icon}
       </div>
