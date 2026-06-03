@@ -341,19 +341,25 @@ function QuickAction({
   icon,
   label,
   sub,
+  onClick,
 }: {
   to: string;
   icon: React.ReactNode;
   label: string;
   sub: string;
+  onClick?: () => void;
 }) {
   const navigate = useNavigate();
   return (
     <button
       type="button"
-      onClick={() => navigate({ to })}
+      onClick={() => {
+        onClick?.();
+        navigate({ to });
+      }}
       className="flex flex-col items-start gap-2 rounded-xl border border-eve-muted/20 bg-white p-3 text-left transition-transform active:scale-[0.98]"
     >
+
       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-eve-cream">
         {icon}
       </div>
