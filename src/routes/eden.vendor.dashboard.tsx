@@ -116,6 +116,9 @@ function VendorDashboard() {
         <span className="font-sans text-xs font-medium text-eve-teal">Open →</span>
       </Link>
 
+      <CoordinationPanels />
+
+
 
       <div className="mt-8 overflow-hidden rounded-xl border border-gray-100 bg-white">
         <div className="border-b border-gray-100 px-5 py-3">
