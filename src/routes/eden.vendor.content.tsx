@@ -168,14 +168,74 @@ function VendorContentStudio() {
           <h2 className="font-sans text-sm font-semibold text-gray-900">Content performance</h2>
         </div>
         <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
-          <Stat label="Total views" value={rows.reduce((s, r) => s + (r.views ?? 0), 0)} />
-          <Stat label="Total saves" value={rows.reduce((s, r) => s + (r.saves ?? 0), 0)} />
-          <Stat label="Published" value={rows.filter((r) => r.status === "published").length} />
-          <Stat label="Drafts" value={rows.filter((r) => r.status === "draft").length} />
+          <Stat label="Total views" value={sum(rows, "views")} />
+          <Stat label="Total saves" value={sum(rows, "saves")} />
+          <Stat label="Profile visits" value={sum(rows, "profile_visits")} />
+          <Stat label="Booking clicks" value={sum(rows, "booking_clicks")} />
+          <Stat label="Quote requests" value={sum(rows, "quote_requests")} />
+          <Stat label="Messages" value={sum(rows, "messages")} />
+          <Stat label="Event sign-ups" value={sum(rows, "event_registrations")} />
+          <Stat label="Shop clicks" value={sum(rows, "shop_clicks")} />
         </div>
+      </div>
+
+      <div className="mt-6 overflow-hidden rounded-xl border border-gray-100 bg-white">
+        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
+          <h2 className="font-sans text-sm font-semibold text-gray-900">Analytics by post</h2>
+          <span className="font-sans text-xs text-gray-500">
+            Track how each piece converts to actions
+          </span>
+        </div>
+        {rows.length === 0 ? (
+          <p className="px-5 py-8 text-center text-sm text-gray-500">
+            Publish content to start collecting analytics.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left font-sans text-sm">
+              <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+                <tr>
+                  <th className="px-4 py-3">Post</th>
+                  <th className="px-4 py-3 text-right">Views</th>
+                  <th className="px-4 py-3 text-right">Saves</th>
+                  <th className="px-4 py-3 text-right">Profile</th>
+                  <th className="px-4 py-3 text-right">Bookings</th>
+                  <th className="px-4 py-3 text-right">Quotes</th>
+                  <th className="px-4 py-3 text-right">Msgs</th>
+                  <th className="px-4 py-3 text-right">Events</th>
+                  <th className="px-4 py-3 text-right">Shop</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.id} className="border-t border-gray-100">
+                    <td className="px-4 py-3">
+                      <p className="font-medium text-gray-900">{r.title}</p>
+                      <p className="text-[11px] capitalize text-gray-500">{r.content_type}</p>
+                    </td>
+                    <td className="px-4 py-3 text-right text-gray-700">{r.views ?? 0}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">{r.saves ?? 0}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">{r.profile_visits ?? 0}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">{r.booking_clicks ?? 0}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">{r.quote_requests ?? 0}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">{r.messages ?? 0}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">
+                      {r.event_registrations ?? 0}
+                    </td>
+                    <td className="px-4 py-3 text-right text-gray-700">{r.shop_clicks ?? 0}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </EdenShell>
   );
+}
+
+function sum(rows: ContentRow[], key: keyof ContentRow) {
+  return rows.reduce((s, r) => s + ((r[key] as number) ?? 0), 0);
 }
 
 function Stat({ label, value }: { label: string; value: number }) {
