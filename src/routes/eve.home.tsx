@@ -277,11 +277,22 @@ function EveHome() {
             sub={t("home.verifiedProviders")}
           />
           <QuickAction
-            to="/eve/match"
+            to="/eve/match/results"
             icon={<Sparkles className="h-[18px] w-[18px] text-eve-terra" />}
             label={t("home.fertility")}
             sub={t("home.fertilitySub")}
+            onClick={() => {
+              try {
+                sessionStorage.setItem(
+                  "eve_match_intake_v1",
+                  JSON.stringify({ stage: "ivf" }),
+                );
+              } catch {
+                /* ignore */
+              }
+            }}
           />
+
           <QuickAction
             to="/eve/match/labs"
             icon={<FlaskConical className="h-[18px] w-[18px] text-eve-teal" />}
@@ -330,19 +341,25 @@ function QuickAction({
   icon,
   label,
   sub,
+  onClick,
 }: {
   to: string;
   icon: React.ReactNode;
   label: string;
   sub: string;
+  onClick?: () => void;
 }) {
   const navigate = useNavigate();
   return (
     <button
       type="button"
-      onClick={() => navigate({ to })}
+      onClick={() => {
+        onClick?.();
+        navigate({ to });
+      }}
       className="flex flex-col items-start gap-2 rounded-xl border border-eve-muted/20 bg-white p-3 text-left transition-transform active:scale-[0.98]"
     >
+
       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-eve-cream">
         {icon}
       </div>

@@ -72,6 +72,16 @@ function MatchIntake() {
   const [payment, setPayment] = useState<PaymentKey | undefined>(existing.payment);
   const [urgency, setUrgency] = useState<Urgency | undefined>(existing.urgency);
 
+  // Tool-style stages route directly to a dedicated support screen.
+  function pickStage(s: LifeStage) {
+    setStage(s);
+    writeIntake({ stage: s });
+    if (s === "labs") return nav({ to: "/eve/match/labs" });
+    if (s === "rx") return nav({ to: "/eve/match/prescriptions" });
+    if (s === "insurance") return nav({ to: "/eve/match/insurance" });
+    if (s === "family") return nav({ to: "/eve/match/family" });
+  }
+
   async function next() {
     writeIntake({ stage, need, city, language, payment, urgency });
     if (step < 4) {
@@ -82,6 +92,7 @@ function MatchIntake() {
     if (res.ok) eveToast.success("Saved — you can resume anytime");
     nav({ to: "/eve/match/results" });
   }
+
   function back() {
     if (step > 1) setStep(step - 1);
     else nav({ to: "/eve/home" });
@@ -131,7 +142,7 @@ function MatchIntake() {
               <OptionTile
                 key={s.key}
                 selected={stage === s.key}
-                onClick={() => setStage(s.key)}
+                onClick={() => pickStage(s.key)}
                 label={s.label}
                 sub={s.sub}
                 emoji={s.emoji}
@@ -139,6 +150,7 @@ function MatchIntake() {
             ))}
           </div>
         )}
+
 
         {step === 2 && (
           <div className="flex flex-col gap-2">
