@@ -274,6 +274,25 @@ function CommunityPage() {
         </div>
       </section>
 
+      {/* Helpful guides from trusted partners */}
+      {personalizedContent.length > 0 && (
+        <section className="mt-5">
+          <SectionLabel>Helpful guides from trusted partners</SectionLabel>
+          <p className="mt-1 text-[11px] text-eve-muted">
+            {profile.stage
+              ? "Personalized to your saved care profile."
+              : "Educational content from verified vendors and providers."}
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-3">
+            {personalizedContent.map((c) => (
+              <ContentCard key={c.id} content={c} vendorName={vendorNames[c.vendor_id]} />
+            ))}
+          </div>
+        </section>
+      )}
+
+
+
       {/* New community post */}
       <div className="mt-4">
         <button
