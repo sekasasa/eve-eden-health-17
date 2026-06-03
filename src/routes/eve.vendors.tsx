@@ -115,11 +115,22 @@ function EveVendors() {
 
   return (
     <EveShell>
+      <button
+        onClick={() => nav({ to: "/eve/home" })}
+        className="mb-2 inline-flex items-center gap-1 text-xs text-eve-muted"
+      >
+        <ArrowLeft className="h-3 w-3" /> Back to dashboard
+      </button>
       <header className="pt-2">
-        <h1 className="font-serif text-2xl text-eve-forest">Shop &amp; discover</h1>
+        <h1 className="font-serif text-2xl text-eve-forest">Shops & services</h1>
         <p className="mt-1 font-sans text-sm text-eve-muted">
-          Vetted products and services for your pregnancy
+          Trusted products and non-clinical support, personalized to your care profile.
         </p>
+        {stage && STAGE_VENDOR_HINT[stage] && (
+          <p className="mt-2 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 text-[11px] text-eve-teal-dark">
+            Recommended for you: {STAGE_VENDOR_HINT[stage]}
+          </p>
+        )}
       </header>
 
       {/* Featured */}
