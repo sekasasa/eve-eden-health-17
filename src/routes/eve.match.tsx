@@ -6,6 +6,7 @@ import { SectionLabel } from "@/components/ui/SectionLabel";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { writeIntake, readIntake, persistIntake } from "@/lib/match-store";
+import type { LifeStage, NeedKey, PaymentKey, Urgency } from "@/lib/match-data";
 import { eveToast } from "@/lib/eve-toast";
 import { cn } from "@/lib/utils";
 
