@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -10,12 +10,18 @@ import {
   Pill,
   Users,
   PhoneCall,
+  History,
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
-import { readIntake, resetIntake } from "@/lib/match-store";
+import {
+  readIntake,
+  resetIntake,
+  hydrateIntakeFromCloud,
+  type MatchIntake,
+} from "@/lib/match-store";
 import { MATCH_PROVIDERS } from "@/lib/match-data";
 import { eveToast } from "@/lib/eve-toast";
 import { cn } from "@/lib/utils";
@@ -26,7 +32,17 @@ export const Route = createFileRoute("/eve/match/results")({
 
 function MatchResults() {
   const nav = useNavigate();
-  const intake = readIntake();
+  const [intake, setIntake] = useState<MatchIntake>(() => readIntake());
+
+  useEffect(() => {
+    let cancel = false;
+    hydrateIntakeFromCloud().then((i) => {
+      if (!cancel) setIntake(i);
+    });
+    return () => {
+      cancel = true;
+    };
+  }, []);
 
   const matched = useMemo(() => {
     const stage = intake.stage;
@@ -53,12 +69,20 @@ function MatchResults() {
   return (
     <EveShell>
       <div className="px-3">
-        <button
-          onClick={() => nav({ to: "/eve/match" })}
-          className="mb-2 inline-flex items-center gap-1 text-xs text-eve-muted"
-        >
-          <ArrowLeft className="h-3 w-3" /> Edit answers
-        </button>
+        <div className="mb-2 flex items-center justify-between">
+          <button
+            onClick={() => nav({ to: "/eve/match" })}
+            className="inline-flex items-center gap-1 text-xs text-eve-muted"
+          >
+            <ArrowLeft className="h-3 w-3" /> Edit answers
+          </button>
+          <Link
+            to="/eve/match/history"
+            className="inline-flex items-center gap-1 text-xs text-eve-teal"
+          >
+            <History className="h-3 w-3" /> History
+          </Link>
+        </div>
         <SectionLabel>Your matches</SectionLabel>
         <h1 className="mt-1 font-serif text-eve-forest" style={{ fontSize: "22px" }}>
           Here are your best next steps

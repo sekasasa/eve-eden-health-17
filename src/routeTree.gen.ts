@@ -52,6 +52,7 @@ import { Route as EveMatchResultsRouteImport } from './routes/eve.match.results'
 import { Route as EveMatchPrescriptionsRouteImport } from './routes/eve.match.prescriptions'
 import { Route as EveMatchLabsRouteImport } from './routes/eve.match.labs'
 import { Route as EveMatchInsuranceRouteImport } from './routes/eve.match.insurance'
+import { Route as EveMatchHistoryRouteImport } from './routes/eve.match.history'
 import { Route as EveMatchFamilyRouteImport } from './routes/eve.match.family'
 import { Route as EdenVendorProductsRouteImport } from './routes/eden.vendor.products'
 import { Route as EdenVendorOrdersRouteImport } from './routes/eden.vendor.orders'
@@ -277,6 +278,11 @@ const EveMatchInsuranceRoute = EveMatchInsuranceRouteImport.update({
   path: '/insurance',
   getParentRoute: () => EveMatchRoute,
 } as any)
+const EveMatchHistoryRoute = EveMatchHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => EveMatchRoute,
+} as any)
 const EveMatchFamilyRoute = EveMatchFamilyRouteImport.update({
   id: '/family',
   path: '/family',
@@ -368,6 +374,7 @@ export interface FileRoutesByFullPath {
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
   '/eve/match/family': typeof EveMatchFamilyRoute
+  '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
   '/eve/match/labs': typeof EveMatchLabsRoute
   '/eve/match/prescriptions': typeof EveMatchPrescriptionsRoute
@@ -422,6 +429,7 @@ export interface FileRoutesByTo {
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
   '/eve/match/family': typeof EveMatchFamilyRoute
+  '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
   '/eve/match/labs': typeof EveMatchLabsRoute
   '/eve/match/prescriptions': typeof EveMatchPrescriptionsRoute
@@ -477,6 +485,7 @@ export interface FileRoutesById {
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
   '/eve/match/family': typeof EveMatchFamilyRoute
+  '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
   '/eve/match/labs': typeof EveMatchLabsRoute
   '/eve/match/prescriptions': typeof EveMatchPrescriptionsRoute
@@ -533,6 +542,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
     | '/eve/match/family'
+    | '/eve/match/history'
     | '/eve/match/insurance'
     | '/eve/match/labs'
     | '/eve/match/prescriptions'
@@ -587,6 +597,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
     | '/eve/match/family'
+    | '/eve/match/history'
     | '/eve/match/insurance'
     | '/eve/match/labs'
     | '/eve/match/prescriptions'
@@ -641,6 +652,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
     | '/eve/match/family'
+    | '/eve/match/history'
     | '/eve/match/insurance'
     | '/eve/match/labs'
     | '/eve/match/prescriptions'
@@ -999,6 +1011,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveMatchInsuranceRouteImport
       parentRoute: typeof EveMatchRoute
     }
+    '/eve/match/history': {
+      id: '/eve/match/history'
+      path: '/history'
+      fullPath: '/eve/match/history'
+      preLoaderRoute: typeof EveMatchHistoryRouteImport
+      parentRoute: typeof EveMatchRoute
+    }
     '/eve/match/family': {
       id: '/eve/match/family'
       path: '/family'
@@ -1091,6 +1110,7 @@ const EdenPatientsRouteWithChildren = EdenPatientsRoute._addFileChildren(
 
 interface EveMatchRouteChildren {
   EveMatchFamilyRoute: typeof EveMatchFamilyRoute
+  EveMatchHistoryRoute: typeof EveMatchHistoryRoute
   EveMatchInsuranceRoute: typeof EveMatchInsuranceRoute
   EveMatchLabsRoute: typeof EveMatchLabsRoute
   EveMatchPrescriptionsRoute: typeof EveMatchPrescriptionsRoute
@@ -1099,6 +1119,7 @@ interface EveMatchRouteChildren {
 
 const EveMatchRouteChildren: EveMatchRouteChildren = {
   EveMatchFamilyRoute: EveMatchFamilyRoute,
+  EveMatchHistoryRoute: EveMatchHistoryRoute,
   EveMatchInsuranceRoute: EveMatchInsuranceRoute,
   EveMatchLabsRoute: EveMatchLabsRoute,
   EveMatchPrescriptionsRoute: EveMatchPrescriptionsRoute,

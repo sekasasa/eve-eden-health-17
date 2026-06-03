@@ -5,8 +5,9 @@ import { EveShell } from "@/components/shells/EveShell";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
-import { writeIntake, readIntake } from "@/lib/match-store";
+import { writeIntake, readIntake, persistIntake } from "@/lib/match-store";
 import type { LifeStage, NeedKey, PaymentKey, Urgency } from "@/lib/match-data";
+import { eveToast } from "@/lib/eve-toast";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/match")({
@@ -69,10 +70,15 @@ function MatchIntake() {
   const [payment, setPayment] = useState<PaymentKey | undefined>(existing.payment);
   const [urgency, setUrgency] = useState<Urgency | undefined>(existing.urgency);
 
-  function next() {
+  async function next() {
     writeIntake({ stage, need, city, language, payment, urgency });
-    if (step < 4) setStep(step + 1);
-    else nav({ to: "/eve/match/results" });
+    if (step < 4) {
+      setStep(step + 1);
+      return;
+    }
+    const res = await persistIntake();
+    if (res.ok) eveToast.success("Saved — you can resume anytime");
+    nav({ to: "/eve/match/results" });
   }
   function back() {
     if (step > 1) setStep(step - 1);
