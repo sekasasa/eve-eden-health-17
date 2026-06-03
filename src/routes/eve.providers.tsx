@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search, Star, Stethoscope } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, Search, Star, Stethoscope } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { TrustBadge } from "@/components/ui/TrustBadge";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { supabase } from "@/integrations/supabase/client";
+import { useSavedProfile } from "@/hooks/useSavedProfile";
+import type { LifeStage } from "@/lib/match-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/providers")({
