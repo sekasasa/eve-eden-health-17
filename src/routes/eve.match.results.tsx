@@ -73,7 +73,7 @@ const TOOLS = {
 const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   ttc: {
     eyebrow: "Fertility & preconception",
-    headline: "Here are your best next steps for trying to conceive",
+    headline: "Your fertility support plan",
     recommended:
       "Start with a preconception visit, then layer in cycle tracking, fertility labs, and a nutrition or supplement plan.",
     actions: [
@@ -87,7 +87,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   ivf: {
     eyebrow: "IVF & fertility treatment",
-    headline: "Here are your best next steps for IVF and fertility care",
+    headline: "Your IVF & fertility care plan",
     recommended:
       "Compare fertility clinics, recommended labs, IVF medication support, and self-pay or international insurance options — a navigator can help you decide.",
     actions: [
@@ -102,7 +102,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   pregnant: {
     eyebrow: "Pregnancy care",
-    headline: "Here are your best next steps for pregnancy care",
+    headline: "Your pregnancy care plan",
     recommended:
       "Book a prenatal visit, prepare lab and prescription questions, and confirm how your visits will be paid for.",
     actions: [
@@ -117,7 +117,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   postpartum: {
     eyebrow: "Postpartum recovery",
-    headline: "Here are your best next steps for postpartum support",
+    headline: "Your postpartum support plan",
     recommended:
       "Book a postpartum check-in, line up lactation and mental-health support, and invite a family supporter to help.",
     actions: [
@@ -132,7 +132,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   newborn: {
     eyebrow: "Newborn & child care",
-    headline: "Here are your best next steps for newborn or child care",
+    headline: "Your child care support plan",
     recommended:
       "Book a pediatric check-in, add feeding support, and decide whether insurance or self-pay fits your family best.",
     actions: [
@@ -147,7 +147,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   pcos: {
     eyebrow: "Hormonal health & PCOS",
-    headline: "Here are your best next steps for hormonal health",
+    headline: "Your hormonal health support plan",
     recommended:
       "Start with a hormone-focused visit, run baseline labs (thyroid, glucose, hormones), and ask about supplements or prescriptions.",
     actions: [
@@ -162,7 +162,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   mood: {
     eyebrow: "Mental & emotional support",
-    headline: "Here are your best next steps for mood & anxiety support",
+    headline: "Your mood support plan",
     recommended:
       "Connect with a therapist who understands maternal mental health — telehealth can start within days.",
     actions: [
@@ -176,7 +176,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   wellness: {
     eyebrow: "Wellness & preventive care",
-    headline: "Here are your best next steps for wellness & preventive care",
+    headline: "Your wellness care plan",
     recommended:
       "Schedule your annual women's-health visit and decide which preventive screenings or labs to add this year.",
     actions: [
@@ -190,7 +190,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   family: {
     eyebrow: "Family support",
-    headline: "Help coordinate care for someone you love",
+    headline: "Your family care coordination plan",
     recommended:
       "Invite them with the permissions that fit your relationship — you can help book, pay, or just stay informed.",
     actions: [
