@@ -582,6 +582,136 @@ export type Database = {
           },
         ]
       }
+      vendor_content: {
+        Row: {
+          body: string | null
+          booking_clicks: number
+          category: string | null
+          content_type: string
+          created_at: string
+          cta_type: string | null
+          cta_url: string | null
+          event_at: string | null
+          event_registrations: number
+          excerpt: string | null
+          id: string
+          language: string | null
+          life_stage: string | null
+          location: string | null
+          media_url: string | null
+          messages: number
+          profile_visits: number
+          quote_requests: number
+          related_service: string | null
+          requires_review: boolean
+          saves: number
+          shop_clicks: number
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          vendor_id: string
+          views: number
+        }
+        Insert: {
+          body?: string | null
+          booking_clicks?: number
+          category?: string | null
+          content_type?: string
+          created_at?: string
+          cta_type?: string | null
+          cta_url?: string | null
+          event_at?: string | null
+          event_registrations?: number
+          excerpt?: string | null
+          id?: string
+          language?: string | null
+          life_stage?: string | null
+          location?: string | null
+          media_url?: string | null
+          messages?: number
+          profile_visits?: number
+          quote_requests?: number
+          related_service?: string | null
+          requires_review?: boolean
+          saves?: number
+          shop_clicks?: number
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          vendor_id: string
+          views?: number
+        }
+        Update: {
+          body?: string | null
+          booking_clicks?: number
+          category?: string | null
+          content_type?: string
+          created_at?: string
+          cta_type?: string | null
+          cta_url?: string | null
+          event_at?: string | null
+          event_registrations?: number
+          excerpt?: string | null
+          id?: string
+          language?: string | null
+          life_stage?: string | null
+          location?: string | null
+          media_url?: string | null
+          messages?: number
+          profile_visits?: number
+          quote_requests?: number
+          related_service?: string | null
+          requires_review?: boolean
+          saves?: number
+          shop_clicks?: number
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          vendor_id?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_content_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendor_content_saves: {
+        Row: {
+          content_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_content_saves_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendors: {
         Row: {
           business_name: string | null
