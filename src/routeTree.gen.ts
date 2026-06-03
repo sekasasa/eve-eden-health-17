@@ -30,6 +30,7 @@ import { Route as EveEventsRouteImport } from './routes/eve.events'
 import { Route as EveCommunityRouteImport } from './routes/eve.community'
 import { Route as EveAskRouteImport } from './routes/eve.ask'
 import { Route as EveAppointmentsRouteImport } from './routes/eve.appointments'
+import { Route as EdenReferralsRouteImport } from './routes/eden.referrals'
 import { Route as EdenProfileRouteImport } from './routes/eden.profile'
 import { Route as EdenPatientsRouteImport } from './routes/eden.patients'
 import { Route as EdenOnboardingRouteImport } from './routes/eden.onboarding'
@@ -171,6 +172,11 @@ const EveAskRoute = EveAskRouteImport.update({
 const EveAppointmentsRoute = EveAppointmentsRouteImport.update({
   id: '/eve/appointments',
   path: '/eve/appointments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenReferralsRoute = EdenReferralsRouteImport.update({
+  id: '/eden/referrals',
+  path: '/eden/referrals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EdenProfileRoute = EdenProfileRouteImport.update({
@@ -381,6 +387,7 @@ export interface FileRoutesByFullPath {
   '/eden/onboarding': typeof EdenOnboardingRoute
   '/eden/patients': typeof EdenPatientsRouteWithChildren
   '/eden/profile': typeof EdenProfileRoute
+  '/eden/referrals': typeof EdenReferralsRoute
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
   '/eve/community': typeof EveCommunityRoute
@@ -441,6 +448,7 @@ export interface FileRoutesByTo {
   '/eden/onboarding': typeof EdenOnboardingRoute
   '/eden/patients': typeof EdenPatientsRouteWithChildren
   '/eden/profile': typeof EdenProfileRoute
+  '/eden/referrals': typeof EdenReferralsRoute
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
   '/eve/community': typeof EveCommunityRoute
@@ -502,6 +510,7 @@ export interface FileRoutesById {
   '/eden/onboarding': typeof EdenOnboardingRoute
   '/eden/patients': typeof EdenPatientsRouteWithChildren
   '/eden/profile': typeof EdenProfileRoute
+  '/eden/referrals': typeof EdenReferralsRoute
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
   '/eve/community': typeof EveCommunityRoute
@@ -564,6 +573,7 @@ export interface FileRouteTypes {
     | '/eden/onboarding'
     | '/eden/patients'
     | '/eden/profile'
+    | '/eden/referrals'
     | '/eve/appointments'
     | '/eve/ask'
     | '/eve/community'
@@ -624,6 +634,7 @@ export interface FileRouteTypes {
     | '/eden/onboarding'
     | '/eden/patients'
     | '/eden/profile'
+    | '/eden/referrals'
     | '/eve/appointments'
     | '/eve/ask'
     | '/eve/community'
@@ -684,6 +695,7 @@ export interface FileRouteTypes {
     | '/eden/onboarding'
     | '/eden/patients'
     | '/eden/profile'
+    | '/eden/referrals'
     | '/eve/appointments'
     | '/eve/ask'
     | '/eve/community'
@@ -745,6 +757,7 @@ export interface RootRouteChildren {
   EdenOnboardingRoute: typeof EdenOnboardingRoute
   EdenPatientsRoute: typeof EdenPatientsRouteWithChildren
   EdenProfileRoute: typeof EdenProfileRoute
+  EdenReferralsRoute: typeof EdenReferralsRoute
   EveAppointmentsRoute: typeof EveAppointmentsRoute
   EveAskRoute: typeof EveAskRoute
   EveCommunityRoute: typeof EveCommunityRoute
@@ -918,6 +931,13 @@ declare module '@tanstack/react-router' {
       path: '/eve/appointments'
       fullPath: '/eve/appointments'
       preLoaderRoute: typeof EveAppointmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/referrals': {
+      id: '/eden/referrals'
+      path: '/eden/referrals'
+      fullPath: '/eden/referrals'
+      preLoaderRoute: typeof EdenReferralsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eden/profile': {
@@ -1299,6 +1319,7 @@ const rootRouteChildren: RootRouteChildren = {
   EdenOnboardingRoute: EdenOnboardingRoute,
   EdenPatientsRoute: EdenPatientsRouteWithChildren,
   EdenProfileRoute: EdenProfileRoute,
+  EdenReferralsRoute: EdenReferralsRoute,
   EveAppointmentsRoute: EveAppointmentsRoute,
   EveAskRoute: EveAskRoute,
   EveCommunityRoute: EveCommunityRoute,
