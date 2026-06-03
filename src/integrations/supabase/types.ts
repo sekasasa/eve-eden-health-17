@@ -201,6 +201,48 @@ export type Database = {
           },
         ]
       }
+      match_intakes: {
+        Row: {
+          city: string | null
+          created_at: string
+          extras: Json
+          id: string
+          language: string | null
+          need: string | null
+          payment: string | null
+          stage: string | null
+          updated_at: string
+          urgency: string | null
+          user_id: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          extras?: Json
+          id?: string
+          language?: string | null
+          need?: string | null
+          payment?: string | null
+          stage?: string | null
+          updated_at?: string
+          urgency?: string | null
+          user_id: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          extras?: Json
+          id?: string
+          language?: string | null
+          need?: string | null
+          payment?: string | null
+          stage?: string | null
+          updated_at?: string
+          urgency?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       mothers: {
         Row: {
           city: string | null
