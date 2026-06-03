@@ -264,6 +264,10 @@ function MatchResults() {
 function recommendedStep(i: ReturnType<typeof readIntake>) {
   if (i.urgency === "today")
     return "We've prioritised providers available today. Tap Request Booking on a match below to confirm a slot.";
+  if (i.stage === "ivf")
+    return "Compare fertility clinics, recommended labs, and medication or self-pay packages — and talk to a care navigator when you're ready.";
+  if (i.stage === "ttc")
+    return "Explore preconception care, fertility labs, and clinics that match your budget and language.";
   if (i.need === "labs_explain")
     return "Upload your lab result and we'll explain it in plain language so you can prepare for your next visit.";
   if (i.need === "rx_explain")
