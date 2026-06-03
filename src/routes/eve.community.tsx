@@ -1,7 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Heart, MessageCircle, Bookmark, Flame, Plus, X } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Flame, Plus, X, ArrowLeft, Users, ShieldCheck, Sparkles } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
+import { useSavedProfile } from "@/hooks/useSavedProfile";
+import { eveToast } from "@/lib/eve-toast";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/community")({
