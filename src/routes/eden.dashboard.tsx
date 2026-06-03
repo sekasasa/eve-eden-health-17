@@ -196,6 +196,22 @@ function EdenDashboard() {
         ))}
       </div>
 
+      <Link
+        to="/eden/vendor/content"
+        className="mt-6 flex items-start gap-4 rounded-xl border border-eve-teal/30 bg-eve-teal-light/30 p-5 transition hover:bg-eve-teal-light/50"
+      >
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-teal text-white">
+          <PenLine className="h-5 w-5" />
+        </div>
+        <div className="flex-1">
+          <p className="font-sans text-sm font-semibold text-eve-teal-dark">Content Studio</p>
+          <p className="mt-0.5 font-sans text-xs text-gray-600">
+            Publish articles, videos, tips, and events to educate patients and grow your practice.
+          </p>
+        </div>
+        <span className="font-sans text-xs font-medium text-eve-teal">Open →</span>
+      </Link>
+
       {/* Today's schedule */}
       <section className="mt-8 rounded-xl border border-gray-200 bg-white">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
