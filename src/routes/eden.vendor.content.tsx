@@ -38,6 +38,7 @@ const ACTIONS = [
 function VendorContentStudio() {
   const nav = useNavigate();
   const [vendorId, setVendorId] = useState<string | null>(null);
+  const [variant, setVariant] = useState<"provider" | "vendor">("vendor");
   const [rows, setRows] = useState<ContentRow[]>([]);
   const [loading, setLoading] = useState(true);
 
