@@ -133,6 +133,7 @@ function MatchIntake() {
                 selected={stage === s.key}
                 onClick={() => setStage(s.key)}
                 label={s.label}
+                sub={s.sub}
                 emoji={s.emoji}
               />
             ))}
