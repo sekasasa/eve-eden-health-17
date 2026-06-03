@@ -10,6 +10,8 @@ import {
   Users,
   ChevronDown,
   Sparkles,
+  FlaskConical,
+  ShieldCheck,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { EveShell } from "@/components/shells/EveShell";
