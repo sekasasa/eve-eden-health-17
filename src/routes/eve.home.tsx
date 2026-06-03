@@ -277,11 +277,22 @@ function EveHome() {
             sub={t("home.verifiedProviders")}
           />
           <QuickAction
-            to="/eve/match"
+            to="/eve/match/results"
             icon={<Sparkles className="h-[18px] w-[18px] text-eve-terra" />}
             label={t("home.fertility")}
             sub={t("home.fertilitySub")}
+            onClick={() => {
+              try {
+                sessionStorage.setItem(
+                  "eve_match_intake_v1",
+                  JSON.stringify({ stage: "ivf" }),
+                );
+              } catch {
+                /* ignore */
+              }
+            }}
           />
+
           <QuickAction
             to="/eve/match/labs"
             icon={<FlaskConical className="h-[18px] w-[18px] text-eve-teal" />}
