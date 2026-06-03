@@ -505,6 +505,38 @@ function EveHome() {
             })}
           </div>
 
+          {/* Care passport + referrals quick links */}
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/eve/passport" })}
+              className="rounded-2xl bg-white px-3 py-3 text-left"
+            >
+              <p className="font-sans text-sm font-semibold text-eve-teal-dark">
+                {lang === "fr" ? "Mon carnet de soins" : "Care Passport"}
+              </p>
+              <p className="mt-0.5 font-sans text-[11px] text-eve-muted">
+                {lang === "fr"
+                  ? "Documents, partage, contrôle"
+                  : "Documents, sharing, control"}
+              </p>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/eve/referrals" })}
+              className="rounded-2xl bg-white px-3 py-3 text-left"
+            >
+              <p className="font-sans text-sm font-semibold text-eve-teal-dark">
+                {lang === "fr" ? "Recommandations" : "Referrals"}
+              </p>
+              <p className="mt-0.5 font-sans text-[11px] text-eve-muted">
+                {lang === "fr"
+                  ? "Prochaines étapes de mes prestataires"
+                  : "Next steps from your providers"}
+              </p>
+            </button>
+          </div>
+
           {/* Update care profile entry */}
           <button
             type="button"
