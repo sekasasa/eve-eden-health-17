@@ -69,12 +69,20 @@ function MatchResults() {
   return (
     <EveShell>
       <div className="px-3">
-        <button
-          onClick={() => nav({ to: "/eve/match" })}
-          className="mb-2 inline-flex items-center gap-1 text-xs text-eve-muted"
-        >
-          <ArrowLeft className="h-3 w-3" /> Edit answers
-        </button>
+        <div className="mb-2 flex items-center justify-between">
+          <button
+            onClick={() => nav({ to: "/eve/match" })}
+            className="inline-flex items-center gap-1 text-xs text-eve-muted"
+          >
+            <ArrowLeft className="h-3 w-3" /> Edit answers
+          </button>
+          <Link
+            to="/eve/match/history"
+            className="inline-flex items-center gap-1 text-xs text-eve-teal"
+          >
+            <History className="h-3 w-3" /> History
+          </Link>
+        </div>
         <SectionLabel>Your matches</SectionLabel>
         <h1 className="mt-1 font-serif text-eve-forest" style={{ fontSize: "22px" }}>
           Here are your best next steps
