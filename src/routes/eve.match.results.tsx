@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -10,12 +10,18 @@ import {
   Pill,
   Users,
   PhoneCall,
+  History,
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
-import { readIntake, resetIntake } from "@/lib/match-store";
+import {
+  readIntake,
+  resetIntake,
+  hydrateIntakeFromCloud,
+  type MatchIntake,
+} from "@/lib/match-store";
 import { MATCH_PROVIDERS } from "@/lib/match-data";
 import { eveToast } from "@/lib/eve-toast";
 import { cn } from "@/lib/utils";
@@ -26,7 +32,17 @@ export const Route = createFileRoute("/eve/match/results")({
 
 function MatchResults() {
   const nav = useNavigate();
-  const intake = readIntake();
+  const [intake, setIntake] = useState<MatchIntake>(() => readIntake());
+
+  useEffect(() => {
+    let cancel = false;
+    hydrateIntakeFromCloud().then((i) => {
+      if (!cancel) setIntake(i);
+    });
+    return () => {
+      cancel = true;
+    };
+  }, []);
 
   const matched = useMemo(() => {
     const stage = intake.stage;
