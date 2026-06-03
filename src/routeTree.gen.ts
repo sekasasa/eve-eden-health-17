@@ -30,9 +30,11 @@ import { Route as EveEventsRouteImport } from './routes/eve.events'
 import { Route as EveCommunityRouteImport } from './routes/eve.community'
 import { Route as EveAskRouteImport } from './routes/eve.ask'
 import { Route as EveAppointmentsRouteImport } from './routes/eve.appointments'
+import { Route as EdenSharedDocsRouteImport } from './routes/eden.shared-docs'
 import { Route as EdenReferralsRouteImport } from './routes/eden.referrals'
 import { Route as EdenProfileRouteImport } from './routes/eden.profile'
 import { Route as EdenPatientsRouteImport } from './routes/eden.patients'
+import { Route as EdenPartnersRouteImport } from './routes/eden.partners'
 import { Route as EdenOnboardingRouteImport } from './routes/eden.onboarding'
 import { Route as EdenLoginRouteImport } from './routes/eden.login'
 import { Route as EdenLeadsRouteImport } from './routes/eden.leads'
@@ -174,6 +176,11 @@ const EveAppointmentsRoute = EveAppointmentsRouteImport.update({
   path: '/eve/appointments',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EdenSharedDocsRoute = EdenSharedDocsRouteImport.update({
+  id: '/eden/shared-docs',
+  path: '/eden/shared-docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EdenReferralsRoute = EdenReferralsRouteImport.update({
   id: '/eden/referrals',
   path: '/eden/referrals',
@@ -187,6 +194,11 @@ const EdenProfileRoute = EdenProfileRouteImport.update({
 const EdenPatientsRoute = EdenPatientsRouteImport.update({
   id: '/eden/patients',
   path: '/eden/patients',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenPartnersRoute = EdenPartnersRouteImport.update({
+  id: '/eden/partners',
+  path: '/eden/partners',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EdenOnboardingRoute = EdenOnboardingRouteImport.update({
@@ -385,9 +397,11 @@ export interface FileRoutesByFullPath {
   '/eden/leads': typeof EdenLeadsRoute
   '/eden/login': typeof EdenLoginRoute
   '/eden/onboarding': typeof EdenOnboardingRoute
+  '/eden/partners': typeof EdenPartnersRoute
   '/eden/patients': typeof EdenPatientsRouteWithChildren
   '/eden/profile': typeof EdenProfileRoute
   '/eden/referrals': typeof EdenReferralsRoute
+  '/eden/shared-docs': typeof EdenSharedDocsRoute
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
   '/eve/community': typeof EveCommunityRoute
@@ -446,9 +460,11 @@ export interface FileRoutesByTo {
   '/eden/leads': typeof EdenLeadsRoute
   '/eden/login': typeof EdenLoginRoute
   '/eden/onboarding': typeof EdenOnboardingRoute
+  '/eden/partners': typeof EdenPartnersRoute
   '/eden/patients': typeof EdenPatientsRouteWithChildren
   '/eden/profile': typeof EdenProfileRoute
   '/eden/referrals': typeof EdenReferralsRoute
+  '/eden/shared-docs': typeof EdenSharedDocsRoute
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
   '/eve/community': typeof EveCommunityRoute
@@ -508,9 +524,11 @@ export interface FileRoutesById {
   '/eden/leads': typeof EdenLeadsRoute
   '/eden/login': typeof EdenLoginRoute
   '/eden/onboarding': typeof EdenOnboardingRoute
+  '/eden/partners': typeof EdenPartnersRoute
   '/eden/patients': typeof EdenPatientsRouteWithChildren
   '/eden/profile': typeof EdenProfileRoute
   '/eden/referrals': typeof EdenReferralsRoute
+  '/eden/shared-docs': typeof EdenSharedDocsRoute
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
   '/eve/community': typeof EveCommunityRoute
@@ -571,9 +589,11 @@ export interface FileRouteTypes {
     | '/eden/leads'
     | '/eden/login'
     | '/eden/onboarding'
+    | '/eden/partners'
     | '/eden/patients'
     | '/eden/profile'
     | '/eden/referrals'
+    | '/eden/shared-docs'
     | '/eve/appointments'
     | '/eve/ask'
     | '/eve/community'
@@ -632,9 +652,11 @@ export interface FileRouteTypes {
     | '/eden/leads'
     | '/eden/login'
     | '/eden/onboarding'
+    | '/eden/partners'
     | '/eden/patients'
     | '/eden/profile'
     | '/eden/referrals'
+    | '/eden/shared-docs'
     | '/eve/appointments'
     | '/eve/ask'
     | '/eve/community'
@@ -693,9 +715,11 @@ export interface FileRouteTypes {
     | '/eden/leads'
     | '/eden/login'
     | '/eden/onboarding'
+    | '/eden/partners'
     | '/eden/patients'
     | '/eden/profile'
     | '/eden/referrals'
+    | '/eden/shared-docs'
     | '/eve/appointments'
     | '/eve/ask'
     | '/eve/community'
@@ -755,9 +779,11 @@ export interface RootRouteChildren {
   EdenLeadsRoute: typeof EdenLeadsRoute
   EdenLoginRoute: typeof EdenLoginRoute
   EdenOnboardingRoute: typeof EdenOnboardingRoute
+  EdenPartnersRoute: typeof EdenPartnersRoute
   EdenPatientsRoute: typeof EdenPatientsRouteWithChildren
   EdenProfileRoute: typeof EdenProfileRoute
   EdenReferralsRoute: typeof EdenReferralsRoute
+  EdenSharedDocsRoute: typeof EdenSharedDocsRoute
   EveAppointmentsRoute: typeof EveAppointmentsRoute
   EveAskRoute: typeof EveAskRoute
   EveCommunityRoute: typeof EveCommunityRoute
@@ -933,6 +959,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveAppointmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eden/shared-docs': {
+      id: '/eden/shared-docs'
+      path: '/eden/shared-docs'
+      fullPath: '/eden/shared-docs'
+      preLoaderRoute: typeof EdenSharedDocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eden/referrals': {
       id: '/eden/referrals'
       path: '/eden/referrals'
@@ -952,6 +985,13 @@ declare module '@tanstack/react-router' {
       path: '/eden/patients'
       fullPath: '/eden/patients'
       preLoaderRoute: typeof EdenPatientsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/partners': {
+      id: '/eden/partners'
+      path: '/eden/partners'
+      fullPath: '/eden/partners'
+      preLoaderRoute: typeof EdenPartnersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eden/onboarding': {
@@ -1317,9 +1357,11 @@ const rootRouteChildren: RootRouteChildren = {
   EdenLeadsRoute: EdenLeadsRoute,
   EdenLoginRoute: EdenLoginRoute,
   EdenOnboardingRoute: EdenOnboardingRoute,
+  EdenPartnersRoute: EdenPartnersRoute,
   EdenPatientsRoute: EdenPatientsRouteWithChildren,
   EdenProfileRoute: EdenProfileRoute,
   EdenReferralsRoute: EdenReferralsRoute,
+  EdenSharedDocsRoute: EdenSharedDocsRoute,
   EveAppointmentsRoute: EveAppointmentsRoute,
   EveAskRoute: EveAskRoute,
   EveCommunityRoute: EveCommunityRoute,
@@ -1348,3 +1390,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
