@@ -34,6 +34,7 @@ import { Route as EdenProfileRouteImport } from './routes/eden.profile'
 import { Route as EdenPatientsRouteImport } from './routes/eden.patients'
 import { Route as EdenOnboardingRouteImport } from './routes/eden.onboarding'
 import { Route as EdenLoginRouteImport } from './routes/eden.login'
+import { Route as EdenLeadsRouteImport } from './routes/eden.leads'
 import { Route as EdenDashboardRouteImport } from './routes/eden.dashboard'
 import { Route as EdenAppointmentsRouteImport } from './routes/eden.appointments'
 import { Route as EdenAnalyticsRouteImport } from './routes/eden.analytics'
@@ -190,6 +191,11 @@ const EdenOnboardingRoute = EdenOnboardingRouteImport.update({
 const EdenLoginRoute = EdenLoginRouteImport.update({
   id: '/eden/login',
   path: '/eden/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EdenLeadsRoute = EdenLeadsRouteImport.update({
+  id: '/eden/leads',
+  path: '/eden/leads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EdenDashboardRoute = EdenDashboardRouteImport.update({
@@ -370,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/eden/analytics': typeof EdenAnalyticsRoute
   '/eden/appointments': typeof EdenAppointmentsRoute
   '/eden/dashboard': typeof EdenDashboardRoute
+  '/eden/leads': typeof EdenLeadsRoute
   '/eden/login': typeof EdenLoginRoute
   '/eden/onboarding': typeof EdenOnboardingRoute
   '/eden/patients': typeof EdenPatientsRouteWithChildren
@@ -429,6 +436,7 @@ export interface FileRoutesByTo {
   '/eden/analytics': typeof EdenAnalyticsRoute
   '/eden/appointments': typeof EdenAppointmentsRoute
   '/eden/dashboard': typeof EdenDashboardRoute
+  '/eden/leads': typeof EdenLeadsRoute
   '/eden/login': typeof EdenLoginRoute
   '/eden/onboarding': typeof EdenOnboardingRoute
   '/eden/patients': typeof EdenPatientsRouteWithChildren
@@ -489,6 +497,7 @@ export interface FileRoutesById {
   '/eden/analytics': typeof EdenAnalyticsRoute
   '/eden/appointments': typeof EdenAppointmentsRoute
   '/eden/dashboard': typeof EdenDashboardRoute
+  '/eden/leads': typeof EdenLeadsRoute
   '/eden/login': typeof EdenLoginRoute
   '/eden/onboarding': typeof EdenOnboardingRoute
   '/eden/patients': typeof EdenPatientsRouteWithChildren
@@ -550,6 +559,7 @@ export interface FileRouteTypes {
     | '/eden/analytics'
     | '/eden/appointments'
     | '/eden/dashboard'
+    | '/eden/leads'
     | '/eden/login'
     | '/eden/onboarding'
     | '/eden/patients'
@@ -609,6 +619,7 @@ export interface FileRouteTypes {
     | '/eden/analytics'
     | '/eden/appointments'
     | '/eden/dashboard'
+    | '/eden/leads'
     | '/eden/login'
     | '/eden/onboarding'
     | '/eden/patients'
@@ -668,6 +679,7 @@ export interface FileRouteTypes {
     | '/eden/analytics'
     | '/eden/appointments'
     | '/eden/dashboard'
+    | '/eden/leads'
     | '/eden/login'
     | '/eden/onboarding'
     | '/eden/patients'
@@ -728,6 +740,7 @@ export interface RootRouteChildren {
   EdenAnalyticsRoute: typeof EdenAnalyticsRoute
   EdenAppointmentsRoute: typeof EdenAppointmentsRoute
   EdenDashboardRoute: typeof EdenDashboardRoute
+  EdenLeadsRoute: typeof EdenLeadsRoute
   EdenLoginRoute: typeof EdenLoginRoute
   EdenOnboardingRoute: typeof EdenOnboardingRoute
   EdenPatientsRoute: typeof EdenPatientsRouteWithChildren
@@ -933,6 +946,13 @@ declare module '@tanstack/react-router' {
       path: '/eden/login'
       fullPath: '/eden/login'
       preLoaderRoute: typeof EdenLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eden/leads': {
+      id: '/eden/leads'
+      path: '/eden/leads'
+      fullPath: '/eden/leads'
+      preLoaderRoute: typeof EdenLeadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eden/dashboard': {
@@ -1274,6 +1294,7 @@ const rootRouteChildren: RootRouteChildren = {
   EdenAnalyticsRoute: EdenAnalyticsRoute,
   EdenAppointmentsRoute: EdenAppointmentsRoute,
   EdenDashboardRoute: EdenDashboardRoute,
+  EdenLeadsRoute: EdenLeadsRoute,
   EdenLoginRoute: EdenLoginRoute,
   EdenOnboardingRoute: EdenOnboardingRoute,
   EdenPatientsRoute: EdenPatientsRouteWithChildren,
