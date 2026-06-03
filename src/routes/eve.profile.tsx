@@ -99,7 +99,23 @@ function EveProfile() {
         </button>
       </div>
 
-      <Accordion type="multiple" className="mt-6 space-y-2">
+      <button
+        type="button"
+        onClick={() => navigate({ to: "/eve/match" })}
+        className="mt-6 flex w-full items-center justify-between rounded-2xl border border-eve-teal/20 bg-white px-4 py-3 text-left"
+      >
+        <div>
+          <p className="font-sans text-sm font-medium text-eve-teal-dark">
+            Update my care profile
+          </p>
+          <p className="font-sans text-[11px] text-eve-muted">
+            Refresh life stage, language, location, and care preferences
+          </p>
+        </div>
+        <Pencil className="h-4 w-4 text-eve-teal" />
+      </button>
+
+      <Accordion type="multiple" className="mt-4 space-y-2">
         <Section value="pregnancy" title="My pregnancy">
           <Row label="Due date" value={m?.due_date ?? "—"} />
           <Row label="Current week" value={m?.pregnancy_week ? `Week ${m.pregnancy_week}` : "—"} />
