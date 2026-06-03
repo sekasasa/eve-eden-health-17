@@ -49,6 +49,12 @@ function VendorContentStudio() {
   async function load() {
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) return;
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("user_type")
+      .eq("id", auth.user.id)
+      .maybeSingle();
+    setVariant(prof?.user_type === "provider" ? "provider" : "vendor");
     let { data: v } = await supabase
       .from("vendors")
       .select("id")
