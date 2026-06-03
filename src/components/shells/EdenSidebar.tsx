@@ -10,6 +10,7 @@ import {
   ShoppingBag,
   Star,
   LogOut,
+  PenLine,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ const VENDOR_NAV = [
   { to: "/eden/vendor/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/eden/vendor/products", label: "Products", icon: Package },
   { to: "/eden/vendor/orders", label: "Orders", icon: ShoppingBag },
+  { to: "/eden/vendor/content", label: "Content Studio", icon: PenLine },
   { to: "/eden/vendor/listing", label: "My Listing", icon: Star },
 ];
 
