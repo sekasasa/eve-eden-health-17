@@ -257,6 +257,21 @@ function EveVendorDetail() {
                     No products to show.
                   </p>
                 )}
+
+                {partnerContent.length > 0 && (
+                  <section className="mt-8">
+                    <SectionLabel>Articles & videos from this partner</SectionLabel>
+                    <div className="mt-3 grid grid-cols-1 gap-3">
+                      {partnerContent.map((c) => (
+                        <ContentCard
+                          key={c.id}
+                          content={c}
+                          vendorName={vendor?.business_name ?? undefined}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                )}
               </>
             )}
           </main>
