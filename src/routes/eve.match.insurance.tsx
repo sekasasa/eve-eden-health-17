@@ -5,19 +5,72 @@ import { EveShell } from "@/components/shells/EveShell";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
-import { INSURANCE_VENDORS } from "@/lib/match-data";
+import { INSURANCE_VENDORS, type LifeStage, type PaymentKey } from "@/lib/match-data";
 import { eveToast } from "@/lib/eve-toast";
+import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/match/insurance")({
   component: InsurancePage,
 });
 
-type Filter = "all" | "local" | "international" | "public";
+type Path =
+  | "local"
+  | "international"
+  | "compare"
+  | "qualify"
+  | "self_pay"
+  | "family"
+  | "unsure";
+
+const PATH_LABELS: Record<Path, string> = {
+  local: "Use local insurance",
+  international: "Use international insurance",
+  compare: "Compare insurance vendors",
+  qualify: "See if I qualify",
+  self_pay: "Self-pay",
+  family: "Family member helping pay",
+  unsure: "I'm not sure",
+};
+
+const PAYMENT_TO_PATH: Partial<Record<PaymentKey, Path>> = {
+  local_insurance: "local",
+  international: "international",
+  compare: "compare",
+  qualify: "qualify",
+  self_pay: "self_pay",
+  family: "family",
+  unsure: "unsure",
+};
+
+// Stage-aware recommendation copy
+const STAGE_COPY: Partial<Record<LifeStage, string>> = {
+  ivf: "Look for IVF coverage, self-pay fertility packages, and international reimbursement.",
+  ttc: "Consider preconception coverage, fertility labs, and self-pay options.",
+  pregnant: "Compare prenatal coverage, maternity packages, lab and prescription coverage.",
+  postpartum: "Postpartum visits, lactation support, and mental health coverage matter most.",
+  newborn: "Look for pediatric coverage, immunizations, and family plans.",
+  pcos: "Check coverage for hormonal labs, ongoing medication, and specialist visits.",
+  mood: "Mental health visits, therapy, and medication coverage matter most.",
+  wellness: "Preventive screenings, annual visits, and general labs.",
+};
 
 function InsurancePage() {
   const nav = useNavigate();
-  const [filter, setFilter] = useState<Filter>("all");
+  const { profile } = useSavedProfile();
+  const stage = profile.stage as LifeStage | undefined;
+  const savedPath =
+    (profile.payment && PAYMENT_TO_PATH[profile.payment]) || "compare";
+  const [path, setPath] = useState<Path>(savedPath);
+  const [intlNeed, setIntlNeed] = useState<string | null>(null);
+
+  const filter: "all" | "local" | "international" | "public" = useMemo(() => {
+    if (path === "local") return "local";
+    if (path === "international") return "international";
+    if (path === "qualify") return "public";
+    return "all";
+  }, [path]);
+
   const list = useMemo(
     () =>
       INSURANCE_VENDORS.filter((v) =>
@@ -32,48 +85,89 @@ function InsurancePage() {
     [filter],
   );
 
+  const recommendation =
+    (stage && STAGE_COPY[stage]) ||
+    "Compare options across coverage, network, and out-of-pocket costs.";
+
   return (
     <EveShell>
       <div className="px-3">
         <button
-          onClick={() => nav({ to: "/eve/match/results" })}
+          onClick={() => nav({ to: "/eve/home" })}
           className="mb-2 inline-flex items-center gap-1 text-xs text-eve-muted"
         >
-          <ArrowLeft className="h-3 w-3" /> Back
+          <ArrowLeft className="h-3 w-3" /> Back to dashboard
         </button>
         <SectionLabel>Insurance & payment</SectionLabel>
         <h1 className="mt-1 font-serif text-eve-forest" style={{ fontSize: "22px" }}>
-          Compare insurance vendors
+          What payment option do you want to explore?
         </h1>
-        <p className="mt-1 text-[12px] text-eve-muted">
-          Side-by-side options for maternity, postpartum, labs, prescriptions, and more.
-        </p>
+        <p className="mt-1 text-[12px] text-eve-muted">{recommendation}</p>
       </div>
 
-      <div className="mt-3 flex gap-2 overflow-x-auto px-3 pb-1">
-        {(
-          [
-            { k: "all", l: "All" },
-            { k: "local", l: "Local" },
-            { k: "international", l: "International" },
-            { k: "public", l: "Public" },
-          ] as { k: Filter; l: string }[]
-        ).map((f) => (
+      {/* Contextual path picker — only this small question, no full survey */}
+      <div className="mx-3 mt-3 grid grid-cols-2 gap-2">
+        {(Object.keys(PATH_LABELS) as Path[]).map((p) => (
           <button
-            key={f.k}
-            onClick={() => setFilter(f.k)}
+            key={p}
+            onClick={() => setPath(p)}
             className={cn(
-              "shrink-0 rounded-full border px-3 py-1.5 text-xs",
-              filter === f.k
-                ? "border-eve-teal bg-eve-teal text-white"
-                : "border-eve-muted/30 bg-white text-eve-teal-dark",
+              "rounded-xl border bg-white p-3 text-left text-[12px]",
+              path === p
+                ? "border-eve-teal bg-eve-teal-light"
+                : "border-eve-muted/20",
             )}
           >
-            {f.l}
+            <p className="font-medium text-eve-teal-dark">{PATH_LABELS[p]}</p>
+            {profile.payment && PAYMENT_TO_PATH[profile.payment] === p && (
+              <p className="mt-0.5 text-[10px] text-eve-teal">From your profile</p>
+            )}
           </button>
         ))}
       </div>
 
+      {/* Contextual follow-up for international */}
+      {path === "international" && (
+        <div className="mx-3 mt-3 rounded-2xl border border-eve-muted/20 bg-white p-3">
+          <SectionLabel>What do you need help with?</SectionLabel>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {[
+              "Direct billing",
+              "Reimbursement documents",
+              "Provider match",
+              "Claim support",
+              "Not sure",
+            ].map((opt) => (
+              <button
+                key={opt}
+                onClick={() => setIntlNeed(opt)}
+                className={cn(
+                  "rounded-full border px-3 py-1 text-[11px]",
+                  intlNeed === opt
+                    ? "border-eve-teal bg-eve-teal text-white"
+                    : "border-eve-muted/30 bg-white text-eve-teal-dark",
+                )}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Self-pay summary */}
+      {path === "self_pay" && (
+        <div className="mx-3 mt-3 rounded-2xl border border-eve-muted/20 bg-white p-3 text-[12px] text-eve-teal-dark">
+          <SectionLabel>Self-pay highlights</SectionLabel>
+          <ul className="mt-2 list-disc pl-5 text-[12px] text-eve-muted">
+            <li>Faster booking, more provider choice</li>
+            <li>No claim paperwork</li>
+            <li>Packages and payment plans available with some providers</li>
+          </ul>
+        </div>
+      )}
+
+      {/* Vendor cards */}
       <div className="mt-3 flex flex-col gap-3 px-3">
         {list.map((v) => (
           <article
@@ -154,7 +248,7 @@ function InsurancePage() {
                 onClick={() => eveToast.info("A navigator will reach out")}
                 className="rounded-full bg-eve-cream px-3 py-1.5 text-xs text-eve-teal-dark"
               >
-                Talk to Navigator
+                Ask Navigator
               </button>
             </div>
           </article>
@@ -162,8 +256,8 @@ function InsurancePage() {
       </div>
 
       <p className="mt-4 px-3 pb-2 text-[10px] leading-relaxed text-eve-muted">
-        Estimated prices are guidance only. Final premiums depend on age, location, and
-        coverage selected.
+        Estimated prices are guidance only. Final premiums depend on age, location,
+        and coverage selected.
       </p>
     </EveShell>
   );
