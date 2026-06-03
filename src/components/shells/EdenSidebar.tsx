@@ -20,6 +20,7 @@ const PROVIDER_NAV = [
   { to: "/eden/patients", label: "Patients", icon: Users },
   { to: "/eden/appointments", label: "Appointments", icon: Calendar },
   { to: "/eden/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/eden/vendor/content", label: "Content Studio", icon: PenLine },
   { to: "/eden/profile", label: "My Profile", icon: UserCircle },
 ];
 

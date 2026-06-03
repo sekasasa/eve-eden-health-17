@@ -6,11 +6,12 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 interface Props {
   children: ReactNode;
   variant?: "provider" | "vendor";
+  allowedTypes?: Array<"provider" | "vendor">;
 }
 
-export function EdenShell({ children, variant = "provider" }: Props) {
+export function EdenShell({ children, variant = "provider", allowedTypes }: Props) {
   const [open, setOpen] = useState(false);
-  const requiredType = variant === "vendor" ? "vendor" : "provider";
+  const requiredType = allowedTypes ?? (variant === "vendor" ? ["vendor"] : ["provider"]);
 
   return (
     <ProtectedRoute requiredType={requiredType}>

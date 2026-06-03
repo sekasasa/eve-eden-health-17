@@ -38,6 +38,7 @@ const ACTIONS = [
 function VendorContentStudio() {
   const nav = useNavigate();
   const [vendorId, setVendorId] = useState<string | null>(null);
+  const [variant, setVariant] = useState<"provider" | "vendor">("vendor");
   const [rows, setRows] = useState<ContentRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,11 +49,41 @@ function VendorContentStudio() {
   async function load() {
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) return;
-    const { data: v } = await supabase
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("user_type")
+      .eq("id", auth.user.id)
+      .maybeSingle();
+    setVariant(prof?.user_type === "provider" ? "provider" : "vendor");
+    let { data: v } = await supabase
       .from("vendors")
       .select("id")
       .eq("user_id", auth.user.id)
       .maybeSingle();
+
+    // Auto-provision a vendor record for providers (doctors, midwives, etc.)
+    // so they can publish content alongside store vendors.
+    if (!v) {
+      const { data: prov } = await supabase
+        .from("providers")
+        .select("full_name,specialty,city")
+        .eq("user_id", auth.user.id)
+        .maybeSingle();
+      if (prov) {
+        const { data: created } = await supabase
+          .from("vendors")
+          .insert({
+            user_id: auth.user.id,
+            business_name: prov.full_name ?? "My Practice",
+            category: prov.specialty ?? "provider",
+            city: prov.city ?? null,
+          })
+          .select("id")
+          .maybeSingle();
+        v = created ?? null;
+      }
+    }
+
     if (!v) {
       setLoading(false);
       return;
@@ -68,7 +99,7 @@ function VendorContentStudio() {
   }
 
   return (
-    <EdenShell variant="vendor">
+    <EdenShell variant={variant} allowedTypes={["provider", "vendor"]}>
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-sans text-2xl font-semibold text-eve-teal-dark">Content Studio</h1>
