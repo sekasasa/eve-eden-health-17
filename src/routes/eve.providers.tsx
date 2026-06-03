@@ -52,12 +52,38 @@ function initials(name?: string | null) {
     .join("");
 }
 
+const STAGE_FILTER: Partial<Record<LifeStage, (typeof FILTERS)[number]>> = {
+  ttc: "Fertility / IVF",
+  ivf: "Fertility / IVF",
+  pregnant: "OB-GYN",
+  postpartum: "Midwife",
+  newborn: "Pediatrician",
+  pcos: "OB-GYN",
+  mood: "Therapist",
+  labs: "Lab",
+  rx: "Pharmacy",
+  insurance: "Insurance",
+  wellness: "Wellness",
+};
+
 function EveProviders() {
+  const nav = useNavigate();
+  const { profile, hydrated } = useSavedProfile();
   const [country, setCountry] = useState<string | null>(null);
   const [items, setItems] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
+  const [autoApplied, setAutoApplied] = useState(false);
+
+  // Pre-select filter from saved profile, once hydrated
+  useEffect(() => {
+    if (!hydrated || autoApplied) return;
+    const stage = profile.stage as LifeStage | undefined;
+    const preset = stage && STAGE_FILTER[stage];
+    if (preset) setFilter(preset);
+    setAutoApplied(true);
+  }, [hydrated, profile.stage, autoApplied]);
 
   useEffect(() => {
     (async () => {
