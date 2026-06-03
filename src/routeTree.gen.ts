@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProgramSettingsRouteImport } from './routes/program.settings'
@@ -22,6 +23,7 @@ import { Route as EveVendorsRouteImport } from './routes/eve.vendors'
 import { Route as EveProvidersRouteImport } from './routes/eve.providers'
 import { Route as EveProfileRouteImport } from './routes/eve.profile'
 import { Route as EveOnboardingRouteImport } from './routes/eve.onboarding'
+import { Route as EveMatchRouteImport } from './routes/eve.match'
 import { Route as EveHomeRouteImport } from './routes/eve.home'
 import { Route as EveGuidanceRouteImport } from './routes/eve.guidance'
 import { Route as EveEventsRouteImport } from './routes/eve.events'
@@ -46,6 +48,11 @@ import { Route as AdminGuidanceRouteImport } from './routes/admin.guidance'
 import { Route as AdminAlertsRouteImport } from './routes/admin.alerts'
 import { Route as EveVendorsIdRouteImport } from './routes/eve.vendors.$id'
 import { Route as EveProvidersIdRouteImport } from './routes/eve.providers.$id'
+import { Route as EveMatchResultsRouteImport } from './routes/eve.match.results'
+import { Route as EveMatchPrescriptionsRouteImport } from './routes/eve.match.prescriptions'
+import { Route as EveMatchLabsRouteImport } from './routes/eve.match.labs'
+import { Route as EveMatchInsuranceRouteImport } from './routes/eve.match.insurance'
+import { Route as EveMatchFamilyRouteImport } from './routes/eve.match.family'
 import { Route as EdenVendorProductsRouteImport } from './routes/eden.vendor.products'
 import { Route as EdenVendorOrdersRouteImport } from './routes/eden.vendor.orders'
 import { Route as EdenVendorOnboardingRouteImport } from './routes/eden.vendor.onboarding'
@@ -58,6 +65,11 @@ import { Route as ChwMothersIdVisitRouteImport } from './routes/chw.mothers.$id.
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartnerRoute = PartnerRouteImport.update({
+  id: '/partner',
+  path: '/partner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -118,6 +130,11 @@ const EveProfileRoute = EveProfileRouteImport.update({
 const EveOnboardingRoute = EveOnboardingRouteImport.update({
   id: '/eve/onboarding',
   path: '/eve/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EveMatchRoute = EveMatchRouteImport.update({
+  id: '/eve/match',
+  path: '/eve/match',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EveHomeRoute = EveHomeRouteImport.update({
@@ -240,6 +257,31 @@ const EveProvidersIdRoute = EveProvidersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => EveProvidersRoute,
 } as any)
+const EveMatchResultsRoute = EveMatchResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => EveMatchRoute,
+} as any)
+const EveMatchPrescriptionsRoute = EveMatchPrescriptionsRouteImport.update({
+  id: '/prescriptions',
+  path: '/prescriptions',
+  getParentRoute: () => EveMatchRoute,
+} as any)
+const EveMatchLabsRoute = EveMatchLabsRouteImport.update({
+  id: '/labs',
+  path: '/labs',
+  getParentRoute: () => EveMatchRoute,
+} as any)
+const EveMatchInsuranceRoute = EveMatchInsuranceRouteImport.update({
+  id: '/insurance',
+  path: '/insurance',
+  getParentRoute: () => EveMatchRoute,
+} as any)
+const EveMatchFamilyRoute = EveMatchFamilyRouteImport.update({
+  id: '/family',
+  path: '/family',
+  getParentRoute: () => EveMatchRoute,
+} as any)
 const EdenVendorProductsRoute = EdenVendorProductsRouteImport.update({
   id: '/eden/vendor/products',
   path: '/eden/vendor/products',
@@ -284,6 +326,7 @@ const ChwMothersIdVisitRoute = ChwMothersIdVisitRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/partner': typeof PartnerRoute
   '/signup': typeof SignupRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
@@ -307,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/eve/events': typeof EveEventsRoute
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
+  '/eve/match': typeof EveMatchRouteWithChildren
   '/eve/onboarding': typeof EveOnboardingRoute
   '/eve/profile': typeof EveProfileRoute
   '/eve/providers': typeof EveProvidersRouteWithChildren
@@ -323,6 +367,11 @@ export interface FileRoutesByFullPath {
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/match/family': typeof EveMatchFamilyRoute
+  '/eve/match/insurance': typeof EveMatchInsuranceRoute
+  '/eve/match/labs': typeof EveMatchLabsRoute
+  '/eve/match/prescriptions': typeof EveMatchPrescriptionsRoute
+  '/eve/match/results': typeof EveMatchResultsRoute
   '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
@@ -331,6 +380,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/partner': typeof PartnerRoute
   '/signup': typeof SignupRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
@@ -354,6 +404,7 @@ export interface FileRoutesByTo {
   '/eve/events': typeof EveEventsRoute
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
+  '/eve/match': typeof EveMatchRouteWithChildren
   '/eve/onboarding': typeof EveOnboardingRoute
   '/eve/profile': typeof EveProfileRoute
   '/eve/providers': typeof EveProvidersRouteWithChildren
@@ -370,6 +421,11 @@ export interface FileRoutesByTo {
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/match/family': typeof EveMatchFamilyRoute
+  '/eve/match/insurance': typeof EveMatchInsuranceRoute
+  '/eve/match/labs': typeof EveMatchLabsRoute
+  '/eve/match/prescriptions': typeof EveMatchPrescriptionsRoute
+  '/eve/match/results': typeof EveMatchResultsRoute
   '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
@@ -379,6 +435,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/partner': typeof PartnerRoute
   '/signup': typeof SignupRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
@@ -402,6 +459,7 @@ export interface FileRoutesById {
   '/eve/events': typeof EveEventsRoute
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
+  '/eve/match': typeof EveMatchRouteWithChildren
   '/eve/onboarding': typeof EveOnboardingRoute
   '/eve/profile': typeof EveProfileRoute
   '/eve/providers': typeof EveProvidersRouteWithChildren
@@ -418,6 +476,11 @@ export interface FileRoutesById {
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/match/family': typeof EveMatchFamilyRoute
+  '/eve/match/insurance': typeof EveMatchInsuranceRoute
+  '/eve/match/labs': typeof EveMatchLabsRoute
+  '/eve/match/prescriptions': typeof EveMatchPrescriptionsRoute
+  '/eve/match/results': typeof EveMatchResultsRoute
   '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
@@ -428,6 +491,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/partner'
     | '/signup'
     | '/admin/alerts'
     | '/admin/guidance'
@@ -451,6 +515,7 @@ export interface FileRouteTypes {
     | '/eve/events'
     | '/eve/guidance'
     | '/eve/home'
+    | '/eve/match'
     | '/eve/onboarding'
     | '/eve/profile'
     | '/eve/providers'
@@ -467,6 +532,11 @@ export interface FileRouteTypes {
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
+    | '/eve/match/family'
+    | '/eve/match/insurance'
+    | '/eve/match/labs'
+    | '/eve/match/prescriptions'
+    | '/eve/match/results'
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
@@ -475,6 +545,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/partner'
     | '/signup'
     | '/admin/alerts'
     | '/admin/guidance'
@@ -498,6 +569,7 @@ export interface FileRouteTypes {
     | '/eve/events'
     | '/eve/guidance'
     | '/eve/home'
+    | '/eve/match'
     | '/eve/onboarding'
     | '/eve/profile'
     | '/eve/providers'
@@ -514,6 +586,11 @@ export interface FileRouteTypes {
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
+    | '/eve/match/family'
+    | '/eve/match/insurance'
+    | '/eve/match/labs'
+    | '/eve/match/prescriptions'
+    | '/eve/match/results'
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
@@ -522,6 +599,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/login'
+    | '/partner'
     | '/signup'
     | '/admin/alerts'
     | '/admin/guidance'
@@ -545,6 +623,7 @@ export interface FileRouteTypes {
     | '/eve/events'
     | '/eve/guidance'
     | '/eve/home'
+    | '/eve/match'
     | '/eve/onboarding'
     | '/eve/profile'
     | '/eve/providers'
@@ -561,6 +640,11 @@ export interface FileRouteTypes {
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
+    | '/eve/match/family'
+    | '/eve/match/insurance'
+    | '/eve/match/labs'
+    | '/eve/match/prescriptions'
+    | '/eve/match/results'
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
@@ -570,6 +654,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  PartnerRoute: typeof PartnerRoute
   SignupRoute: typeof SignupRoute
   AdminAlertsRoute: typeof AdminAlertsRoute
   AdminGuidanceRoute: typeof AdminGuidanceRoute
@@ -593,6 +678,7 @@ export interface RootRouteChildren {
   EveEventsRoute: typeof EveEventsRoute
   EveGuidanceRoute: typeof EveGuidanceRoute
   EveHomeRoute: typeof EveHomeRoute
+  EveMatchRoute: typeof EveMatchRouteWithChildren
   EveOnboardingRoute: typeof EveOnboardingRoute
   EveProfileRoute: typeof EveProfileRoute
   EveProvidersRoute: typeof EveProvidersRouteWithChildren
@@ -617,6 +703,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/partner': {
+      id: '/partner'
+      path: '/partner'
+      fullPath: '/partner'
+      preLoaderRoute: typeof PartnerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -701,6 +794,13 @@ declare module '@tanstack/react-router' {
       path: '/eve/onboarding'
       fullPath: '/eve/onboarding'
       preLoaderRoute: typeof EveOnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eve/match': {
+      id: '/eve/match'
+      path: '/eve/match'
+      fullPath: '/eve/match'
+      preLoaderRoute: typeof EveMatchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eve/home': {
@@ -871,6 +971,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveProvidersIdRouteImport
       parentRoute: typeof EveProvidersRoute
     }
+    '/eve/match/results': {
+      id: '/eve/match/results'
+      path: '/results'
+      fullPath: '/eve/match/results'
+      preLoaderRoute: typeof EveMatchResultsRouteImport
+      parentRoute: typeof EveMatchRoute
+    }
+    '/eve/match/prescriptions': {
+      id: '/eve/match/prescriptions'
+      path: '/prescriptions'
+      fullPath: '/eve/match/prescriptions'
+      preLoaderRoute: typeof EveMatchPrescriptionsRouteImport
+      parentRoute: typeof EveMatchRoute
+    }
+    '/eve/match/labs': {
+      id: '/eve/match/labs'
+      path: '/labs'
+      fullPath: '/eve/match/labs'
+      preLoaderRoute: typeof EveMatchLabsRouteImport
+      parentRoute: typeof EveMatchRoute
+    }
+    '/eve/match/insurance': {
+      id: '/eve/match/insurance'
+      path: '/insurance'
+      fullPath: '/eve/match/insurance'
+      preLoaderRoute: typeof EveMatchInsuranceRouteImport
+      parentRoute: typeof EveMatchRoute
+    }
+    '/eve/match/family': {
+      id: '/eve/match/family'
+      path: '/family'
+      fullPath: '/eve/match/family'
+      preLoaderRoute: typeof EveMatchFamilyRouteImport
+      parentRoute: typeof EveMatchRoute
+    }
     '/eden/vendor/products': {
       id: '/eden/vendor/products'
       path: '/eden/vendor/products'
@@ -954,6 +1089,26 @@ const EdenPatientsRouteWithChildren = EdenPatientsRoute._addFileChildren(
   EdenPatientsRouteChildren,
 )
 
+interface EveMatchRouteChildren {
+  EveMatchFamilyRoute: typeof EveMatchFamilyRoute
+  EveMatchInsuranceRoute: typeof EveMatchInsuranceRoute
+  EveMatchLabsRoute: typeof EveMatchLabsRoute
+  EveMatchPrescriptionsRoute: typeof EveMatchPrescriptionsRoute
+  EveMatchResultsRoute: typeof EveMatchResultsRoute
+}
+
+const EveMatchRouteChildren: EveMatchRouteChildren = {
+  EveMatchFamilyRoute: EveMatchFamilyRoute,
+  EveMatchInsuranceRoute: EveMatchInsuranceRoute,
+  EveMatchLabsRoute: EveMatchLabsRoute,
+  EveMatchPrescriptionsRoute: EveMatchPrescriptionsRoute,
+  EveMatchResultsRoute: EveMatchResultsRoute,
+}
+
+const EveMatchRouteWithChildren = EveMatchRoute._addFileChildren(
+  EveMatchRouteChildren,
+)
+
 interface EveProvidersIdRouteChildren {
   EveProvidersIdBookRoute: typeof EveProvidersIdBookRoute
 }
@@ -993,6 +1148,7 @@ const EveVendorsRouteWithChildren = EveVendorsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  PartnerRoute: PartnerRoute,
   SignupRoute: SignupRoute,
   AdminAlertsRoute: AdminAlertsRoute,
   AdminGuidanceRoute: AdminGuidanceRoute,
@@ -1016,6 +1172,7 @@ const rootRouteChildren: RootRouteChildren = {
   EveEventsRoute: EveEventsRoute,
   EveGuidanceRoute: EveGuidanceRoute,
   EveHomeRoute: EveHomeRoute,
+  EveMatchRoute: EveMatchRouteWithChildren,
   EveOnboardingRoute: EveOnboardingRoute,
   EveProfileRoute: EveProfileRoute,
   EveProvidersRoute: EveProvidersRouteWithChildren,

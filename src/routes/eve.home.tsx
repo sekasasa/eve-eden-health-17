@@ -9,6 +9,7 @@ import {
   Calendar,
   Users,
   ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { EveShell } from "@/components/shells/EveShell";
@@ -296,6 +297,12 @@ function EveHome() {
             icon={<Calendar className="h-[18px] w-[18px] text-eve-teal" />}
             label="Events"
             sub="Workshops & meetups"
+          />
+          <QuickAction
+            to="/eve/match"
+            icon={<Sparkles className="h-[18px] w-[18px] text-eve-terra" />}
+            label="Find Support"
+            sub="Care + Vendor Match"
           />
         </div>
       </div>
