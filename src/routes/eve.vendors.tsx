@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Store } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, ChevronRight, Store } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { TrustBadge } from "@/components/ui/TrustBadge";
 import { EveCard } from "@/components/ui/EveCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { useSavedProfile } from "@/hooks/useSavedProfile";
+import type { LifeStage } from "@/lib/match-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/vendors")({
@@ -44,7 +46,21 @@ function initials(name: string | null) {
     .toUpperCase();
 }
 
+const STAGE_VENDOR_HINT: Partial<Record<LifeStage, string>> = {
+  ivf: "Fertility support products, wellness, nutrition, and emotional support.",
+  ttc: "Preconception wellness, supplements, nutrition and cycle tracking tools.",
+  pregnant: "Maternity essentials, prenatal classes, doulas, and birth prep.",
+  postpartum: "Postpartum recovery, lactation support, baby essentials, meal support.",
+  newborn: "Baby essentials, feeding vendors, pediatric and pharmacy support.",
+  pcos: "Hormonal-friendly nutrition, wellness, and supplements.",
+  mood: "Mental health, mindfulness, and wellness services.",
+  wellness: "Preventive wellness, nutrition, and trusted local services.",
+};
+
 function EveVendors() {
+  const nav = useNavigate();
+  const { profile } = useSavedProfile();
+  const stage = profile.stage as LifeStage | undefined;
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [productCounts, setProductCounts] = useState<Record<string, number>>({});
   const [country, setCountry] = useState<string>("MA");
@@ -99,11 +115,22 @@ function EveVendors() {
 
   return (
     <EveShell>
+      <button
+        onClick={() => nav({ to: "/eve/home" })}
+        className="mb-2 inline-flex items-center gap-1 text-xs text-eve-muted"
+      >
+        <ArrowLeft className="h-3 w-3" /> Back to dashboard
+      </button>
       <header className="pt-2">
-        <h1 className="font-serif text-2xl text-eve-forest">Shop &amp; discover</h1>
+        <h1 className="font-serif text-2xl text-eve-forest">Shops & services</h1>
         <p className="mt-1 font-sans text-sm text-eve-muted">
-          Vetted products and services for your pregnancy
+          Trusted products and non-clinical support, personalized to your care profile.
         </p>
+        {stage && STAGE_VENDOR_HINT[stage] && (
+          <p className="mt-2 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 text-[11px] text-eve-teal-dark">
+            Recommended for you: {STAGE_VENDOR_HINT[stage]}
+          </p>
+        )}
       </header>
 
       {/* Featured */}

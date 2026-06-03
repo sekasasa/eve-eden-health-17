@@ -312,17 +312,25 @@ function MatchResults() {
       <div className="px-3">
         <div className="mb-2 flex items-center justify-between">
           <button
-            onClick={() => nav({ to: "/eve/match" })}
+            onClick={() => nav({ to: "/eve/home" })}
             className="inline-flex items-center gap-1 text-xs text-eve-muted"
           >
-            <ArrowLeft className="h-3 w-3" /> Edit answers
+            <ArrowLeft className="h-3 w-3" /> Back to dashboard
           </button>
-          <Link
-            to="/eve/match/history"
-            className="inline-flex items-center gap-1 text-xs text-eve-teal"
-          >
-            <History className="h-3 w-3" /> History
-          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => nav({ to: "/eve/match" })}
+              className="inline-flex items-center gap-1 text-xs text-eve-teal"
+            >
+              <Sparkles className="h-3 w-3" /> Update my care profile
+            </button>
+            <Link
+              to="/eve/match/history"
+              className="inline-flex items-center gap-1 text-xs text-eve-teal"
+            >
+              <History className="h-3 w-3" /> History
+            </Link>
+          </div>
         </div>
         <SectionLabel>{pathway.eyebrow}</SectionLabel>
         <h1 className="mt-1 font-serif text-eve-forest" style={{ fontSize: "22px" }}>

@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search, Star, Stethoscope } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, Search, Star, Stethoscope } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { TrustBadge } from "@/components/ui/TrustBadge";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { supabase } from "@/integrations/supabase/client";
+import { useSavedProfile } from "@/hooks/useSavedProfile";
+import type { LifeStage } from "@/lib/match-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/providers")({
@@ -50,12 +52,38 @@ function initials(name?: string | null) {
     .join("");
 }
 
+const STAGE_FILTER: Partial<Record<LifeStage, (typeof FILTERS)[number]>> = {
+  ttc: "Fertility / IVF",
+  ivf: "Fertility / IVF",
+  pregnant: "OB-GYN",
+  postpartum: "Midwife",
+  newborn: "Pediatrician",
+  pcos: "OB-GYN",
+  mood: "Therapist",
+  labs: "Lab",
+  rx: "Pharmacy",
+  insurance: "Insurance",
+  wellness: "Wellness",
+};
+
 function EveProviders() {
+  const nav = useNavigate();
+  const { profile, hydrated } = useSavedProfile();
   const [country, setCountry] = useState<string | null>(null);
   const [items, setItems] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
+  const [autoApplied, setAutoApplied] = useState(false);
+
+  // Pre-select filter from saved profile, once hydrated
+  useEffect(() => {
+    if (!hydrated || autoApplied) return;
+    const stage = profile.stage as LifeStage | undefined;
+    const preset = stage && STAGE_FILTER[stage];
+    if (preset) setFilter(preset);
+    setAutoApplied(true);
+  }, [hydrated, profile.stage, autoApplied]);
 
   useEffect(() => {
     (async () => {
@@ -106,12 +134,27 @@ function EveProviders() {
 
   return (
     <EveShell>
+      <button
+        onClick={() => nav({ to: "/eve/home" })}
+        className="mb-2 inline-flex items-center gap-1 text-xs text-eve-muted"
+      >
+        <ArrowLeft className="h-3 w-3" /> Back to dashboard
+      </button>
       <h1 className="font-serif text-[26px] leading-tight text-eve-forest">
         Find care
       </h1>
       <p className="mt-1 font-sans text-xs text-eve-muted">
         Doctors, midwives, doulas, labs, pharmacies, insurance and wellness — all in one place.
       </p>
+
+      {(profile.stage || profile.city || profile.language) && (
+        <div className="mt-3 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 text-[11px] text-eve-teal-dark">
+          Personalized for your saved profile
+          {profile.city ? ` · ${profile.city}` : ""}
+          {profile.language ? ` · ${profile.language}` : ""}
+          {filter !== "All" ? ` · ${filter}` : ""}
+        </div>
+      )}
 
       <div className="mt-4 flex items-center gap-2 rounded-full bg-eve-cream px-4 py-3">
         <Search className="h-4 w-4 text-eve-muted" />

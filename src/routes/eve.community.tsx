@@ -1,7 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Heart, MessageCircle, Bookmark, Flame, Plus, X } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Flame, Plus, X, ArrowLeft, Users, ShieldCheck, Sparkles } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
+import { useSavedProfile } from "@/hooks/useSavedProfile";
+import { eveToast } from "@/lib/eve-toast";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/community")({
@@ -154,6 +156,8 @@ const SEED_POSTS: Post[] = [
 ];
 
 function CommunityPage() {
+  const nav = useNavigate();
+  const { profile } = useSavedProfile();
   const [active, setActive] = useState<CategoryKey>("all");
   const [open, setOpen] = useState(false);
   const [hearts, setHearts] = useState<Record<string, number>>({});
@@ -167,17 +171,85 @@ function CommunityPage() {
   return (
     <EveShell>
       <div className="pt-2">
-        <h1 className="font-serif text-3xl text-eve-teal-dark">Community</h1>
+        <button
+          onClick={() => nav({ to: "/eve/home" })}
+          className="mb-2 inline-flex items-center gap-1 text-xs text-eve-muted"
+        >
+          <ArrowLeft className="h-3 w-3" /> Back to dashboard
+        </button>
+        <h1 className="font-serif text-3xl text-eve-teal-dark">Community & support</h1>
         <p className="mt-1 italic font-sans text-sm text-eve-muted">
-          Ask anything. Share everything. You're not alone.
+          Navigator, family support, emotional support, and women like you.
         </p>
+      </div>
 
+      {/* Care Navigator */}
+      <section className="mt-4 rounded-2xl border border-eve-teal/20 bg-white p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-teal-light">
+            <Sparkles className="h-4 w-4 text-eve-teal" />
+          </div>
+          <div className="flex-1">
+            <p className="font-sans text-sm font-semibold text-eve-teal-dark">Care Navigator</p>
+            <p className="mt-0.5 text-[12px] text-eve-muted">
+              A navigator can help you compare options, prepare questions, or decide what to do next.
+            </p>
+            <button
+              onClick={() => nav({ to: "/eve/ask" })}
+              className="mt-3 rounded-full bg-eve-teal px-4 py-1.5 text-[12px] font-medium text-white"
+            >
+              Talk to a navigator
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Family Support */}
+      <section className="mt-3 rounded-2xl border border-eve-muted/20 bg-white p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-cream">
+            <Users className="h-4 w-4 text-eve-terra" />
+          </div>
+          <div className="flex-1">
+            <p className="font-sans text-sm font-semibold text-eve-teal-dark">Family support</p>
+            <p className="mt-0.5 text-[12px] text-eve-muted">
+              Invite a family supporter to help pay, coordinate, or follow along.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                onClick={() => eveToast.success("Invite link copied")}
+                className="rounded-full bg-eve-teal px-3 py-1 text-[11px] text-white"
+              >
+                Invite family supporter
+              </button>
+              <button
+                onClick={() => eveToast.info("Privacy settings opening soon")}
+                className="rounded-full border border-eve-teal px-3 py-1 text-[11px] text-eve-teal"
+              >
+                Privacy settings
+              </button>
+            </div>
+            <p className="mt-2 inline-flex items-center gap-1 text-[10px] text-eve-muted">
+              <ShieldCheck className="h-3 w-3" />
+              You choose what your family supporter can see.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* New community post */}
+      <div className="mt-4">
         <button
           onClick={() => setOpen(true)}
-          className="mt-4 inline-flex items-center gap-2 rounded-full bg-eve-teal px-4 py-2 text-sm font-medium text-white shadow-sm transition active:scale-95"
+          className="inline-flex items-center gap-2 rounded-full bg-eve-teal px-4 py-2 text-sm font-medium text-white shadow-sm transition active:scale-95"
         >
           <Plus className="h-4 w-4" /> New Post
         </button>
+        {profile.stage && (
+          <p className="mt-2 text-[11px] text-eve-muted">
+            Showing community posts relevant to your profile.
+          </p>
+        )}
       </div>
 
       {/* Category pills */}
