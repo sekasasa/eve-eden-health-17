@@ -142,7 +142,7 @@ function MatchIntake() {
               <OptionTile
                 key={s.key}
                 selected={stage === s.key}
-                onClick={() => setStage(s.key)}
+                onClick={() => pickStage(s.key)}
                 label={s.label}
                 sub={s.sub}
                 emoji={s.emoji}
@@ -150,6 +150,7 @@ function MatchIntake() {
             ))}
           </div>
         )}
+
 
         {step === 2 && (
           <div className="flex flex-col gap-2">
