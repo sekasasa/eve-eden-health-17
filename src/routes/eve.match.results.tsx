@@ -73,7 +73,7 @@ const TOOLS = {
 const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   ttc: {
     eyebrow: "Fertility & preconception",
-    headline: "Here are your best next steps for trying to conceive",
+    headline: "Your fertility support plan",
     recommended:
       "Start with a preconception visit, then layer in cycle tracking, fertility labs, and a nutrition or supplement plan.",
     actions: [
@@ -87,7 +87,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   ivf: {
     eyebrow: "IVF & fertility treatment",
-    headline: "Here are your best next steps for IVF and fertility care",
+    headline: "Your IVF & fertility care plan",
     recommended:
       "Compare fertility clinics, recommended labs, IVF medication support, and self-pay or international insurance options — a navigator can help you decide.",
     actions: [
@@ -102,7 +102,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   pregnant: {
     eyebrow: "Pregnancy care",
-    headline: "Here are your best next steps for pregnancy care",
+    headline: "Your pregnancy care plan",
     recommended:
       "Book a prenatal visit, prepare lab and prescription questions, and confirm how your visits will be paid for.",
     actions: [
@@ -117,7 +117,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   postpartum: {
     eyebrow: "Postpartum recovery",
-    headline: "Here are your best next steps for postpartum support",
+    headline: "Your postpartum support plan",
     recommended:
       "Book a postpartum check-in, line up lactation and mental-health support, and invite a family supporter to help.",
     actions: [
@@ -132,7 +132,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   newborn: {
     eyebrow: "Newborn & child care",
-    headline: "Here are your best next steps for newborn or child care",
+    headline: "Your child care support plan",
     recommended:
       "Book a pediatric check-in, add feeding support, and decide whether insurance or self-pay fits your family best.",
     actions: [
@@ -147,7 +147,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   pcos: {
     eyebrow: "Hormonal health & PCOS",
-    headline: "Here are your best next steps for hormonal health",
+    headline: "Your hormonal health support plan",
     recommended:
       "Start with a hormone-focused visit, run baseline labs (thyroid, glucose, hormones), and ask about supplements or prescriptions.",
     actions: [
@@ -162,7 +162,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   mood: {
     eyebrow: "Mental & emotional support",
-    headline: "Here are your best next steps for mood & anxiety support",
+    headline: "Your mood support plan",
     recommended:
       "Connect with a therapist who understands maternal mental health — telehealth can start within days.",
     actions: [
@@ -176,7 +176,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   wellness: {
     eyebrow: "Wellness & preventive care",
-    headline: "Here are your best next steps for wellness & preventive care",
+    headline: "Your wellness care plan",
     recommended:
       "Schedule your annual women's-health visit and decide which preventive screenings or labs to add this year.",
     actions: [
@@ -190,7 +190,7 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
   family: {
     eyebrow: "Family support",
-    headline: "Help coordinate care for someone you love",
+    headline: "Your family care coordination plan",
     recommended:
       "Invite them with the permissions that fit your relationship — you can help book, pay, or just stay informed.",
     actions: [
@@ -203,7 +203,49 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
     tools: [TOOLS.family, TOOLS.providers, TOOLS.insurance, TOOLS.navigator],
     providerCategories: [],
   },
+  labs: {
+    eyebrow: "Lab results support",
+    headline: "Your lab results support plan",
+    recommended:
+      "Upload or enter your lab result and we'll help you understand what to ask next, then connect you with a provider if needed.",
+    actions: [
+      { label: "Upload result", to: "/eve/match/labs" },
+      { label: "Find a lab/provider", to: "/eve/providers" },
+      { label: "Ask navigator", to: "/eve/ask" },
+    ],
+    tools: [TOOLS.labs, TOOLS.providers, TOOLS.rx, TOOLS.insurance, TOOLS.navigator],
+    providerCategories: ["Lab", "OB-GYN", "Wellness"],
+  },
+  rx: {
+    eyebrow: "Prescription support",
+    headline: "Your prescription support plan",
+    recommended:
+      "Add a medication or upload your prescription and we'll help you prepare the right questions, find a pharmacy, and check cost options.",
+    actions: [
+      { label: "Add medication", to: "/eve/match/prescriptions" },
+      { label: "Find pharmacy", to: "/eve/providers" },
+      { label: "Check payment", to: "/eve/match/insurance" },
+      { label: "Ask navigator", to: "/eve/ask" },
+    ],
+    tools: [TOOLS.rx, TOOLS.providers, TOOLS.insurance, TOOLS.navigator],
+    providerCategories: ["Pharmacy", "OB-GYN"],
+  },
+  insurance: {
+    eyebrow: "Insurance & payment",
+    headline: "Your insurance & payment options",
+    recommended:
+      "Compare local, international, and self-pay options that fit your life stage and budget.",
+    actions: [
+      { label: "Compare vendors", to: "/eve/match/insurance" },
+      { label: "Find providers", to: "/eve/providers" },
+      { label: "Invite family", to: "/eve/match/family" },
+      { label: "Ask navigator", to: "/eve/ask" },
+    ],
+    tools: [TOOLS.insurance, TOOLS.providers, TOOLS.family, TOOLS.navigator],
+    providerCategories: [],
+  },
 };
+
 
 const DEFAULT_PATHWAY: Pathway = {
   eyebrow: "Your matches",
