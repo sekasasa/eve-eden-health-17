@@ -21,6 +21,12 @@ export type ContentRow = {
   event_at: string | null;
   views: number;
   saves: number;
+  profile_visits: number;
+  booking_clicks: number;
+  quote_requests: number;
+  messages: number;
+  event_registrations: number;
+  shop_clicks: number;
   created_at: string;
 };
 
