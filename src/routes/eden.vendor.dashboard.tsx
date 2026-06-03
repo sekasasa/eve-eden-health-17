@@ -4,6 +4,7 @@ import { PenLine } from "lucide-react";
 import { EdenShell } from "@/components/shells/EdenShell";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { CoordinationPanels } from "@/components/CoordinationPanels";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/eden/vendor/dashboard")({
