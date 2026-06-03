@@ -46,7 +46,21 @@ function initials(name: string | null) {
     .toUpperCase();
 }
 
+const STAGE_VENDOR_HINT: Partial<Record<LifeStage, string>> = {
+  ivf: "Fertility support products, wellness, nutrition, and emotional support.",
+  ttc: "Preconception wellness, supplements, nutrition and cycle tracking tools.",
+  pregnant: "Maternity essentials, prenatal classes, doulas, and birth prep.",
+  postpartum: "Postpartum recovery, lactation support, baby essentials, meal support.",
+  newborn: "Baby essentials, feeding vendors, pediatric and pharmacy support.",
+  pcos: "Hormonal-friendly nutrition, wellness, and supplements.",
+  mood: "Mental health, mindfulness, and wellness services.",
+  wellness: "Preventive wellness, nutrition, and trusted local services.",
+};
+
 function EveVendors() {
+  const nav = useNavigate();
+  const { profile } = useSavedProfile();
+  const stage = profile.stage as LifeStage | undefined;
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [productCounts, setProductCounts] = useState<Record<string, number>>({});
   const [country, setCountry] = useState<string>("MA");
