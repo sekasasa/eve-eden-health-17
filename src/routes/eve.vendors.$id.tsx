@@ -59,6 +59,7 @@ function EveVendorDetail() {
   const [openQty, setOpenQty] = useState(1);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [partnerContent, setPartnerContent] = useState<ContentRow[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -73,16 +74,24 @@ function EveVendorDetail() {
         if (m?.pregnancy_week) setWeek(m.pregnancy_week);
       }
 
-      const [{ data: v }, { data: p }] = await Promise.all([
+      const [{ data: v }, { data: p }, { data: c }] = await Promise.all([
         supabase.from("vendors").select("*").eq("id", id).maybeSingle(),
         supabase
           .from("products")
           .select("*")
           .eq("vendor_id", id)
           .eq("is_available", true),
+        supabase
+          .from("vendor_content")
+          .select("*")
+          .eq("vendor_id", id)
+          .eq("status", "published")
+          .order("created_at", { ascending: false })
+          .limit(6),
       ]);
       setVendor(v as Vendor | null);
       setProducts((p ?? []) as Product[]);
+      setPartnerContent((c ?? []) as ContentRow[]);
       setLoading(false);
     })();
   }, [id]);
