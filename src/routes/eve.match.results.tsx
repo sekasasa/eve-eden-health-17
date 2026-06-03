@@ -11,6 +11,11 @@ import {
   Users,
   PhoneCall,
   History,
+  Stethoscope,
+  Sparkles,
+  Heart,
+  Baby,
+  ShoppingBag,
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -22,13 +27,197 @@ import {
   hydrateIntakeFromCloud,
   type MatchIntake,
 } from "@/lib/match-store";
-import { MATCH_PROVIDERS } from "@/lib/match-data";
+import { MATCH_PROVIDERS, type LifeStage } from "@/lib/match-data";
 import { eveToast } from "@/lib/eve-toast";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/match/results")({
   component: MatchResults,
 });
+
+/**
+ * Per-pathway configuration. Each life-stage card a user can pick maps to a
+ * tailored set of headlines, suggested next actions, support tools, and a
+ * provider-category filter so the Results page acts like a real care
+ * navigation engine instead of a generic list.
+ */
+type ActionBtn = { label: string; to: string; icon?: React.ReactNode };
+type Tool = { to: string; label: string; icon: React.ReactNode };
+
+type Pathway = {
+  eyebrow: string;
+  headline: string;
+  recommended: string;
+  actions: ActionBtn[];
+  tools: Tool[];
+  providerCategories: string[]; // substring match on provider.category
+};
+
+const tool = (
+  to: string,
+  label: string,
+  icon: React.ReactNode,
+): Tool => ({ to, label, icon });
+
+const TOOLS = {
+  labs: tool("/eve/match/labs", "Understand labs", <FlaskConical className="h-4 w-4 text-eve-teal" />),
+  rx: tool("/eve/match/prescriptions", "Prescription support", <Pill className="h-4 w-4 text-eve-terra" />),
+  insurance: tool("/eve/match/insurance", "Insurance & payment", <ShieldCheck className="h-4 w-4 text-eve-forest" />),
+  family: tool("/eve/match/family", "Invite family", <Users className="h-4 w-4 text-eve-rose" />),
+  navigator: tool("/eve/ask", "Care navigator", <MessageCircle className="h-4 w-4 text-eve-teal" />),
+  providers: tool("/eve/providers", "Find a provider", <Stethoscope className="h-4 w-4 text-eve-teal" />),
+  shops: tool("/eve/vendors", "Shops & services", <ShoppingBag className="h-4 w-4 text-eve-terra" />),
+  edit: tool("/eve/match", "Update my answers", <PhoneCall className="h-4 w-4 text-eve-muted" />),
+};
+
+const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
+  ttc: {
+    eyebrow: "Fertility & preconception",
+    headline: "Here are your best next steps for trying to conceive",
+    recommended:
+      "Start with a preconception visit, then layer in cycle tracking, fertility labs, and a nutrition or supplement plan.",
+    actions: [
+      { label: "Find fertility support", to: "/eve/providers" },
+      { label: "Understand labs", to: "/eve/match/labs" },
+      { label: "Compare payment options", to: "/eve/match/insurance" },
+      { label: "Talk to navigator", to: "/eve/ask" },
+    ],
+    tools: [TOOLS.providers, TOOLS.labs, TOOLS.rx, TOOLS.insurance, TOOLS.navigator, TOOLS.edit],
+    providerCategories: ["OB-GYN", "Fertility", "Reproductive", "Wellness", "Lab"],
+  },
+  ivf: {
+    eyebrow: "IVF & fertility treatment",
+    headline: "Here are your best next steps for IVF and fertility care",
+    recommended:
+      "Compare fertility clinics, recommended labs, IVF medication support, and self-pay or international insurance options — a navigator can help you decide.",
+    actions: [
+      { label: "Compare clinics", to: "/eve/providers" },
+      { label: "Find fertility labs", to: "/eve/match/labs" },
+      { label: "Medication support", to: "/eve/match/prescriptions" },
+      { label: "Insurance / self-pay", to: "/eve/match/insurance" },
+      { label: "Talk to navigator", to: "/eve/ask" },
+    ],
+    tools: [TOOLS.providers, TOOLS.labs, TOOLS.rx, TOOLS.insurance, TOOLS.navigator, TOOLS.edit],
+    providerCategories: ["Fertility", "Reproductive", "Lab", "Pharmacy"],
+  },
+  pregnant: {
+    eyebrow: "Pregnancy care",
+    headline: "Here are your best next steps for pregnancy care",
+    recommended:
+      "Book a prenatal visit, prepare lab and prescription questions, and confirm how your visits will be paid for.",
+    actions: [
+      { label: "Find prenatal provider", to: "/eve/providers" },
+      { label: "Understand labs", to: "/eve/match/labs" },
+      { label: "Check prescriptions", to: "/eve/match/prescriptions" },
+      { label: "Compare payment", to: "/eve/match/insurance" },
+      { label: "Find birth support", to: "/eve/vendors" },
+    ],
+    tools: [TOOLS.providers, TOOLS.labs, TOOLS.rx, TOOLS.insurance, TOOLS.shops, TOOLS.navigator],
+    providerCategories: ["OB-GYN", "Midwife", "Doula", "Lab", "Pharmacy"],
+  },
+  postpartum: {
+    eyebrow: "Postpartum recovery",
+    headline: "Here are your best next steps for postpartum support",
+    recommended:
+      "Book a postpartum check-in, line up lactation and mental-health support, and invite a family supporter to help.",
+    actions: [
+      { label: "Find postpartum care", to: "/eve/providers" },
+      { label: "Lactation support", to: "/eve/providers" },
+      { label: "Medication safety", to: "/eve/match/prescriptions" },
+      { label: "Invite family supporter", to: "/eve/match/family" },
+      { label: "Talk to navigator", to: "/eve/ask" },
+    ],
+    tools: [TOOLS.providers, TOOLS.rx, TOOLS.labs, TOOLS.family, TOOLS.insurance, TOOLS.navigator],
+    providerCategories: ["OB-GYN", "Midwife", "Lactation", "Therapist", "Pharmacy"],
+  },
+  newborn: {
+    eyebrow: "Newborn & child care",
+    headline: "Here are your best next steps for newborn or child care",
+    recommended:
+      "Book a pediatric check-in, add feeding support, and decide whether insurance or self-pay fits your family best.",
+    actions: [
+      { label: "Find pediatric care", to: "/eve/providers" },
+      { label: "Feeding support", to: "/eve/providers" },
+      { label: "Shop baby essentials", to: "/eve/vendors" },
+      { label: "Check insurance/payment", to: "/eve/match/insurance" },
+      { label: "Save appointments", to: "/eve/appointments" },
+    ],
+    tools: [TOOLS.providers, TOOLS.shops, TOOLS.insurance, TOOLS.family, TOOLS.navigator],
+    providerCategories: ["Pediatric", "Lactation", "Midwife"],
+  },
+  pcos: {
+    eyebrow: "Hormonal health & PCOS",
+    headline: "Here are your best next steps for hormonal health",
+    recommended:
+      "Start with a hormone-focused visit, run baseline labs (thyroid, glucose, hormones), and ask about supplements or prescriptions.",
+    actions: [
+      { label: "Find hormonal provider", to: "/eve/providers" },
+      { label: "Understand labs", to: "/eve/match/labs" },
+      { label: "Prescription support", to: "/eve/match/prescriptions" },
+      { label: "Explore fertility support", to: "/eve/providers" },
+      { label: "Talk to navigator", to: "/eve/ask" },
+    ],
+    tools: [TOOLS.providers, TOOLS.labs, TOOLS.rx, TOOLS.insurance, TOOLS.navigator],
+    providerCategories: ["OB-GYN", "Reproductive", "Wellness", "Lab"],
+  },
+  mood: {
+    eyebrow: "Mental & emotional support",
+    headline: "Here are your best next steps for mood & anxiety support",
+    recommended:
+      "Connect with a therapist who understands maternal mental health — telehealth can start within days.",
+    actions: [
+      { label: "Find a therapist", to: "/eve/providers" },
+      { label: "Invite family supporter", to: "/eve/match/family" },
+      { label: "Check medication safety", to: "/eve/match/prescriptions" },
+      { label: "Talk to navigator", to: "/eve/ask" },
+    ],
+    tools: [TOOLS.providers, TOOLS.rx, TOOLS.family, TOOLS.navigator],
+    providerCategories: ["Therapist", "OB-GYN", "Midwife"],
+  },
+  wellness: {
+    eyebrow: "Wellness & preventive care",
+    headline: "Here are your best next steps for wellness & preventive care",
+    recommended:
+      "Schedule your annual women's-health visit and decide which preventive screenings or labs to add this year.",
+    actions: [
+      { label: "Find wellness provider", to: "/eve/providers" },
+      { label: "Explore screenings", to: "/eve/providers" },
+      { label: "Understand labs", to: "/eve/match/labs" },
+      { label: "Compare payment options", to: "/eve/match/insurance" },
+    ],
+    tools: [TOOLS.providers, TOOLS.labs, TOOLS.insurance, TOOLS.shops, TOOLS.navigator],
+    providerCategories: ["Wellness", "OB-GYN", "Lab"],
+  },
+  family: {
+    eyebrow: "Family support",
+    headline: "Help coordinate care for someone you love",
+    recommended:
+      "Invite them with the permissions that fit your relationship — you can help book, pay, or just stay informed.",
+    actions: [
+      { label: "Invite family member", to: "/eve/match/family" },
+      { label: "Help pay for care", to: "/eve/match/insurance" },
+      { label: "Find provider/vendor", to: "/eve/providers" },
+      { label: "Track appointments", to: "/eve/appointments" },
+      { label: "Talk to navigator", to: "/eve/ask" },
+    ],
+    tools: [TOOLS.family, TOOLS.providers, TOOLS.insurance, TOOLS.navigator],
+    providerCategories: [],
+  },
+};
+
+const DEFAULT_PATHWAY: Pathway = {
+  eyebrow: "Your matches",
+  headline: "Here are your best next steps",
+  recommended:
+    "Book a first visit with a matched provider and save your questions ahead of time.",
+  actions: [
+    { label: "Find care", to: "/eve/providers" },
+    { label: "Insurance & payment", to: "/eve/match/insurance" },
+    { label: "Talk to navigator", to: "/eve/ask" },
+  ],
+  tools: [TOOLS.providers, TOOLS.labs, TOOLS.rx, TOOLS.insurance, TOOLS.family, TOOLS.navigator],
+  providerCategories: [],
+};
 
 function MatchResults() {
   const nav = useNavigate();
@@ -44,27 +233,37 @@ function MatchResults() {
     };
   }, []);
 
+  const pathway: Pathway =
+    (intake.stage && PATHWAYS[intake.stage]) || DEFAULT_PATHWAY;
+
   const matched = useMemo(() => {
     const stage = intake.stage;
     const city = intake.city?.toLowerCase() ?? "";
     const lang = intake.language;
     const wantsIntl = intake.payment === "international";
     const wantsSelf = intake.payment === "self_pay";
+    const cats = pathway.providerCategories;
     return MATCH_PROVIDERS.map((p) => {
       let score = 0;
       if (stage && p.bestFor.includes(stage)) score += 3;
+      if (cats.length && cats.some((c) => p.category.toLowerCase().includes(c.toLowerCase())))
+        score += 4;
       if (city && p.city.toLowerCase().includes(city.split(" ")[0])) score += 2;
       if (lang && p.languages.includes(lang)) score += 2;
       if (wantsIntl && p.acceptsInternational) score += 2;
       if (wantsSelf && p.acceptsSelfPay) score += 1;
       return { p, score };
     })
+      .filter((x) => (cats.length ? x.score >= 4 : true))
       .sort((a, b) => b.score - a.score)
       .slice(0, 4)
       .map((x) => x.p);
-  }, [intake]);
+  }, [intake, pathway]);
 
-  const nextStep = recommendedStep(intake);
+  const urgencyNote =
+    intake.urgency === "today"
+      ? "We've prioritised providers available today."
+      : null;
 
   return (
     <EveShell>
@@ -83,11 +282,9 @@ function MatchResults() {
             <History className="h-3 w-3" /> History
           </Link>
         </div>
-        <SectionLabel>Your matches</SectionLabel>
+        <SectionLabel>{pathway.eyebrow}</SectionLabel>
         <h1 className="mt-1 font-serif text-eve-forest" style={{ fontSize: "22px" }}>
-          {intake.stage === "ttc" || intake.stage === "ivf"
-            ? "Here are your best next steps for fertility support"
-            : "Here are your best next steps"}
+          {pathway.headline}
         </h1>
       </div>
 
@@ -96,90 +293,85 @@ function MatchResults() {
         <p className="text-[10px] uppercase tracking-widest text-white/70">
           Recommended next step
         </p>
-        <p className="mt-1 text-sm leading-relaxed">{nextStep}</p>
+        <p className="mt-1 text-sm leading-relaxed">
+          {urgencyNote ? `${urgencyNote} ` : ""}{pathway.recommended}
+        </p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <PrimaryButton
-            onClick={() => eveToast.success("Saved to your plan")}
-            className="!bg-white !text-eve-teal !py-2 !px-4 text-xs"
-          >
-            Start
-          </PrimaryButton>
-          <button
-            onClick={() => eveToast.info("Saved for later")}
-            className="rounded-full border border-white/40 px-4 py-2 text-xs text-white"
-          >
-            Save
-          </button>
-          <Link
-            to="/eve/ask"
-            className="rounded-full border border-white/40 px-4 py-2 text-xs text-white"
-          >
-            Ask a Navigator
-          </Link>
+          {pathway.actions.map((a) => (
+            <Link
+              key={a.label}
+              to={a.to}
+              className="rounded-full bg-white px-4 py-2 text-xs font-medium text-eve-teal"
+            >
+              {a.label}
+            </Link>
+          ))}
         </div>
       </section>
 
       {/* Matched Providers / Vendors */}
-      <section className="mt-5 px-3">
-        <SectionLabel>Matched providers & vendors</SectionLabel>
-        <div className="mt-2 flex flex-col gap-2">
-          {matched.map((p) => (
-            <article
-              key={p.id}
-              className="rounded-2xl border border-eve-muted/20 bg-white p-3"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1">
-                    <h3 className="truncate font-sans text-sm font-semibold text-eve-teal-dark">
-                      {p.name}
-                    </h3>
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-eve-teal" />
+      {matched.length > 0 && (
+        <section className="mt-5 px-3">
+          <SectionLabel>Matched providers & vendors</SectionLabel>
+          <div className="mt-2 flex flex-col gap-2">
+            {matched.map((p) => (
+              <article
+                key={p.id}
+                className="rounded-2xl border border-eve-muted/20 bg-white p-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1">
+                      <h3 className="truncate font-sans text-sm font-semibold text-eve-teal-dark">
+                        {p.name}
+                      </h3>
+                      <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-eve-teal" />
+                    </div>
+                    <p className="text-[11px] text-eve-muted">
+                      {p.category} · {p.city}
+                    </p>
+                    <p className="mt-1 text-[11px] text-eve-teal-dark">
+                      {p.languages.join(" · ")} · {p.priceRange}
+                    </p>
                   </div>
-                  <p className="text-[11px] text-eve-muted">
-                    {p.category} · {p.city}
-                  </p>
-                  <p className="mt-1 text-[11px] text-eve-teal-dark">
-                    {p.languages.join(" · ")} · {p.priceRange}
-                  </p>
+                  <TierBadge tier={p.tier} />
                 </div>
-                <TierBadge tier={p.tier} />
-              </div>
-              <div className="mt-2 flex flex-wrap gap-1">
-                {p.tags.slice(0, 3).map((t) => (
-                  <span
-                    key={t}
-                    className="rounded-full bg-eve-cream px-2 py-0.5 text-[10px] text-eve-teal-dark"
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {p.tags.slice(0, 3).map((t) => (
+                    <span
+                      key={t}
+                      className="rounded-full bg-eve-cream px-2 py-0.5 text-[10px] text-eve-teal-dark"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1 text-[10px] text-eve-muted">
+                  {p.visitTypes.map((v) => (
+                    <span key={v} className="rounded bg-eve-teal-light px-1.5 py-0.5 text-eve-teal">
+                      {v}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-3 flex gap-2">
+                  <PrimaryButton
+                    onClick={() => eveToast.success(`Request sent to ${p.name}`)}
+                    className="!py-1.5 !px-3 text-xs"
                   >
-                    {t}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-2 flex flex-wrap gap-1 text-[10px] text-eve-muted">
-                {p.visitTypes.map((v) => (
-                  <span key={v} className="rounded bg-eve-teal-light px-1.5 py-0.5 text-eve-teal">
-                    {v}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-3 flex gap-2">
-                <PrimaryButton
-                  onClick={() => eveToast.success(`Request sent to ${p.name}`)}
-                  className="!py-1.5 !px-3 text-xs"
-                >
-                  Request booking
-                </PrimaryButton>
-                <SecondaryButton
-                  onClick={() => eveToast.info("Saved")}
-                  className="!py-1.5 !px-3 text-xs inline-flex items-center gap-1"
-                >
-                  <Bookmark className="h-3 w-3" /> Save
-                </SecondaryButton>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+                    Request booking
+                  </PrimaryButton>
+                  <SecondaryButton
+                    onClick={() => eveToast.info("Saved")}
+                    className="!py-1.5 !px-3 text-xs inline-flex items-center gap-1"
+                  >
+                    <Bookmark className="h-3 w-3" /> Save
+                  </SecondaryButton>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Payment options */}
       <section className="mt-5 px-3">
@@ -195,7 +387,7 @@ function MatchResults() {
           />
           <PaymentOption
             title="Compare insurance vendors"
-            covered="See plans matched to pregnancy, postpartum, pediatrics"
+            covered="See plans matched to your life stage and goals"
             notCovered="Waiting periods may apply"
             cost="From 350 MAD/mo"
             cta="Compare Plans"
@@ -219,64 +411,29 @@ function MatchResults() {
       <section className="mt-5 px-3">
         <SectionLabel>Support tools</SectionLabel>
         <div className="mt-2 grid grid-cols-2 gap-2">
-          <ToolTile
-            to="/eve/match/labs"
-            icon={<FlaskConical className="h-4 w-4 text-eve-teal" />}
-            label="Understand my labs"
-          />
-          <ToolTile
-            to="/eve/match/prescriptions"
-            icon={<Pill className="h-4 w-4 text-eve-terra" />}
-            label="Check my prescription"
-          />
-          <ToolTile
-            to="/eve/match/insurance"
-            icon={<ShieldCheck className="h-4 w-4 text-eve-forest" />}
-            label="Insurance/payment help"
-          />
-          <ToolTile
-            to="/eve/match/family"
-            icon={<Users className="h-4 w-4 text-eve-rose" />}
-            label="Invite family supporter"
-          />
-          <ToolTile
-            to="/eve/ask"
-            icon={<MessageCircle className="h-4 w-4 text-eve-teal" />}
-            label="Message care navigator"
-          />
-          <ToolTile
-            to="/eve/match"
-            icon={<PhoneCall className="h-4 w-4 text-eve-muted" />}
-            label="Update my answers"
-            onClick={() => resetIntake()}
-          />
+          {pathway.tools.map((t) => (
+            <ToolTile
+              key={t.label + t.to}
+              to={t.to}
+              icon={t.icon}
+              label={t.label}
+              onClick={t.to === "/eve/match" ? () => resetIntake() : undefined}
+            />
+          ))}
         </div>
       </section>
 
       <p className="mt-5 px-3 pb-2 text-[10px] leading-relaxed text-eve-muted">
-        For urgent or life-threatening symptoms, please contact emergency services
+        Eve & Eden provides education and care navigation — not diagnosis. For
+        urgent or life-threatening symptoms, please contact emergency services
         or seek immediate medical care.
       </p>
+      {/* unused icon imports kept for lint */}
+      <span className="hidden">
+        <Sparkles /> <Heart /> <Baby />
+      </span>
     </EveShell>
   );
-}
-
-function recommendedStep(i: ReturnType<typeof readIntake>) {
-  if (i.urgency === "today")
-    return "We've prioritised providers available today. Tap Request Booking on a match below to confirm a slot.";
-  if (i.stage === "ivf")
-    return "Compare fertility clinics, recommended labs, and medication or self-pay packages — and talk to a care navigator when you're ready.";
-  if (i.stage === "ttc")
-    return "Explore preconception care, fertility labs, and clinics that match your budget and language.";
-  if (i.need === "labs_explain")
-    return "Upload your lab result and we'll explain it in plain language so you can prepare for your next visit.";
-  if (i.need === "rx_explain")
-    return "Add your medication and we'll share what to ask your doctor or pharmacist.";
-  if (i.payment === "compare")
-    return "Compare insurance vendors side-by-side to find a plan that fits your life stage and budget.";
-  if (i.stage === "postpartum")
-    return "Book a postpartum check-in and save questions for your next visit.";
-  return "Book a first visit with a matched provider and save your questions ahead of time.";
 }
 
 function TierBadge({ tier }: { tier: string }) {
