@@ -65,6 +65,42 @@ export type Database = {
           },
         ]
       }
+      care_documents: {
+        Row: {
+          created_at: string
+          customer_user_id: string
+          doc_type: string
+          file_url: string | null
+          id: string
+          notes: string | null
+          sensitive: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_user_id: string
+          doc_type: string
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          sensitive?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_user_id?: string
+          doc_type?: string
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          sensitive?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chw_alerts: {
         Row: {
           chw_id: string
@@ -151,6 +187,60 @@ export type Database = {
           },
         ]
       }
+      document_shares: {
+        Row: {
+          created_at: string
+          customer_user_id: string
+          document_id: string
+          follow_up_note: string | null
+          granted_at: string
+          id: string
+          reviewed_at: string | null
+          revoked_at: string | null
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_user_id: string
+          document_id: string
+          follow_up_note?: string | null
+          granted_at?: string
+          id?: string
+          reviewed_at?: string | null
+          revoked_at?: string | null
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_user_id?: string
+          document_id?: string
+          follow_up_note?: string | null
+          granted_at?: string
+          id?: string
+          reviewed_at?: string | null
+          revoked_at?: string | null
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_shares_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "care_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_shares_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guidance_content: {
         Row: {
           body: string | null
@@ -197,6 +287,75 @@ export type Database = {
             columns: ["reviewed_by"]
             isOneToOne: false
             referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          created_at: string
+          customer_display_name: string | null
+          customer_user_id: string | null
+          id: string
+          language: string | null
+          life_stage: string | null
+          location: string | null
+          need: string | null
+          notes: string | null
+          payment_preference: string | null
+          source: string
+          source_content_id: string | null
+          status: string
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_display_name?: string | null
+          customer_user_id?: string | null
+          id?: string
+          language?: string | null
+          life_stage?: string | null
+          location?: string | null
+          need?: string | null
+          notes?: string | null
+          payment_preference?: string | null
+          source?: string
+          source_content_id?: string | null
+          status?: string
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_display_name?: string | null
+          customer_user_id?: string | null
+          id?: string
+          language?: string | null
+          life_stage?: string | null
+          location?: string | null
+          need?: string | null
+          notes?: string | null
+          payment_preference?: string | null
+          source?: string
+          source_content_id?: string | null
+          status?: string
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_source_content_id_fkey"
+            columns: ["source_content_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_content"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
             referencedColumns: ["id"]
           },
         ]
@@ -388,6 +547,47 @@ export type Database = {
           vendor_id?: string
         }
         Relationships: []
+      }
+      passport_shares: {
+        Row: {
+          created_at: string
+          customer_user_id: string
+          granted_at: string
+          id: string
+          revoked_at: string | null
+          scope: Json
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_user_id: string
+          granted_at?: string
+          id?: string
+          revoked_at?: string | null
+          scope?: Json
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_user_id?: string
+          granted_at?: string
+          id?: string
+          revoked_at?: string | null
+          scope?: Json
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "passport_shares_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       patient_notes: {
         Row: {
@@ -582,11 +782,144 @@ export type Database = {
           },
         ]
       }
+      referrals: {
+        Row: {
+          created_at: string
+          customer_consent_share_completion: boolean
+          customer_user_id: string
+          documents_requested: Json
+          follow_up_due: string | null
+          from_vendor_id: string
+          id: string
+          notes: string | null
+          permission_requested: boolean
+          reason: string | null
+          status: string
+          to_category: string | null
+          to_partner_name: string | null
+          to_vendor_id: string | null
+          updated_at: string
+          urgency: string
+        }
+        Insert: {
+          created_at?: string
+          customer_consent_share_completion?: boolean
+          customer_user_id: string
+          documents_requested?: Json
+          follow_up_due?: string | null
+          from_vendor_id: string
+          id?: string
+          notes?: string | null
+          permission_requested?: boolean
+          reason?: string | null
+          status?: string
+          to_category?: string | null
+          to_partner_name?: string | null
+          to_vendor_id?: string | null
+          updated_at?: string
+          urgency?: string
+        }
+        Update: {
+          created_at?: string
+          customer_consent_share_completion?: boolean
+          customer_user_id?: string
+          documents_requested?: Json
+          follow_up_due?: string | null
+          from_vendor_id?: string
+          id?: string
+          notes?: string | null
+          permission_requested?: boolean
+          reason?: string | null
+          status?: string
+          to_category?: string | null
+          to_partner_name?: string | null
+          to_vendor_id?: string | null
+          updated_at?: string
+          urgency?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_from_vendor_id_fkey"
+            columns: ["from_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_to_vendor_id_fkey"
+            columns: ["to_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trusted_partners: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          languages: string[]
+          location: string | null
+          owner_vendor_id: string
+          partner_name: string
+          partner_vendor_id: string | null
+          payment_options: string[]
+          recommendation_note: string | null
+          updated_at: string
+          verified: boolean
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          languages?: string[]
+          location?: string | null
+          owner_vendor_id: string
+          partner_name: string
+          partner_vendor_id?: string | null
+          payment_options?: string[]
+          recommendation_note?: string | null
+          updated_at?: string
+          verified?: boolean
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          languages?: string[]
+          location?: string | null
+          owner_vendor_id?: string
+          partner_name?: string
+          partner_vendor_id?: string | null
+          payment_options?: string[]
+          recommendation_note?: string | null
+          updated_at?: string
+          verified?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trusted_partners_owner_vendor_id_fkey"
+            columns: ["owner_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trusted_partners_partner_vendor_id_fkey"
+            columns: ["partner_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendor_content: {
         Row: {
           body: string | null
           booking_clicks: number
           category: string | null
+          completed_bookings: number
           content_type: string
           created_at: string
           cta_type: string | null
@@ -600,8 +933,10 @@ export type Database = {
           location: string | null
           media_url: string | null
           messages: number
+          new_leads: number
           profile_visits: number
           quote_requests: number
+          referrals_generated: number
           related_service: string | null
           requires_review: boolean
           saves: number
@@ -617,6 +952,7 @@ export type Database = {
           body?: string | null
           booking_clicks?: number
           category?: string | null
+          completed_bookings?: number
           content_type?: string
           created_at?: string
           cta_type?: string | null
@@ -630,8 +966,10 @@ export type Database = {
           location?: string | null
           media_url?: string | null
           messages?: number
+          new_leads?: number
           profile_visits?: number
           quote_requests?: number
+          referrals_generated?: number
           related_service?: string | null
           requires_review?: boolean
           saves?: number
@@ -647,6 +985,7 @@ export type Database = {
           body?: string | null
           booking_clicks?: number
           category?: string | null
+          completed_bookings?: number
           content_type?: string
           created_at?: string
           cta_type?: string | null
@@ -660,8 +999,10 @@ export type Database = {
           location?: string | null
           media_url?: string | null
           messages?: number
+          new_leads?: number
           profile_visits?: number
           quote_requests?: number
+          referrals_generated?: number
           related_service?: string | null
           requires_review?: boolean
           saves?: number
@@ -849,6 +1190,7 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_vendor_owner: { Args: { _vendor_id: string }; Returns: boolean }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

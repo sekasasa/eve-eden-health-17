@@ -11,15 +11,27 @@ import {
   Star,
   LogOut,
   PenLine,
+  Inbox,
+  Send,
+  FileText,
+  Handshake,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+
+const COORD_NAV = [
+  { to: "/eden/leads", label: "Leads", icon: Inbox },
+  { to: "/eden/referrals", label: "Referrals", icon: Send },
+  { to: "/eden/partners", label: "Trusted Partners", icon: Handshake },
+  { to: "/eden/shared-docs", label: "Shared Docs", icon: FileText },
+];
 
 const PROVIDER_NAV = [
   { to: "/eden/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/eden/patients", label: "Patients", icon: Users },
   { to: "/eden/appointments", label: "Appointments", icon: Calendar },
   { to: "/eden/analytics", label: "Analytics", icon: BarChart3 },
+  ...COORD_NAV,
   { to: "/eden/vendor/content", label: "Content Studio", icon: PenLine },
   { to: "/eden/profile", label: "My Profile", icon: UserCircle },
 ];
@@ -28,6 +40,7 @@ const VENDOR_NAV = [
   { to: "/eden/vendor/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/eden/vendor/products", label: "Products", icon: Package },
   { to: "/eden/vendor/orders", label: "Orders", icon: ShoppingBag },
+  ...COORD_NAV,
   { to: "/eden/vendor/content", label: "Content Studio", icon: PenLine },
   { to: "/eden/vendor/listing", label: "My Listing", icon: Star },
 ];
