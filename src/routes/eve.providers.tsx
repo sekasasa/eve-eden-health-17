@@ -134,12 +134,27 @@ function EveProviders() {
 
   return (
     <EveShell>
+      <button
+        onClick={() => nav({ to: "/eve/home" })}
+        className="mb-2 inline-flex items-center gap-1 text-xs text-eve-muted"
+      >
+        <ArrowLeft className="h-3 w-3" /> Back to dashboard
+      </button>
       <h1 className="font-serif text-[26px] leading-tight text-eve-forest">
         Find care
       </h1>
       <p className="mt-1 font-sans text-xs text-eve-muted">
         Doctors, midwives, doulas, labs, pharmacies, insurance and wellness — all in one place.
       </p>
+
+      {(profile.stage || profile.city || profile.language) && (
+        <div className="mt-3 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 text-[11px] text-eve-teal-dark">
+          Personalized for your saved profile
+          {profile.city ? ` · ${profile.city}` : ""}
+          {profile.language ? ` · ${profile.language}` : ""}
+          {filter !== "All" ? ` · ${filter}` : ""}
+        </div>
+      )}
 
       <div className="mt-4 flex items-center gap-2 rounded-full bg-eve-cream px-4 py-3">
         <Search className="h-4 w-4 text-eve-muted" />
