@@ -20,6 +20,7 @@ import { Route as ProgramMothersRouteImport } from './routes/program.mothers'
 import { Route as ProgramChwRouteImport } from './routes/program.chw'
 import { Route as ProgramAlertsRouteImport } from './routes/program.alerts'
 import { Route as EveVendorsRouteImport } from './routes/eve.vendors'
+import { Route as EveReferralsRouteImport } from './routes/eve.referrals'
 import { Route as EveProvidersRouteImport } from './routes/eve.providers'
 import { Route as EveProfileRouteImport } from './routes/eve.profile'
 import { Route as EvePassportRouteImport } from './routes/eve.passport'
@@ -125,6 +126,11 @@ const ProgramAlertsRoute = ProgramAlertsRouteImport.update({
 const EveVendorsRoute = EveVendorsRouteImport.update({
   id: '/eve/vendors',
   path: '/eve/vendors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EveReferralsRoute = EveReferralsRouteImport.update({
+  id: '/eve/referrals',
+  path: '/eve/referrals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EveProvidersRoute = EveProvidersRouteImport.update({
@@ -419,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/eve/passport': typeof EvePassportRoute
   '/eve/profile': typeof EveProfileRoute
   '/eve/providers': typeof EveProvidersRouteWithChildren
+  '/eve/referrals': typeof EveReferralsRoute
   '/eve/vendors': typeof EveVendorsRouteWithChildren
   '/program/alerts': typeof ProgramAlertsRoute
   '/program/chw': typeof ProgramChwRoute
@@ -483,6 +490,7 @@ export interface FileRoutesByTo {
   '/eve/passport': typeof EvePassportRoute
   '/eve/profile': typeof EveProfileRoute
   '/eve/providers': typeof EveProvidersRouteWithChildren
+  '/eve/referrals': typeof EveReferralsRoute
   '/eve/vendors': typeof EveVendorsRouteWithChildren
   '/program/alerts': typeof ProgramAlertsRoute
   '/program/chw': typeof ProgramChwRoute
@@ -548,6 +556,7 @@ export interface FileRoutesById {
   '/eve/passport': typeof EvePassportRoute
   '/eve/profile': typeof EveProfileRoute
   '/eve/providers': typeof EveProvidersRouteWithChildren
+  '/eve/referrals': typeof EveReferralsRoute
   '/eve/vendors': typeof EveVendorsRouteWithChildren
   '/program/alerts': typeof ProgramAlertsRoute
   '/program/chw': typeof ProgramChwRoute
@@ -614,6 +623,7 @@ export interface FileRouteTypes {
     | '/eve/passport'
     | '/eve/profile'
     | '/eve/providers'
+    | '/eve/referrals'
     | '/eve/vendors'
     | '/program/alerts'
     | '/program/chw'
@@ -678,6 +688,7 @@ export interface FileRouteTypes {
     | '/eve/passport'
     | '/eve/profile'
     | '/eve/providers'
+    | '/eve/referrals'
     | '/eve/vendors'
     | '/program/alerts'
     | '/program/chw'
@@ -742,6 +753,7 @@ export interface FileRouteTypes {
     | '/eve/passport'
     | '/eve/profile'
     | '/eve/providers'
+    | '/eve/referrals'
     | '/eve/vendors'
     | '/program/alerts'
     | '/program/chw'
@@ -807,6 +819,7 @@ export interface RootRouteChildren {
   EvePassportRoute: typeof EvePassportRoute
   EveProfileRoute: typeof EveProfileRoute
   EveProvidersRoute: typeof EveProvidersRouteWithChildren
+  EveReferralsRoute: typeof EveReferralsRoute
   EveVendorsRoute: typeof EveVendorsRouteWithChildren
   ProgramAlertsRoute: typeof ProgramAlertsRoute
   ProgramChwRoute: typeof ProgramChwRoute
@@ -900,6 +913,13 @@ declare module '@tanstack/react-router' {
       path: '/eve/vendors'
       fullPath: '/eve/vendors'
       preLoaderRoute: typeof EveVendorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eve/referrals': {
+      id: '/eve/referrals'
+      path: '/eve/referrals'
+      fullPath: '/eve/referrals'
+      preLoaderRoute: typeof EveReferralsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eve/providers': {
@@ -1393,6 +1413,7 @@ const rootRouteChildren: RootRouteChildren = {
   EvePassportRoute: EvePassportRoute,
   EveProfileRoute: EveProfileRoute,
   EveProvidersRoute: EveProvidersRouteWithChildren,
+  EveReferralsRoute: EveReferralsRoute,
   EveVendorsRoute: EveVendorsRouteWithChildren,
   ProgramAlertsRoute: ProgramAlertsRoute,
   ProgramChwRoute: ProgramChwRoute,
