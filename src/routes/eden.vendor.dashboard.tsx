@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { PenLine } from "lucide-react";
 import { EdenShell } from "@/components/shells/EdenShell";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -97,6 +98,23 @@ function VendorDashboard() {
         <Kpi label="Revenue MAD (30d)" value={`${revenue.toFixed(0)}`} />
         <Kpi label="Commission owed" value={`${(revenue * COMMISSION).toFixed(0)}`} accent="amber" />
       </div>
+
+      <Link
+        to="/eden/vendor/content"
+        className="mt-6 flex items-start gap-4 rounded-xl border border-eve-teal/30 bg-eve-teal-light/30 p-5 transition hover:bg-eve-teal-light/50"
+      >
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-teal text-white">
+          <PenLine className="h-5 w-5" />
+        </div>
+        <div className="flex-1">
+          <p className="font-sans text-sm font-semibold text-eve-teal-dark">Content Studio</p>
+          <p className="mt-0.5 font-sans text-xs text-gray-600">
+            Publish articles, videos, tips, events, and promotions to reach more women and families.
+          </p>
+        </div>
+        <span className="font-sans text-xs font-medium text-eve-teal">Open →</span>
+      </Link>
+
 
       <div className="mt-8 overflow-hidden rounded-xl border border-gray-100 bg-white">
         <div className="border-b border-gray-100 px-5 py-3">

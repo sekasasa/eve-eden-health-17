@@ -1,9 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Heart, MessageCircle, Bookmark, Flame, Plus, X, ArrowLeft, Users, ShieldCheck, Sparkles } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
+import { ContentCard } from "@/components/ui/ContentCard";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { eveToast } from "@/lib/eve-toast";
+import { rankForProfile, type ContentRow } from "@/lib/content-filter";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/community")({
@@ -163,6 +167,39 @@ function CommunityPage() {
   const [hearts, setHearts] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
 
+  const [partnerContent, setPartnerContent] = useState<ContentRow[]>([]);
+  const [vendorNames, setVendorNames] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("vendor_content")
+        .select("*")
+        .eq("status", "published")
+        .order("created_at", { ascending: false })
+        .limit(30);
+      const rows = (data ?? []) as ContentRow[];
+      setPartnerContent(rows);
+      const ids = [...new Set(rows.map((r) => r.vendor_id))];
+      if (ids.length) {
+        const { data: vs } = await supabase
+          .from("vendors")
+          .select("id,business_name")
+          .in("id", ids);
+        const map: Record<string, string> = {};
+        (vs ?? []).forEach((v: { id: string; business_name: string | null }) => {
+          map[v.id] = v.business_name ?? "Partner";
+        });
+        setVendorNames(map);
+      }
+    })();
+  }, []);
+
+  const personalizedContent = useMemo(
+    () => rankForProfile(partnerContent, profile).slice(0, 6),
+    [partnerContent, profile],
+  );
+
   const filtered = useMemo(
     () => (active === "all" ? SEED_POSTS : SEED_POSTS.filter((p) => p.category === active)),
     [active],
@@ -236,6 +273,25 @@ function CommunityPage() {
           </div>
         </div>
       </section>
+
+      {/* Helpful guides from trusted partners */}
+      {personalizedContent.length > 0 && (
+        <section className="mt-5">
+          <SectionLabel>Helpful guides from trusted partners</SectionLabel>
+          <p className="mt-1 text-[11px] text-eve-muted">
+            {profile.stage
+              ? "Personalized to your saved care profile."
+              : "Educational content from verified vendors and providers."}
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-3">
+            {personalizedContent.map((c) => (
+              <ContentCard key={c.id} content={c} vendorName={vendorNames[c.vendor_id]} />
+            ))}
+          </div>
+        </section>
+      )}
+
+
 
       {/* New community post */}
       <div className="mt-4">

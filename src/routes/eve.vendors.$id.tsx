@@ -4,6 +4,8 @@ import { ArrowLeft, Minus, Plus, ShoppingCart, X } from "lucide-react";
 import { TrustBadge } from "@/components/ui/TrustBadge";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ContentCard } from "@/components/ui/ContentCard";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import {
   Sheet,
   SheetContent,
@@ -12,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import type { ContentRow } from "@/lib/content-filter";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/vendors/$id")({
@@ -56,6 +59,7 @@ function EveVendorDetail() {
   const [openQty, setOpenQty] = useState(1);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [partnerContent, setPartnerContent] = useState<ContentRow[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -70,16 +74,24 @@ function EveVendorDetail() {
         if (m?.pregnancy_week) setWeek(m.pregnancy_week);
       }
 
-      const [{ data: v }, { data: p }] = await Promise.all([
+      const [{ data: v }, { data: p }, { data: c }] = await Promise.all([
         supabase.from("vendors").select("*").eq("id", id).maybeSingle(),
         supabase
           .from("products")
           .select("*")
           .eq("vendor_id", id)
           .eq("is_available", true),
+        supabase
+          .from("vendor_content")
+          .select("*")
+          .eq("vendor_id", id)
+          .eq("status", "published")
+          .order("created_at", { ascending: false })
+          .limit(6),
       ]);
       setVendor(v as Vendor | null);
       setProducts((p ?? []) as Product[]);
+      setPartnerContent((c ?? []) as ContentRow[]);
       setLoading(false);
     })();
   }, [id]);
@@ -244,6 +256,21 @@ function EveVendorDetail() {
                   <p className="mt-6 text-center font-sans text-sm text-eve-muted">
                     No products to show.
                   </p>
+                )}
+
+                {partnerContent.length > 0 && (
+                  <section className="mt-8">
+                    <SectionLabel>Articles & videos from this partner</SectionLabel>
+                    <div className="mt-3 grid grid-cols-1 gap-3">
+                      {partnerContent.map((c) => (
+                        <ContentCard
+                          key={c.id}
+                          content={c}
+                          vendorName={vendor?.business_name ?? undefined}
+                        />
+                      ))}
+                    </div>
+                  </section>
                 )}
               </>
             )}

@@ -54,14 +54,18 @@ import { Route as EveMatchLabsRouteImport } from './routes/eve.match.labs'
 import { Route as EveMatchInsuranceRouteImport } from './routes/eve.match.insurance'
 import { Route as EveMatchHistoryRouteImport } from './routes/eve.match.history'
 import { Route as EveMatchFamilyRouteImport } from './routes/eve.match.family'
+import { Route as EveContentIdRouteImport } from './routes/eve.content.$id'
 import { Route as EdenVendorProductsRouteImport } from './routes/eden.vendor.products'
 import { Route as EdenVendorOrdersRouteImport } from './routes/eden.vendor.orders'
 import { Route as EdenVendorOnboardingRouteImport } from './routes/eden.vendor.onboarding'
 import { Route as EdenVendorListingRouteImport } from './routes/eden.vendor.listing'
 import { Route as EdenVendorDashboardRouteImport } from './routes/eden.vendor.dashboard'
+import { Route as EdenVendorContentRouteImport } from './routes/eden.vendor.content'
 import { Route as EdenPatientsIdRouteImport } from './routes/eden.patients.$id'
 import { Route as EveProvidersIdBookRouteImport } from './routes/eve.providers.$id.book'
+import { Route as EdenVendorContentNewRouteImport } from './routes/eden.vendor.content.new'
 import { Route as ChwMothersIdVisitRouteImport } from './routes/chw.mothers.$id.visit'
+import { Route as EdenVendorContentIdEditRouteImport } from './routes/eden.vendor.content.$id.edit'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -288,6 +292,11 @@ const EveMatchFamilyRoute = EveMatchFamilyRouteImport.update({
   path: '/family',
   getParentRoute: () => EveMatchRoute,
 } as any)
+const EveContentIdRoute = EveContentIdRouteImport.update({
+  id: '/eve/content/$id',
+  path: '/eve/content/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EdenVendorProductsRoute = EdenVendorProductsRouteImport.update({
   id: '/eden/vendor/products',
   path: '/eden/vendor/products',
@@ -313,6 +322,11 @@ const EdenVendorDashboardRoute = EdenVendorDashboardRouteImport.update({
   path: '/eden/vendor/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EdenVendorContentRoute = EdenVendorContentRouteImport.update({
+  id: '/eden/vendor/content',
+  path: '/eden/vendor/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EdenPatientsIdRoute = EdenPatientsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -323,10 +337,20 @@ const EveProvidersIdBookRoute = EveProvidersIdBookRouteImport.update({
   path: '/book',
   getParentRoute: () => EveProvidersIdRoute,
 } as any)
+const EdenVendorContentNewRoute = EdenVendorContentNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => EdenVendorContentRoute,
+} as any)
 const ChwMothersIdVisitRoute = ChwMothersIdVisitRouteImport.update({
   id: '/$id/visit',
   path: '/$id/visit',
   getParentRoute: () => ChwMothersRoute,
+} as any)
+const EdenVendorContentIdEditRoute = EdenVendorContentIdEditRouteImport.update({
+  id: '/$id/edit',
+  path: '/$id/edit',
+  getParentRoute: () => EdenVendorContentRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -368,11 +392,13 @@ export interface FileRoutesByFullPath {
   '/program/reports': typeof ProgramReportsRoute
   '/program/settings': typeof ProgramSettingsRoute
   '/eden/patients/$id': typeof EdenPatientsIdRoute
+  '/eden/vendor/content': typeof EdenVendorContentRouteWithChildren
   '/eden/vendor/dashboard': typeof EdenVendorDashboardRoute
   '/eden/vendor/listing': typeof EdenVendorListingRoute
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/content/$id': typeof EveContentIdRoute
   '/eve/match/family': typeof EveMatchFamilyRoute
   '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
@@ -382,7 +408,9 @@ export interface FileRoutesByFullPath {
   '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
+  '/eden/vendor/content/new': typeof EdenVendorContentNewRoute
   '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
+  '/eden/vendor/content/$id/edit': typeof EdenVendorContentIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -423,11 +451,13 @@ export interface FileRoutesByTo {
   '/program/reports': typeof ProgramReportsRoute
   '/program/settings': typeof ProgramSettingsRoute
   '/eden/patients/$id': typeof EdenPatientsIdRoute
+  '/eden/vendor/content': typeof EdenVendorContentRouteWithChildren
   '/eden/vendor/dashboard': typeof EdenVendorDashboardRoute
   '/eden/vendor/listing': typeof EdenVendorListingRoute
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/content/$id': typeof EveContentIdRoute
   '/eve/match/family': typeof EveMatchFamilyRoute
   '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
@@ -437,7 +467,9 @@ export interface FileRoutesByTo {
   '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
+  '/eden/vendor/content/new': typeof EdenVendorContentNewRoute
   '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
+  '/eden/vendor/content/$id/edit': typeof EdenVendorContentIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -479,11 +511,13 @@ export interface FileRoutesById {
   '/program/reports': typeof ProgramReportsRoute
   '/program/settings': typeof ProgramSettingsRoute
   '/eden/patients/$id': typeof EdenPatientsIdRoute
+  '/eden/vendor/content': typeof EdenVendorContentRouteWithChildren
   '/eden/vendor/dashboard': typeof EdenVendorDashboardRoute
   '/eden/vendor/listing': typeof EdenVendorListingRoute
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/content/$id': typeof EveContentIdRoute
   '/eve/match/family': typeof EveMatchFamilyRoute
   '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
@@ -493,7 +527,9 @@ export interface FileRoutesById {
   '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
+  '/eden/vendor/content/new': typeof EdenVendorContentNewRoute
   '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
+  '/eden/vendor/content/$id/edit': typeof EdenVendorContentIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -536,11 +572,13 @@ export interface FileRouteTypes {
     | '/program/reports'
     | '/program/settings'
     | '/eden/patients/$id'
+    | '/eden/vendor/content'
     | '/eden/vendor/dashboard'
     | '/eden/vendor/listing'
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
+    | '/eve/content/$id'
     | '/eve/match/family'
     | '/eve/match/history'
     | '/eve/match/insurance'
@@ -550,7 +588,9 @@ export interface FileRouteTypes {
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
+    | '/eden/vendor/content/new'
     | '/eve/providers/$id/book'
+    | '/eden/vendor/content/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -591,11 +631,13 @@ export interface FileRouteTypes {
     | '/program/reports'
     | '/program/settings'
     | '/eden/patients/$id'
+    | '/eden/vendor/content'
     | '/eden/vendor/dashboard'
     | '/eden/vendor/listing'
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
+    | '/eve/content/$id'
     | '/eve/match/family'
     | '/eve/match/history'
     | '/eve/match/insurance'
@@ -605,7 +647,9 @@ export interface FileRouteTypes {
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
+    | '/eden/vendor/content/new'
     | '/eve/providers/$id/book'
+    | '/eden/vendor/content/$id/edit'
   id:
     | '__root__'
     | '/'
@@ -646,11 +690,13 @@ export interface FileRouteTypes {
     | '/program/reports'
     | '/program/settings'
     | '/eden/patients/$id'
+    | '/eden/vendor/content'
     | '/eden/vendor/dashboard'
     | '/eden/vendor/listing'
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
+    | '/eve/content/$id'
     | '/eve/match/family'
     | '/eve/match/history'
     | '/eve/match/insurance'
@@ -660,7 +706,9 @@ export interface FileRouteTypes {
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
+    | '/eden/vendor/content/new'
     | '/eve/providers/$id/book'
+    | '/eden/vendor/content/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -701,11 +749,13 @@ export interface RootRouteChildren {
   ProgramOverviewRoute: typeof ProgramOverviewRoute
   ProgramReportsRoute: typeof ProgramReportsRoute
   ProgramSettingsRoute: typeof ProgramSettingsRoute
+  EdenVendorContentRoute: typeof EdenVendorContentRouteWithChildren
   EdenVendorDashboardRoute: typeof EdenVendorDashboardRoute
   EdenVendorListingRoute: typeof EdenVendorListingRoute
   EdenVendorOnboardingRoute: typeof EdenVendorOnboardingRoute
   EdenVendorOrdersRoute: typeof EdenVendorOrdersRoute
   EdenVendorProductsRoute: typeof EdenVendorProductsRoute
+  EveContentIdRoute: typeof EveContentIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1025,6 +1075,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveMatchFamilyRouteImport
       parentRoute: typeof EveMatchRoute
     }
+    '/eve/content/$id': {
+      id: '/eve/content/$id'
+      path: '/eve/content/$id'
+      fullPath: '/eve/content/$id'
+      preLoaderRoute: typeof EveContentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eden/vendor/products': {
       id: '/eden/vendor/products'
       path: '/eden/vendor/products'
@@ -1060,6 +1117,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EdenVendorDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eden/vendor/content': {
+      id: '/eden/vendor/content'
+      path: '/eden/vendor/content'
+      fullPath: '/eden/vendor/content'
+      preLoaderRoute: typeof EdenVendorContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eden/patients/$id': {
       id: '/eden/patients/$id'
       path: '/$id'
@@ -1074,12 +1138,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveProvidersIdBookRouteImport
       parentRoute: typeof EveProvidersIdRoute
     }
+    '/eden/vendor/content/new': {
+      id: '/eden/vendor/content/new'
+      path: '/new'
+      fullPath: '/eden/vendor/content/new'
+      preLoaderRoute: typeof EdenVendorContentNewRouteImport
+      parentRoute: typeof EdenVendorContentRoute
+    }
     '/chw/mothers/$id/visit': {
       id: '/chw/mothers/$id/visit'
       path: '/$id/visit'
       fullPath: '/chw/mothers/$id/visit'
       preLoaderRoute: typeof ChwMothersIdVisitRouteImport
       parentRoute: typeof ChwMothersRoute
+    }
+    '/eden/vendor/content/$id/edit': {
+      id: '/eden/vendor/content/$id/edit'
+      path: '/$id/edit'
+      fullPath: '/eden/vendor/content/$id/edit'
+      preLoaderRoute: typeof EdenVendorContentIdEditRouteImport
+      parentRoute: typeof EdenVendorContentRoute
     }
   }
 }
@@ -1166,6 +1244,19 @@ const EveVendorsRouteWithChildren = EveVendorsRoute._addFileChildren(
   EveVendorsRouteChildren,
 )
 
+interface EdenVendorContentRouteChildren {
+  EdenVendorContentNewRoute: typeof EdenVendorContentNewRoute
+  EdenVendorContentIdEditRoute: typeof EdenVendorContentIdEditRoute
+}
+
+const EdenVendorContentRouteChildren: EdenVendorContentRouteChildren = {
+  EdenVendorContentNewRoute: EdenVendorContentNewRoute,
+  EdenVendorContentIdEditRoute: EdenVendorContentIdEditRoute,
+}
+
+const EdenVendorContentRouteWithChildren =
+  EdenVendorContentRoute._addFileChildren(EdenVendorContentRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
@@ -1204,11 +1295,13 @@ const rootRouteChildren: RootRouteChildren = {
   ProgramOverviewRoute: ProgramOverviewRoute,
   ProgramReportsRoute: ProgramReportsRoute,
   ProgramSettingsRoute: ProgramSettingsRoute,
+  EdenVendorContentRoute: EdenVendorContentRouteWithChildren,
   EdenVendorDashboardRoute: EdenVendorDashboardRoute,
   EdenVendorListingRoute: EdenVendorListingRoute,
   EdenVendorOnboardingRoute: EdenVendorOnboardingRoute,
   EdenVendorOrdersRoute: EdenVendorOrdersRoute,
   EdenVendorProductsRoute: EdenVendorProductsRoute,
+  EveContentIdRoute: EveContentIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
