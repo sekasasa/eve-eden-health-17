@@ -4,6 +4,7 @@ import { ArrowDownRight, ArrowUpRight, PenLine } from "lucide-react";
 import { EdenShell } from "@/components/shells/EdenShell";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { CoordinationPanels } from "@/components/CoordinationPanels";
 
 export const Route = createFileRoute("/eden/dashboard")({
   component: EdenDashboard,
@@ -211,6 +212,9 @@ function EdenDashboard() {
         </div>
         <span className="font-sans text-xs font-medium text-eve-teal">Open →</span>
       </Link>
+
+      <CoordinationPanels />
+
 
       {/* Today's schedule */}
       <section className="mt-8 rounded-xl border border-gray-200 bg-white">

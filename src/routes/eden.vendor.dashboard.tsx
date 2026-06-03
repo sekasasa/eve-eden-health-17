@@ -4,6 +4,7 @@ import { PenLine } from "lucide-react";
 import { EdenShell } from "@/components/shells/EdenShell";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { CoordinationPanels } from "@/components/CoordinationPanels";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/eden/vendor/dashboard")({
@@ -114,6 +115,9 @@ function VendorDashboard() {
         </div>
         <span className="font-sans text-xs font-medium text-eve-teal">Open →</span>
       </Link>
+
+      <CoordinationPanels />
+
 
 
       <div className="mt-8 overflow-hidden rounded-xl border border-gray-100 bg-white">
