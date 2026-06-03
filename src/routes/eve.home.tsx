@@ -277,10 +277,22 @@ function EveHome() {
             sub={t("home.verifiedProviders")}
           />
           <QuickAction
-            to="/eve/vendors"
-            icon={<ShoppingBag className="h-[18px] w-[18px] text-eve-terra" />}
-            label={t("home.shopVendors")}
-            sub={t("home.mamaEssentials")}
+            to="/eve/match"
+            icon={<Sparkles className="h-[18px] w-[18px] text-eve-terra" />}
+            label={t("home.fertility")}
+            sub={t("home.fertilitySub")}
+          />
+          <QuickAction
+            to="/eve/match/labs"
+            icon={<FlaskConical className="h-[18px] w-[18px] text-eve-teal" />}
+            label={t("home.labsRx")}
+            sub={t("home.labsRxSub")}
+          />
+          <QuickAction
+            to="/eve/match/insurance"
+            icon={<ShieldCheck className="h-[18px] w-[18px] text-eve-forest" />}
+            label={t("home.insurance")}
+            sub={t("home.insuranceSub")}
           />
           <QuickAction
             to="/eve/appointments"
@@ -289,22 +301,22 @@ function EveHome() {
             sub={t("home.upcomingVisits")}
           />
           <QuickAction
+            to="/eve/vendors"
+            icon={<ShoppingBag className="h-[18px] w-[18px] text-eve-terra" />}
+            label={t("home.shopVendors")}
+            sub={t("home.mamaEssentials")}
+          />
+          <QuickAction
             to="/eve/community"
             icon={<Users className="h-[18px] w-[18px] text-eve-rose" />}
             label={t("home.community")}
             sub={t("home.mothersNearYou")}
           />
           <QuickAction
-            to="/eve/events"
-            icon={<Calendar className="h-[18px] w-[18px] text-eve-teal" />}
-            label="Events"
-            sub="Workshops & meetups"
-          />
-          <QuickAction
             to="/eve/match"
             icon={<Sparkles className="h-[18px] w-[18px] text-eve-terra" />}
-            label="Find Support"
-            sub="Care + Vendor Match"
+            label={t("home.findSupport")}
+            sub={t("home.findSupportSub")}
           />
         </div>
       </div>
