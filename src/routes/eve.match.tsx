@@ -70,10 +70,15 @@ function MatchIntake() {
   const [payment, setPayment] = useState<PaymentKey | undefined>(existing.payment);
   const [urgency, setUrgency] = useState<Urgency | undefined>(existing.urgency);
 
-  function next() {
+  async function next() {
     writeIntake({ stage, need, city, language, payment, urgency });
-    if (step < 4) setStep(step + 1);
-    else nav({ to: "/eve/match/results" });
+    if (step < 4) {
+      setStep(step + 1);
+      return;
+    }
+    const res = await persistIntake();
+    if (res.ok) eveToast.success("Saved — you can resume anytime");
+    nav({ to: "/eve/match/results" });
   }
   function back() {
     if (step > 1) setStep(step - 1);
