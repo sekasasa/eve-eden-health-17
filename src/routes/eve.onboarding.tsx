@@ -64,7 +64,7 @@ interface Provider {
 
 function Onboarding() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
 
