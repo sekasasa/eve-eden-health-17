@@ -14,7 +14,9 @@ import { DemoBanner } from "@/components/ui/DemoBanner";
 import { InstallPrompt } from "@/components/ui/InstallPrompt";
 import { Toaster } from "@/components/ui/sonner";
 import { initPwaInstall } from "@/lib/pwa-install";
+import { useLanguage } from "@/hooks/useLanguage";
 import "@/i18n";
+
 
 function NotFoundComponent() {
   return (
