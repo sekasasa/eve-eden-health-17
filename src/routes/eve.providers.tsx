@@ -229,12 +229,20 @@ function EveProviders() {
             </div>
           </div>
         ) : (
-          filtered.map((p) => <ProviderCard key={p.id} p={p} />)
+          filtered.map((p) => (
+            <ProviderCard
+              key={p.id}
+              p={p}
+              userLang={profile.language ?? null}
+              userCity={profile.city ?? null}
+            />
+          ))
         )}
       </div>
     </EveShell>
   );
 }
+
 
 function ProviderCard({ p }: { p: Provider }) {
   return (
