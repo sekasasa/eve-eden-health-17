@@ -428,29 +428,10 @@ function MatchResults() {
         urgent or life-threatening symptoms, please contact emergency services
         or seek immediate medical care.
       </p>
-      {/* unused icon imports kept for lint */}
-      <span className="hidden">
-        <Sparkles /> <Heart /> <Baby />
-      </span>
     </EveShell>
   );
 }
 
-function TierBadge({ tier }: { tier: string }) {
-  const color =
-    tier === "Clinical Partner"
-      ? "bg-eve-teal text-white"
-      : tier === "Preferred Partner"
-        ? "bg-eve-terra text-white"
-        : tier === "Verified"
-          ? "bg-eve-teal-light text-eve-teal"
-          : "bg-eve-cream text-eve-muted";
-  return (
-    <span className={cn("rounded-full px-2 py-0.5 text-[9px] font-medium", color)}>
-      {tier}
-    </span>
-  );
-}
 
 function PaymentOption({
   title,
