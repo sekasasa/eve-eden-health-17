@@ -417,6 +417,7 @@ export type Database = {
           preferred_provider_id: string | null
           pregnancy_week: number | null
           religious_pref: string | null
+          stage: string | null
           user_id: string
           whatsapp_opt_in: boolean | null
         }
@@ -434,6 +435,7 @@ export type Database = {
           preferred_provider_id?: string | null
           pregnancy_week?: number | null
           religious_pref?: string | null
+          stage?: string | null
           user_id: string
           whatsapp_opt_in?: boolean | null
         }
@@ -451,6 +453,7 @@ export type Database = {
           preferred_provider_id?: string | null
           pregnancy_week?: number | null
           religious_pref?: string | null
+          stage?: string | null
           user_id?: string
           whatsapp_opt_in?: boolean | null
         }

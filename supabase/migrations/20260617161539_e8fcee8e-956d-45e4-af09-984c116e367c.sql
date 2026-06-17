@@ -1,0 +1,1 @@
+ALTER TABLE public.mothers ADD COLUMN IF NOT EXISTS stage text;
