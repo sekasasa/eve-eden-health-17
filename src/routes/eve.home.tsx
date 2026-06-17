@@ -11,7 +11,7 @@ import {
   ChevronDown,
   Sparkles,
   FlaskConical,
-  ShieldCheck,
+  
   ClipboardList,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
