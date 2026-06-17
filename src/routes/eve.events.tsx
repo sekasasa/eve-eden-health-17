@@ -46,7 +46,7 @@ function EventsPage() {
       const { data } = await supabase
         .from("vendor_content")
         .select(
-          "id,title,excerpt,location,language,category,life_stage,event_at,cta_type,cta_url,media_url,vendor_id,vendors(name)",
+          "id,title,excerpt,location,language,category,life_stage,event_at,cta_type,cta_url,media_url,price_label,vendor_id,vendors(business_name)",
         )
         .eq("content_type", "event")
         .eq("status", "published")
