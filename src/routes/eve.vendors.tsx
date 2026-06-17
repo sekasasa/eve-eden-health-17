@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ChevronRight, Store } from "lucide-react";
+import { ArrowLeft, ChevronRight, Search, Store, X } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { TrustBadge } from "@/components/ui/TrustBadge";
@@ -44,6 +44,9 @@ type Vendor = {
   is_verified: boolean | null;
   is_featured: boolean | null;
   description: string | null;
+  services: string | null;
+  languages: string[] | null;
+  credentials: string | null;
 };
 
 function initials(name: string | null) {
@@ -76,6 +79,9 @@ function EveVendors() {
   const [country, setCountry] = useState<string>("MA");
   const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("All");
   const [loading, setLoading] = useState(true);
+  const [serviceQuery, setServiceQuery] = useState("");
+  const [language, setLanguage] = useState<string>("");
+  const [credential, setCredential] = useState<string>("");
 
   useEffect(() => {
     (async () => {
@@ -116,10 +122,40 @@ function EveVendors() {
   }, []);
 
   const filtered = useMemo(() => {
+    const sq = serviceQuery.trim().toLowerCase();
+    const cq = credential.trim().toLowerCase();
     return vendors
       .filter((v) => (v.country ?? "MA") === country)
-      .filter((v) => (cat === "All" ? true : v.category === CATEGORY_VALUE[cat]));
-  }, [vendors, country, cat]);
+      .filter((v) => (cat === "All" ? true : v.category === CATEGORY_VALUE[cat]))
+      .filter((v) =>
+        sq
+          ? (v.services ?? "").toLowerCase().includes(sq) ||
+            (v.description ?? "").toLowerCase().includes(sq) ||
+            (v.business_name ?? "").toLowerCase().includes(sq)
+          : true,
+      )
+      .filter((v) =>
+        language ? (v.languages ?? []).some((l) => l?.toLowerCase() === language.toLowerCase()) : true,
+      )
+      .filter((v) => (cq ? (v.credentials ?? "").toLowerCase().includes(cq) : true));
+  }, [vendors, country, cat, serviceQuery, language, credential]);
+
+  const languageOptions = useMemo(() => {
+    const set = new Set<string>();
+    vendors.forEach((v) => (v.languages ?? []).forEach((l) => l && set.add(l)));
+    return Array.from(set).sort();
+  }, [vendors]);
+
+  const credentialOptions = useMemo(() => {
+    const set = new Set<string>();
+    vendors.forEach((v) => {
+      const c = (v.credentials ?? "").trim();
+      if (c) set.add(c);
+    });
+    return Array.from(set).sort();
+  }, [vendors]);
+
+  const hasActiveFilters = !!(serviceQuery || language || credential || cat !== "All");
 
   const featured = useMemo(() => vendors.filter((v) => v.is_featured), [vendors]);
 
@@ -188,6 +224,61 @@ function EveVendors() {
           </button>
         ))}
       </div>
+
+      {/* Filters */}
+      <div className="mt-4 flex flex-col gap-2">
+        <div className="flex items-center gap-2 rounded-full bg-eve-cream px-4 py-2.5">
+          <Search className="h-4 w-4 text-eve-muted" />
+          <input
+            value={serviceQuery}
+            onChange={(e) => setServiceQuery(e.target.value)}
+            placeholder="Search services (e.g. lactation, prenatal yoga)"
+            className="flex-1 bg-transparent font-sans text-xs text-eve-forest outline-none placeholder:text-eve-muted"
+          />
+          {serviceQuery && (
+            <button onClick={() => setServiceQuery("")} aria-label="Clear">
+              <X className="h-3.5 w-3.5 text-eve-muted" />
+            </button>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="flex-1 rounded-full border border-eve-muted/30 bg-white px-3 py-2 font-sans text-xs text-eve-forest outline-none"
+          >
+            <option value="">All languages</option>
+            {languageOptions.map((l) => (
+              <option key={l} value={l}>{l}</option>
+            ))}
+          </select>
+          <select
+            value={credential}
+            onChange={(e) => setCredential(e.target.value)}
+            className="flex-1 rounded-full border border-eve-muted/30 bg-white px-3 py-2 font-sans text-xs text-eve-forest outline-none"
+          >
+            <option value="">All credentials</option>
+            {credentialOptions.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+        {hasActiveFilters && (
+          <button
+            onClick={() => {
+              setServiceQuery("");
+              setLanguage("");
+              setCredential("");
+              setCat("All");
+            }}
+            className="self-end font-sans text-[11px] text-eve-teal"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
+
 
       {/* List */}
       <section className="mt-4 flex flex-col gap-3">
