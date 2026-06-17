@@ -296,6 +296,22 @@ function EveHome() {
   const personalizedTitle =
     stage && STAGE_TITLES[stage] ? STAGE_TITLES[stage][lang] : null;
   const qaOrder = orderForStage(stage);
+  const isPregnancyStage = stage === "pregnant" || (!stage && (mother?.pregnancy_week ?? 0) > 0);
+
+  // Stage-specific "where you are" subtitle for non-pregnant users
+  const STAGE_SUBTITLE: Partial<Record<LifeStage, { en: string; fr: string }>> = {
+    ttc: { en: "Trying to conceive", fr: "Essais de conception" },
+    ivf: { en: "Fertility treatment", fr: "Traitement de fertilité" },
+    postpartum: { en: "Postpartum recovery", fr: "Récupération post-partum" },
+    newborn: { en: "Caring for your child", fr: "Soin de votre enfant" },
+    pcos: { en: "Hormonal health", fr: "Santé hormonale" },
+    mood: { en: "Emotional wellbeing", fr: "Bien-être émotionnel" },
+    labs: { en: "Lab results support", fr: "Soutien analyses" },
+    rx: { en: "Prescription support", fr: "Soutien ordonnances" },
+    insurance: { en: "Coverage & payment", fr: "Couverture & paiement" },
+    wellness: { en: "Wellness journey", fr: "Bien-être" },
+    family: { en: "Family coordination", fr: "Coordination familiale" },
+  };
 
   return (
     <EveShell>
@@ -335,71 +351,81 @@ function EveHome() {
             {personalizedTitle ??
               (loading ? t("home.loadingWeek") : t("home.weekOf", { week }))}
           </h1>
+          <p
+            className="mt-1 font-sans text-eve-muted"
+            style={{ fontSize: "12px" }}
+          >
+            {lang === "fr"
+              ? "Dites-nous ce qu'il vous faut — nous trouvons vos prochaines étapes."
+              : "Tell us what you need — we'll find your next steps."}
+          </p>
         </div>
 
-        {/* Stage card */}
-        <div className="mx-3 mt-4">
-          {loading ? (
-            <SkeletonBlock className="h-32" />
-          ) : (
-            <div className="rounded-2xl border border-eve-teal/20 bg-white p-4">
-              <div className="flex items-center gap-4 rtl:flex-row-reverse">
-                <StageRing week={week} size={58} />
-                <div className="min-w-0 flex-1 rtl:text-right">
-                  <SectionLabel>{t(`trimester.${trimesterKey}`)}</SectionLabel>
-                  <p
-                    className="mt-1 font-sans text-eve-teal-dark"
-                    style={{ fontSize: "12px" }}
-                  >
-                    {t("home.babySize", { size: babySizeFor(week) })}
-                  </p>
-                  {dueDate && (
-                    <p
-                      className="mt-1 font-sans text-eve-muted"
-                      style={{ fontSize: "10px" }}
-                    >
-                      {t("home.due", { date: dueDate })}
+        {/* HERO: Care plan if intake exists, else pregnancy stage if pregnant, else generic stage card */}
+        {intake?.stage ? (
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/eve/match/results" })}
+            className="mx-3 mt-4 block w-full rounded-2xl border border-eve-teal/30 bg-gradient-to-br from-white to-eve-teal-light/40 p-4 text-left transition-transform active:scale-[0.99]"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <SectionLabel>
+                  {lang === "fr" ? "Votre plan de soins" : "Your care plan"}
+                </SectionLabel>
+                <p className="mt-1 font-serif text-eve-forest" style={{ fontSize: "16px" }}>
+                  {personalizedTitle}
+                </p>
+                <p className="mt-1 font-sans text-eve-muted" style={{ fontSize: "12px" }}>
+                  {lang === "fr"
+                    ? "Voir vos prochaines étapes et soins recommandés."
+                    : "See your next steps and recommended care."}
+                </p>
+              </div>
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-eve-teal text-white">
+                <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+              </span>
+            </div>
+          </button>
+        ) : isPregnancyStage ? (
+          <div className="mx-3 mt-4">
+            {loading ? (
+              <SkeletonBlock className="h-32" />
+            ) : (
+              <div className="rounded-2xl border border-eve-teal/20 bg-white p-4">
+                <div className="flex items-center gap-4 rtl:flex-row-reverse">
+                  <StageRing week={week} size={58} />
+                  <div className="min-w-0 flex-1 rtl:text-right">
+                    <SectionLabel>{t(`trimester.${trimesterKey}`)}</SectionLabel>
+                    <p className="mt-1 font-sans text-eve-teal-dark" style={{ fontSize: "12px" }}>
+                      {t("home.babySize", { size: babySizeFor(week) })}
                     </p>
-                  )}
+                    {dueDate && (
+                      <p className="mt-1 font-sans text-eve-muted" style={{ fontSize: "10px" }}>
+                        {t("home.due", { date: dueDate })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-eve-teal-light">
+                  <div
+                    className="h-full rounded-full bg-eve-teal transition-all"
+                    style={{ width: `${progressPct}%` }}
+                  />
                 </div>
               </div>
-              <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-eve-teal-light">
-                <div
-                  className="h-full rounded-full bg-eve-teal transition-all"
-                  style={{ width: `${progressPct}%` }}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Recommended next step (personalized) */}
-        {intake?.stage && (
-          <div className="mx-3 mt-3 rounded-2xl border border-eve-teal/20 bg-white p-4">
-            <SectionLabel>
-              {lang === "fr" ? "Prochaine étape" : "Recommended next step"}
-            </SectionLabel>
-            <p
-              className="mt-1 font-sans text-eve-teal-dark"
-              style={{ fontSize: "13px" }}
-            >
-              {lang === "fr"
-                ? "D'après vos réponses, voici votre meilleure prochaine étape."
-                : "Based on what you shared, here's your best next step."}
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/eve/match/results" })}
-              className="mt-3 inline-flex items-center gap-2 rounded-full bg-eve-teal px-4 py-2 font-sans text-white"
-              style={{ fontSize: "12px" }}
-            >
-              {lang === "fr" ? "Voir mon plan" : "View my plan"}
-              <ArrowRight className="h-3 w-3" />
-            </button>
+            )}
           </div>
-        )}
+        ) : stage && STAGE_SUBTITLE[stage] ? (
+          <div className="mx-3 mt-4 rounded-2xl border border-eve-teal/20 bg-white p-4">
+            <SectionLabel>{lang === "fr" ? "Où vous en êtes" : "Where you are"}</SectionLabel>
+            <p className="mt-1 font-sans text-eve-teal-dark" style={{ fontSize: "13px" }}>
+              {STAGE_SUBTITLE[stage]![lang]}
+            </p>
+          </div>
+        ) : null}
 
-        {/* Ask Eve */}
+        {/* Ask Eve — what do you need today */}
         <Link to="/eve/ask" className="mx-3 mt-3 block">
           <AICard className="flex items-center gap-3 p-4 rtl:flex-row-reverse">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
@@ -410,7 +436,7 @@ function EveHome() {
                 className="font-sans uppercase tracking-widest text-white/70"
                 style={{ fontSize: "10px" }}
               >
-                {t("ask.title")}
+                {lang === "fr" ? "Que cherchez-vous aujourd'hui ?" : "What do you need today?"}
               </p>
               <p className="mt-0.5 truncate font-sans italic text-white text-sm">
                 "{t("ask.placeholder")}"
@@ -419,6 +445,7 @@ function EveHome() {
             <ArrowRight className="h-4 w-4 shrink-0 text-white rtl:rotate-180" />
           </AICard>
         </Link>
+
 
         {/* Today's guidance */}
         <div className="mx-3 mt-3">
