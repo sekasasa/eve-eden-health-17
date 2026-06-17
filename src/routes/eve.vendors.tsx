@@ -44,6 +44,9 @@ type Vendor = {
   is_verified: boolean | null;
   is_featured: boolean | null;
   description: string | null;
+  services: string | null;
+  languages: string[] | null;
+  credentials: string | null;
 };
 
 function initials(name: string | null) {
