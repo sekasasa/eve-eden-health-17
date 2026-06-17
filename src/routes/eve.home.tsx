@@ -51,20 +51,21 @@ type Guidance = {
 const SKIP_KEY = "eve_personalize_skipped_v1";
 
 // Personalized dashboard titles by life stage
-const STAGE_TITLES: Record<string, { en: string; fr: string }> = {
-  ttc: { en: "Your fertility support plan", fr: "Votre plan de fertilité" },
-  ivf: { en: "Your IVF & fertility care plan", fr: "Votre plan de soins FIV" },
-  pregnant: { en: "Your pregnancy care plan", fr: "Votre plan de grossesse" },
-  postpartum: { en: "Your postpartum support plan", fr: "Votre plan post-partum" },
-  newborn: { en: "Your child care support plan", fr: "Votre plan de garde d'enfant" },
-  pcos: { en: "Your hormonal health support plan", fr: "Votre plan de santé hormonale" },
-  mood: { en: "Your mood support plan", fr: "Votre plan de soutien émotionnel" },
-  labs: { en: "Your lab results support plan", fr: "Votre plan d'analyses" },
-  rx: { en: "Your prescription support plan", fr: "Votre plan d'ordonnances" },
-  insurance: { en: "Your insurance & payment options", fr: "Vos options d'assurance" },
-  wellness: { en: "Your wellness care plan", fr: "Votre plan de bien-être" },
-  family: { en: "Your family care coordination plan", fr: "Votre plan de coordination familiale" },
+const STAGE_TITLES: Record<string, { en: string; fr: string; ar: string }> = {
+  ttc: { en: "Your fertility support plan", fr: "Votre plan de fertilité", ar: "خطة دعم الخصوبة الخاصة بك" },
+  ivf: { en: "Your IVF & fertility care plan", fr: "Votre plan de soins FIV", ar: "خطة رعاية التلقيح الصناعي والخصوبة" },
+  pregnant: { en: "Your pregnancy care plan", fr: "Votre plan de grossesse", ar: "خطة رعاية الحمل الخاصة بك" },
+  postpartum: { en: "Your postpartum support plan", fr: "Votre plan post-partum", ar: "خطة دعم ما بعد الولادة" },
+  newborn: { en: "Your child care support plan", fr: "Votre plan de garde d'enfant", ar: "خطة دعم رعاية الطفل" },
+  pcos: { en: "Your hormonal health support plan", fr: "Votre plan de santé hormonale", ar: "خطة دعم الصحة الهرمونية" },
+  mood: { en: "Your mood support plan", fr: "Votre plan de soutien émotionnel", ar: "خطة دعم الصحة النفسية" },
+  labs: { en: "Your lab results support plan", fr: "Votre plan d'analyses", ar: "خطة دعم نتائج التحاليل" },
+  rx: { en: "Your prescription support plan", fr: "Votre plan d'ordonnances", ar: "خطة دعم الأدوية" },
+  insurance: { en: "Your insurance & payment options", fr: "Vos options d'assurance", ar: "خيارات التأمين والدفع" },
+  wellness: { en: "Your wellness care plan", fr: "Votre plan de bien-être", ar: "خطة العافية الخاصة بك" },
+  family: { en: "Your family care coordination plan", fr: "Votre plan de coordination familiale", ar: "خطة تنسيق رعاية العائلة" },
 };
+
 
 // 5 consolidated Quick Action keys
 type QAKey = "find_care" | "care_support" | "care_plan" | "shops" | "community";
