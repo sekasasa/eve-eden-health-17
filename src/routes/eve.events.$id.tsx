@@ -12,6 +12,9 @@ import {
   Clock,
   Users,
   ShieldCheck,
+  Check,
+  Sparkles,
+  Briefcase,
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
@@ -36,7 +39,21 @@ type Speaker = {
   placeholder?: boolean;
 };
 
-type AgendaItem = { time?: string | null; title?: string | null };
+type AgendaItem = {
+  time?: string | null;
+  title?: string | null;
+  subtitle?: string | null;
+};
+
+type EventSections = {
+  date_label?: string;
+  hero_copy?: string;
+  who_for?: string[];
+  learnings?: string[];
+  what_to_bring?: string[];
+  what_to_bring_note?: string;
+  organizer_note?: string;
+};
 
 type EventRow = {
   id: string;
@@ -56,6 +73,8 @@ type EventRow = {
   agenda: AgendaItem[] | null;
   safety_note: string | null;
   price_label: string | null;
+  map_embed_url: string | null;
+  event_sections: EventSections | null;
   vendor_id: string;
   vendors?: { business_name: string | null } | null;
 };
@@ -65,13 +84,14 @@ function EventDetail() {
   const nav = useNavigate();
   const [ev, setEv] = useState<EventRow | null | undefined>(undefined);
   const [saved, setSaved] = useState(false);
+  const [registered, setRegistered] = useState(false);
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase
         .from("vendor_content")
         .select(
-          "id,title,excerpt,body,location,language,category,life_stage,event_at,cta_type,cta_url,media_url,tags,speakers,agenda,safety_note,price_label,vendor_id,vendors(business_name)",
+          "id,title,excerpt,body,location,language,category,life_stage,event_at,cta_type,cta_url,media_url,tags,speakers,agenda,safety_note,price_label,map_embed_url,event_sections,vendor_id,vendors(business_name)",
         )
         .eq("id", id)
         .eq("content_type", "event")
@@ -110,16 +130,19 @@ function EventDetail() {
     );
   }
 
-  const dateLabel = ev.event_at
-    ? new Date(ev.event_at).toLocaleString(undefined, {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "Date to be confirmed";
+  const sections = ev.event_sections ?? {};
+  const dateLabel =
+    sections.date_label ??
+    (ev.event_at
+      ? new Date(ev.event_at).toLocaleString(undefined, {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "Date to be confirmed");
   const organizer = ev.vendors?.business_name ?? "Verified partner";
   const isExternal = ev.cta_type === "register" && ev.cta_url;
 
@@ -143,10 +166,13 @@ function EventDetail() {
 
   function reserve() {
     if (isExternal) return;
+    setRegistered(true);
     eveToast.info(
       "Registration is opening soon. Ask a navigator if you would like to be notified.",
     );
   }
+
+  const speakers = Array.isArray(ev.speakers) ? ev.speakers : [];
 
   return (
     <EveShell>
@@ -177,15 +203,15 @@ function EventDetail() {
       <p className="mt-1 text-[12px] text-eve-teal">Hosted by {organizer}</p>
 
       <div className="mt-3 space-y-1.5 text-[13px] text-eve-forest">
-        <p className="inline-flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-eve-teal" /> {dateLabel}
+        <p className="inline-flex items-start gap-2">
+          <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-eve-teal" /> {dateLabel}
         </p>
-        <p className="inline-flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-eve-teal" /> {ev.location || "Online"}
+        <p className="inline-flex items-start gap-2">
+          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-eve-teal" /> {ev.location || "Online"}
         </p>
         {ev.language ? (
-          <p className="inline-flex items-center gap-2">
-            <Globe className="h-4 w-4 text-eve-teal" /> {ev.language.toUpperCase()}
+          <p className="inline-flex items-start gap-2">
+            <Globe className="mt-0.5 h-4 w-4 shrink-0 text-eve-teal" /> {ev.language}
           </p>
         ) : null}
       </div>
@@ -216,7 +242,11 @@ function EventDetail() {
         ))}
       </div>
 
-      {ev.excerpt ? (
+      {sections.hero_copy ? (
+        <p className="mt-4 whitespace-pre-line text-[14px] leading-relaxed text-eve-forest">
+          {sections.hero_copy}
+        </p>
+      ) : ev.excerpt ? (
         <p className="mt-4 text-[14px] leading-relaxed text-eve-forest">{ev.excerpt}</p>
       ) : null}
 
@@ -229,34 +259,104 @@ function EventDetail() {
         </section>
       ) : null}
 
-      {Array.isArray(ev.speakers) && ev.speakers.length > 0 ? (
+      {Array.isArray(sections.who_for) && sections.who_for.length > 0 ? (
         <section className="mt-6">
-          <h2 className="font-serif text-base text-eve-teal-dark">Speakers</h2>
+          <h2 className="font-serif text-base text-eve-teal-dark">Who this event is for</h2>
+          <ul className="mt-2 space-y-1.5">
+            {sections.who_for.map((line, i) => (
+              <li key={i} className="flex items-start gap-2 text-[13px] text-eve-forest">
+                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-eve-teal" />
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {Array.isArray(sections.learnings) && sections.learnings.length > 0 ? (
+        <section className="mt-6">
+          <h2 className="font-serif text-base text-eve-teal-dark">What you'll learn</h2>
+          <ul className="mt-2 space-y-1.5">
+            {sections.learnings.map((line, i) => (
+              <li key={i} className="flex items-start gap-2 text-[13px] text-eve-forest">
+                <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-eve-teal" />
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {speakers.length > 0 ? (
+        <section className="mt-6">
+          <h2 className="font-serif text-base text-eve-teal-dark">Featured speakers</h2>
           <div className="mt-2 space-y-2">
-            {ev.speakers.map((s, i) => (
+            {speakers.map((s, i) => (
               <SpeakerCard key={i} speaker={s} />
             ))}
           </div>
         </section>
-      ) : null}
+      ) : (
+        <section className="mt-6 rounded-2xl border border-dashed border-eve-muted/30 bg-eve-cream/40 p-4 text-center">
+          <p className="text-[13px] text-eve-forest">Speakers will be announced soon.</p>
+        </section>
+      )}
 
       {Array.isArray(ev.agenda) && ev.agenda.length > 0 ? (
         <section className="mt-6">
           <h2 className="font-serif text-base text-eve-teal-dark">Agenda</h2>
-          <ol className="mt-2 space-y-1 rounded-2xl border border-eve-teal/15 bg-white p-3">
+          <ol className="mt-2 space-y-2 rounded-2xl border border-eve-teal/15 bg-white p-3">
             {ev.agenda.map((a, i) => (
               <li
                 key={i}
-                className="flex items-start gap-3 border-b border-eve-cream/70 py-1.5 last:border-b-0"
+                className="border-b border-eve-cream/70 pb-2 last:border-b-0 last:pb-0"
               >
-                <span className="inline-flex items-center gap-1 text-[12px] font-medium text-eve-teal">
+                <p className="inline-flex items-center gap-1 text-[12px] font-medium text-eve-teal">
                   <Clock className="h-3 w-3" />
                   {a.time ?? ""}
-                </span>
-                <span className="text-[13px] text-eve-forest">{a.title}</span>
+                </p>
+                <p className="mt-0.5 text-[13px] font-medium text-eve-forest">{a.title}</p>
+                {a.subtitle ? (
+                  <p className="mt-0.5 text-[12px] leading-snug text-eve-muted">{a.subtitle}</p>
+                ) : null}
               </li>
             ))}
           </ol>
+        </section>
+      ) : null}
+
+      {Array.isArray(sections.what_to_bring) && sections.what_to_bring.length > 0 ? (
+        <section className="mt-6">
+          <h2 className="font-serif text-base text-eve-teal-dark">What to bring</h2>
+          <ul className="mt-2 space-y-1.5">
+            {sections.what_to_bring.map((line, i) => (
+              <li key={i} className="flex items-start gap-2 text-[13px] text-eve-forest">
+                <Briefcase className="mt-0.5 h-3.5 w-3.5 shrink-0 text-eve-teal" />
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
+          {sections.what_to_bring_note ? (
+            <p className="mt-2 text-[12px] leading-snug text-eve-muted">
+              {sections.what_to_bring_note}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
+      {ev.map_embed_url ? (
+        <section className="mt-6">
+          <h2 className="font-serif text-base text-eve-teal-dark">Location</h2>
+          <p className="mt-1 text-[12px] text-eve-muted">{ev.location || "Online"}</p>
+          <div className="mt-2 overflow-hidden rounded-2xl border border-eve-teal/15">
+            <iframe
+              src={ev.map_embed_url}
+              title="Event location map"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-56 w-full"
+            />
+          </div>
         </section>
       ) : null}
 
@@ -287,10 +387,21 @@ function EventDetail() {
             Reserve my spot <ArrowRight className="h-4 w-4" />
           </button>
         )}
-        {!isExternal && (
+        {!isExternal && !registered && (
           <p className="text-center text-[11px] text-eve-muted">
             Registration is opening soon. Ask a navigator to be notified.
           </p>
+        )}
+        {registered && !isExternal && (
+          <div className="rounded-2xl border border-eve-teal/20 bg-eve-teal-light/40 p-3 text-center">
+            <p className="text-[12px] font-medium text-eve-teal-dark">
+              Thanks — we'll be in touch when registration opens.
+            </p>
+            <p className="mt-1 text-[11px] text-eve-muted">
+              When the Eve & Eden Launch Gathering is live, you'll get event details,
+              speaker updates, and the final venue closer to the event date.
+            </p>
+          </div>
         )}
 
         <div className="grid grid-cols-3 gap-2">
@@ -319,6 +430,25 @@ function EventDetail() {
           </Link>
         </div>
       </div>
+
+      {sections.organizer_note ? (
+        <div className="mt-6 rounded-2xl border border-eve-teal/15 bg-white p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-teal">
+            Organizer
+          </p>
+          <p className="mt-1 font-serif text-sm text-eve-teal-dark">{organizer}</p>
+          <p className="mt-1 text-[12px] leading-relaxed text-eve-muted">
+            {sections.organizer_note}
+          </p>
+          <Link
+            to="/eve/vendors/$id"
+            params={{ id: ev.vendor_id }}
+            className="mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-eve-teal"
+          >
+            View host profile <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+      ) : null}
 
       <div className="mt-5">
         <NavigatorHelp
@@ -362,18 +492,19 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
         {speaker.role || speaker.specialty ? (
           <p className="text-[11px] text-eve-teal">
             {[speaker.role, speaker.specialty].filter(Boolean).join(" · ")}
+            {speaker.city ? ` · ${speaker.city}` : ""}
           </p>
         ) : null}
-        {speaker.organization || speaker.city ? (
-          <p className="text-[11px] text-eve-muted">
-            {[speaker.organization, speaker.city].filter(Boolean).join(" · ")}
-          </p>
-        ) : null}
-        {speaker.session ? (
-          <p className="mt-1 text-[12px] text-eve-forest">Session: {speaker.session}</p>
+        {speaker.organization ? (
+          <p className="text-[11px] text-eve-muted">{speaker.organization}</p>
         ) : null}
         {speaker.bio ? (
           <p className="mt-1 text-[12px] leading-snug text-eve-muted">{speaker.bio}</p>
+        ) : null}
+        {speaker.session ? (
+          <p className="mt-1 text-[12px] text-eve-forest">
+            <span className="font-medium text-eve-teal-dark">Session:</span> {speaker.session}
+          </p>
         ) : null}
         {Array.isArray(speaker.languages) && speaker.languages.length > 0 ? (
           <p className="mt-1 text-[10px] uppercase tracking-wide text-eve-muted">
