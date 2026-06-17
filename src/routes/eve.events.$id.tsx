@@ -101,15 +101,15 @@ function EventDetail() {
 
   async function share() {
     const url = typeof window !== "undefined" ? window.location.href : "";
-    const nav = typeof navigator !== "undefined" ? (navigator as Navigator) : null;
+    const n = typeof navigator !== "undefined" ? (navigator as Navigator) : null;
     try {
-      if (nav && typeof (nav as Navigator & { share?: unknown }).share === "function") {
-        await (nav as Navigator & { share: (d: ShareData) => Promise<void> }).share({
+      if (n && typeof (n as Navigator & { share?: unknown }).share === "function") {
+        await (n as Navigator & { share: (d: ShareData) => Promise<void> }).share({
           title: ev!.title,
           url,
         });
-      } else if (nav?.clipboard) {
-        await nav.clipboard.writeText(url);
+      } else if (n?.clipboard) {
+        await n.clipboard.writeText(url);
         eveToast.success("Link copied");
       }
     } catch {
