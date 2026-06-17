@@ -137,7 +137,7 @@ function EveVendorDetail() {
 
   return (
     <ProtectedRoute requiredType="mother">
-      <div className="min-h-screen bg-eve-sand pb-28">
+      <div className="min-h-dvh bg-eve-sand pb-28">
         <div className="mx-auto max-w-sm">
           {/* Header */}
           <header className="flex items-center gap-3 px-5 pt-6">

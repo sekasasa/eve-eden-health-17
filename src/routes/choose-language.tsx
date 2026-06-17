@@ -74,7 +74,7 @@ function ChooseLanguagePage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-eve-sand px-6 py-12">
+    <main className="flex min-h-dvh items-center justify-center bg-eve-sand px-6 py-12">
       <div className="w-full max-w-md">
         <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-eve-cream text-eve-teal-dark">
           <Globe className="h-5 w-5" />

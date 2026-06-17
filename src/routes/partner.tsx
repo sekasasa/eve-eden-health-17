@@ -294,7 +294,7 @@ function PartnerPage() {
 
 function Wrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-eve-sand">
+    <div className="min-h-dvh bg-eve-sand">
       <div className="mx-auto max-w-xl px-5 py-8">{children}</div>
     </div>
   );

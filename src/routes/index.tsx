@@ -41,7 +41,7 @@ function Landing() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-eve-sand px-6 text-center">
+    <main className="flex min-h-dvh flex-col items-center justify-center bg-eve-sand px-6 text-center">
       <h1 className="font-serif text-5xl text-eve-teal sm:text-6xl">
         eve &amp; eden health
       </h1>
