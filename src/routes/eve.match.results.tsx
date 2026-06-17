@@ -272,29 +272,8 @@ function MatchResults() {
   const pathway: Pathway =
     (intake.stage && PATHWAYS[intake.stage]) || DEFAULT_PATHWAY;
 
-  const matched = useMemo(() => {
-    const stage = intake.stage;
-    const city = intake.city?.toLowerCase() ?? "";
-    const lang = intake.language;
-    const wantsIntl = intake.payment === "international";
-    const wantsSelf = intake.payment === "self_pay";
-    const cats = pathway.providerCategories;
-    return MATCH_PROVIDERS.map((p) => {
-      let score = 0;
-      if (stage && p.bestFor.includes(stage)) score += 3;
-      if (cats.length && cats.some((c) => p.category.toLowerCase().includes(c.toLowerCase())))
-        score += 4;
-      if (city && p.city.toLowerCase().includes(city.split(" ")[0])) score += 2;
-      if (lang && p.languages.includes(lang)) score += 2;
-      if (wantsIntl && p.acceptsInternational) score += 2;
-      if (wantsSelf && p.acceptsSelfPay) score += 1;
-      return { p, score };
-    })
-      .filter((x) => (cats.length ? x.score >= 4 : true))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 4)
-      .map((x) => x.p);
-  }, [intake, pathway]);
+  // pathway.providerCategories drives the Find Care filter below
+
 
   const urgencyNote =
     intake.urgency === "today"
