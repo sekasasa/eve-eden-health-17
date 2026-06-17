@@ -312,6 +312,19 @@ function EveVendors() {
             ))}
           </select>
         </div>
+        <div className="flex items-center gap-2 rounded-full border border-eve-muted/30 bg-white px-3 py-2">
+          <ArrowUpDown className="h-3.5 w-3.5 text-eve-muted" />
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+            className="flex-1 bg-transparent font-sans text-xs text-eve-forest outline-none"
+          >
+            <option value="recommended">Recommended</option>
+            <option value="nearest">Nearest</option>
+            <option value="newest">Newest</option>
+            <option value="highest_rated">Highest rated</option>
+          </select>
+        </div>
         {hasActiveFilters && (
           <button
             onClick={() => {
@@ -319,6 +332,7 @@ function EveVendors() {
               setLanguage("");
               setCredential("");
               setCat("All");
+              setSortBy("recommended");
             }}
             className="self-end font-sans text-[11px] text-eve-teal"
           >
