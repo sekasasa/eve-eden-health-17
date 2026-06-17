@@ -66,8 +66,8 @@ const STAGE_TITLES: Record<string, { en: string; fr: string }> = {
   family: { en: "Your family care coordination plan", fr: "Votre plan de coordination familiale" },
 };
 
-// 6 consolidated Quick Action keys
-type QAKey = "find_care" | "labs_rx" | "insurance" | "care_plan" | "shops" | "community";
+// 5 consolidated Quick Action keys
+type QAKey = "find_care" | "care_support" | "care_plan" | "shops" | "community";
 
 const QA_DEFS: Record<QAKey, {
   to: string;
@@ -82,17 +82,11 @@ const QA_DEFS: Record<QAKey, {
     en: { label: "Find Care", sub: "Doctors, midwives, IVF, pediatrics" },
     fr: { label: "Trouver des soins", sub: "Médecins, sages-femmes, FIV, pédiatrie" },
   },
-  labs_rx: {
-    to: "/eve/match/labs",
+  care_support: {
+    to: "/eve/care-support",
     icon: <FlaskConical className="h-[18px] w-[18px] text-eve-teal" />,
-    en: { label: "Labs & Prescriptions", sub: "Results, medications, pharmacies" },
-    fr: { label: "Analyses & ordonnances", sub: "Résultats, médicaments, pharmacies" },
-  },
-  insurance: {
-    to: "/eve/match/insurance",
-    icon: <ShieldCheck className="h-[18px] w-[18px] text-eve-forest" />,
-    en: { label: "Insurance & Payment", sub: "Coverage, IVF, self-pay" },
-    fr: { label: "Assurance & paiement", sub: "Couverture, FIV, paiement direct" },
+    en: { label: "Care Support", sub: "Labs, prescriptions & payment" },
+    fr: { label: "Support de soins", sub: "Analyses, ordonnances & paiement" },
   },
   care_plan: {
     to: "/eve/match/results",
@@ -114,7 +108,7 @@ const QA_DEFS: Record<QAKey, {
   },
 };
 
-const DEFAULT_ORDER: QAKey[] = ["find_care", "labs_rx", "care_plan", "insurance", "shops", "community"];
+const DEFAULT_ORDER: QAKey[] = ["find_care", "care_support", "care_plan", "shops", "community"];
 
 function orderForStage(stage?: LifeStage): QAKey[] {
   const rest = (head: QAKey[]) =>
@@ -122,31 +116,30 @@ function orderForStage(stage?: LifeStage): QAKey[] {
   switch (stage) {
     case "ivf":
     case "ttc":
-      return rest(["find_care", "labs_rx", "insurance"]);
+      return rest(["find_care", "care_support", "care_plan"]);
     case "pregnant":
-      return rest(["find_care", "care_plan", "labs_rx"]);
+      return rest(["find_care", "care_plan", "care_support"]);
     case "postpartum":
       return rest(["care_plan", "community", "shops"]);
     case "labs":
-      return rest(["labs_rx", "find_care", "care_plan"]);
     case "rx":
-      return rest(["labs_rx", "find_care", "insurance"]);
     case "insurance":
-      return rest(["insurance", "find_care", "care_plan"]);
+      return rest(["care_support", "find_care", "care_plan"]);
     case "family":
-      return rest(["community", "insurance", "care_plan"]);
+      return rest(["community", "care_support", "care_plan"]);
     case "pcos":
-      return rest(["find_care", "labs_rx", "care_plan"]);
+      return rest(["find_care", "care_support", "care_plan"]);
     case "mood":
       return rest(["find_care", "community", "care_plan"]);
     case "wellness":
-      return rest(["find_care", "labs_rx", "shops"]);
+      return rest(["find_care", "care_support", "shops"]);
     case "newborn":
       return rest(["find_care", "shops", "care_plan"]);
     default:
       return DEFAULT_ORDER;
   }
 }
+
 
 function EveHome() {
   const { t, i18n } = useTranslation();
