@@ -128,7 +128,55 @@ function EditContent() {
         <Field label="CTA URL">
           <input value={row.cta_url ?? ""} onChange={(e) => setRow({ ...row, cta_url: e.target.value })} className="input" />
         </Field>
+        {row.content_type === "event" && (
+          <>
+            <Field label="Event date & time">
+              <input
+                type="datetime-local"
+                value={row.event_at ? new Date(row.event_at).toISOString().slice(0, 16) : ""}
+                onChange={(e) =>
+                  setRow({
+                    ...row,
+                    event_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+                  })
+                }
+                className="input"
+              />
+              <span className="mt-1 block text-[11px] text-gray-500">
+                Leave blank to show "Date to be confirmed" on mother-facing cards.
+              </span>
+            </Field>
+            <Field label="Location (or leave blank for Online)">
+              <input
+                value={row.location ?? ""}
+                onChange={(e) => setRow({ ...row, location: e.target.value })}
+                className="input"
+                placeholder="Online"
+              />
+            </Field>
+            <Field label="Language">
+              <select
+                value={row.language ?? "en"}
+                onChange={(e) => setRow({ ...row, language: e.target.value })}
+                className="input"
+              >
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+                <option value="ar">العربية</option>
+              </select>
+            </Field>
+            <Field label="Life stage">
+              <input
+                value={row.life_stage ?? ""}
+                onChange={(e) => setRow({ ...row, life_stage: e.target.value })}
+                className="input"
+                placeholder="e.g. pregnant, postpartum"
+              />
+            </Field>
+          </>
+        )}
       </div>
+
 
       {isClinical && <div className="mt-4"><SafetyDisclaimer /></div>}
 
