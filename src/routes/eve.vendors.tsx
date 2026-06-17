@@ -84,6 +84,8 @@ function EveVendors() {
   const [serviceQuery, setServiceQuery] = useState("");
   const [language, setLanguage] = useState<string>("");
   const [credential, setCredential] = useState<string>("");
+  const [userCity, setUserCity] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"recommended" | "nearest" | "newest" | "highest_rated">("recommended");
 
   useEffect(() => {
     (async () => {
