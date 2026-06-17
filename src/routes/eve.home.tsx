@@ -305,19 +305,20 @@ function EveHome() {
   const isPregnancyStage = stage === "pregnant" || (!stage && (mother?.pregnancy_week ?? 0) > 0);
 
   // Stage-specific "where you are" subtitle for non-pregnant users
-  const STAGE_SUBTITLE: Partial<Record<LifeStage, { en: string; fr: string }>> = {
-    ttc: { en: "Trying to conceive", fr: "Essais de conception" },
-    ivf: { en: "Fertility treatment", fr: "Traitement de fertilité" },
-    postpartum: { en: "Postpartum recovery", fr: "Récupération post-partum" },
-    newborn: { en: "Caring for your child", fr: "Soin de votre enfant" },
-    pcos: { en: "Hormonal health", fr: "Santé hormonale" },
-    mood: { en: "Emotional wellbeing", fr: "Bien-être émotionnel" },
-    labs: { en: "Lab results support", fr: "Soutien analyses" },
-    rx: { en: "Prescription support", fr: "Soutien ordonnances" },
-    insurance: { en: "Coverage & payment", fr: "Couverture & paiement" },
-    wellness: { en: "Wellness journey", fr: "Bien-être" },
-    family: { en: "Family coordination", fr: "Coordination familiale" },
+  const STAGE_SUBTITLE: Partial<Record<LifeStage, { en: string; fr: string; ar: string }>> = {
+    ttc: { en: "Trying to conceive", fr: "Essais de conception", ar: "محاولة الحمل" },
+    ivf: { en: "Fertility treatment", fr: "Traitement de fertilité", ar: "علاج الخصوبة" },
+    postpartum: { en: "Postpartum recovery", fr: "Récupération post-partum", ar: "تعافي ما بعد الولادة" },
+    newborn: { en: "Caring for your child", fr: "Soin de votre enfant", ar: "العناية بطفلك" },
+    pcos: { en: "Hormonal health", fr: "Santé hormonale", ar: "الصحة الهرمونية" },
+    mood: { en: "Emotional wellbeing", fr: "Bien-être émotionnel", ar: "الصحة النفسية" },
+    labs: { en: "Lab results support", fr: "Soutien analyses", ar: "دعم نتائج التحاليل" },
+    rx: { en: "Prescription support", fr: "Soutien ordonnances", ar: "دعم الأدوية" },
+    insurance: { en: "Coverage & payment", fr: "Couverture & paiement", ar: "التغطية والدفع" },
+    wellness: { en: "Wellness journey", fr: "Bien-être", ar: "رحلة العافية" },
+    family: { en: "Family coordination", fr: "Coordination familiale", ar: "تنسيق العائلة" },
   };
+
 
   return (
     <EveShell>
