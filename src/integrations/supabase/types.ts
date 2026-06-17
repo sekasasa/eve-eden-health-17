@@ -1089,6 +1089,7 @@ export type Database = {
       vendors: {
         Row: {
           address: string | null
+          avg_rating: number | null
           bio: string | null
           booking_url: string | null
           business_name: string | null
@@ -1121,6 +1122,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          avg_rating?: number | null
           bio?: string | null
           booking_url?: string | null
           business_name?: string | null
@@ -1153,6 +1155,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          avg_rating?: number | null
           bio?: string | null
           booking_url?: string | null
           business_name?: string | null
