@@ -122,10 +122,40 @@ function EveVendors() {
   }, []);
 
   const filtered = useMemo(() => {
+    const sq = serviceQuery.trim().toLowerCase();
+    const cq = credential.trim().toLowerCase();
     return vendors
       .filter((v) => (v.country ?? "MA") === country)
-      .filter((v) => (cat === "All" ? true : v.category === CATEGORY_VALUE[cat]));
-  }, [vendors, country, cat]);
+      .filter((v) => (cat === "All" ? true : v.category === CATEGORY_VALUE[cat]))
+      .filter((v) =>
+        sq
+          ? (v.services ?? "").toLowerCase().includes(sq) ||
+            (v.description ?? "").toLowerCase().includes(sq) ||
+            (v.business_name ?? "").toLowerCase().includes(sq)
+          : true,
+      )
+      .filter((v) =>
+        language ? (v.languages ?? []).some((l) => l?.toLowerCase() === language.toLowerCase()) : true,
+      )
+      .filter((v) => (cq ? (v.credentials ?? "").toLowerCase().includes(cq) : true));
+  }, [vendors, country, cat, serviceQuery, language, credential]);
+
+  const languageOptions = useMemo(() => {
+    const set = new Set<string>();
+    vendors.forEach((v) => (v.languages ?? []).forEach((l) => l && set.add(l)));
+    return Array.from(set).sort();
+  }, [vendors]);
+
+  const credentialOptions = useMemo(() => {
+    const set = new Set<string>();
+    vendors.forEach((v) => {
+      const c = (v.credentials ?? "").trim();
+      if (c) set.add(c);
+    });
+    return Array.from(set).sort();
+  }, [vendors]);
+
+  const hasActiveFilters = !!(serviceQuery || language || credential || cat !== "All");
 
   const featured = useMemo(() => vendors.filter((v) => v.is_featured), [vendors]);
 
