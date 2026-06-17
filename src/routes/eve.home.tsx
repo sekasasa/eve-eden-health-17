@@ -81,16 +81,16 @@ const QA_DEFS: Record<QAKey, {
   find_care: {
     to: "/eve/providers",
     icon: <Stethoscope className="h-[18px] w-[18px] text-eve-teal" />,
-    en: { label: "Find Care", sub: "Doctors, midwives, IVF, pediatrics" },
-    fr: { label: "Trouver des soins", sub: "Médecins, sages-femmes, FIV, pédiatrie" },
-    ar: { label: "ابحث عن رعاية", sub: "أطباء، قابلات، تلقيح صناعي، أطفال" },
+    en: { label: "Find the right provider", sub: "Doctors, midwives, IVF, pediatrics" },
+    fr: { label: "Trouver le bon soignant", sub: "Médecins, sages-femmes, FIV, pédiatrie" },
+    ar: { label: "ابحث عن الرعاية المناسبة", sub: "أطباء، قابلات، تلقيح صناعي، أطفال" },
   },
   care_support: {
     to: "/eve/care-support",
     icon: <FlaskConical className="h-[18px] w-[18px] text-eve-teal" />,
-    en: { label: "Care Support", sub: "Labs, prescriptions & payment" },
-    fr: { label: "Support de soins", sub: "Analyses, ordonnances & paiement" },
-    ar: { label: "دعم الرعاية", sub: "تحاليل، أدوية ودفع" },
+    en: { label: "Understand labs, prescriptions & payment", sub: "Get help with results, meds, and how to pay" },
+    fr: { label: "Comprendre analyses, ordonnances & paiement", sub: "Résultats, médicaments et options de paiement" },
+    ar: { label: "افهم التحاليل والأدوية والدفع", sub: "مساعدة في النتائج والأدوية وكيفية الدفع" },
   },
   care_plan: {
     to: "/eve/match/results",
