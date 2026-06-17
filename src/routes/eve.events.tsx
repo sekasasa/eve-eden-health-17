@@ -32,8 +32,9 @@ type EventRow = {
   cta_type: string | null;
   cta_url: string | null;
   media_url: string | null;
+  price_label: string | null;
   vendor_id: string;
-  vendors?: { name: string | null } | null;
+  vendors?: { business_name: string | null } | null;
 };
 
 function EventsPage() {
