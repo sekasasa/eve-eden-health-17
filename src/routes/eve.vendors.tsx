@@ -204,7 +204,7 @@ function EveVendors() {
     return Array.from(set).sort();
   }, [vendors]);
 
-  const hasActiveFilters = !!(serviceQuery || language || credential || cat !== "All");
+  const hasActiveFilters = !!(serviceQuery || language || credential || cat !== "All" || sortBy !== "recommended");
 
   const featured = useMemo(() => vendors.filter((v) => v.is_featured), [vendors]);
 
