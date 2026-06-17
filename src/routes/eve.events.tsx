@@ -148,8 +148,13 @@ function EventCard({ ev }: { ev: EventRow }) {
           </span>
         ) : null}
       </div>
-      {(ev.category || ev.life_stage) && (
+      {(ev.category || ev.life_stage || ev.price_label) && (
         <div className="mt-2 flex flex-wrap gap-1.5">
+          {ev.price_label ? (
+            <span className="rounded-full bg-eve-forest/10 px-2 py-0.5 text-[10px] font-medium text-eve-forest">
+              {ev.price_label}
+            </span>
+          ) : null}
           {ev.category ? (
             <span className="rounded-full bg-eve-teal-light px-2 py-0.5 text-[10px] font-medium text-eve-teal">
               {ev.category}
