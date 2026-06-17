@@ -119,7 +119,7 @@ function formatDate(iso: string | null) {
 }
 
 function EventCard({ ev }: { ev: EventRow }) {
-  const organizer = ev.vendors?.name ?? "Verified partner";
+  const organizer = ev.vendors?.business_name ?? "Verified partner";
   const dateLabel = formatDate(ev.event_at);
   const isExternal = ev.cta_type === "register" && ev.cta_url;
   const cta = isExternal
