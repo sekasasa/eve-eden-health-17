@@ -14,6 +14,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
+import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import {
   readIntake,
