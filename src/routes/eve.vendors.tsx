@@ -94,10 +94,11 @@ function EveVendors() {
       if (userId) {
         const { data: m } = await supabase
           .from("mothers")
-          .select("country")
+          .select("country, city")
           .eq("user_id", userId)
           .maybeSingle();
         if (m?.country) setCountry(m.country);
+        if (m?.city) setUserCity(m.city);
       }
 
       const { data } = await supabase
