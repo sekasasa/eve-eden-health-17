@@ -37,7 +37,7 @@ type Row = {
 type ReviewerOpt = { id: string; full_name: string | null };
 
 const CATEGORIES = ["nutrition", "exercise", "preparation", "warning_signs", "wellbeing"];
-const LANGUAGES = ["fr", "ar", "en", "ber"];
+const LANGUAGES = ["en", "fr", "ar"];
 const COUNTRIES = ["ALL", "MA", "UG"];
 
 function AdminGuidance() {

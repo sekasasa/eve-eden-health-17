@@ -29,15 +29,13 @@ export const askEve = createServerFn({ method: "POST" })
       };
     }
 
-    const lang = data.language ?? "fr";
+    const lang = data.language ?? "en";
     const langName =
-      lang === "en"
-        ? "English"
+      lang === "fr"
+        ? "French"
         : lang === "ar"
           ? "Arabic"
-          : lang === "ber"
-            ? "Tamazight (use French if uncertain)"
-            : "French";
+          : "English";
 
     const system = [
       "You are Eve, a warm, knowledgeable pregnancy companion for mothers in Africa (primarily Morocco).",

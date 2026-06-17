@@ -1,84 +1,56 @@
-# Trusted Referral + Care Coordination Network
+## Goal
+Make English the default language across the app, gate every signed-in session on an explicit language choice (English, French, Arabic; Darija shown as "Coming soon"), and finish wiring translations so every screen renders in the chosen language.
 
-A lightweight care-coordination + marketing layer added on top of the existing Eve & Eden vendor dashboard, Content Studio, and customer surfaces. No redesign — same warm palette, rounded cards, typography, and spacing.
+## 1. Default language = English
+- `src/i18n/index.ts`: change `lng: "fr"` → `lng: "en"` and `fallbackLng: "fr"` → `fallbackLng: "en"`.
+- `src/hooks/useLanguage.ts`: default unauthenticated/no-profile language to `"en"` instead of `"fr"`.
+- `src/routes/eve.onboarding.tsx`: initial `useState("fr")` → `useState("en")`.
+- Any place we currently fall back to `"fr"` (greeting, formatters) → fall back to `"en"`.
 
-## What we're building
+## 2. Language options
+- `LANGS` in `src/i18n/index.ts` becomes:
+  - `en` English (active)
+  - `fr` Français (active)
+  - `ar` العربية (active, RTL)
+  - `darija` الدارجة — **disabled, "Coming soon" badge**
+- Remove `ber` / `zgh` from the active list. Keep the JSON file for now but stop importing it, and alias any legacy `ber`/`zgh` profile values to `en` on load so existing users aren't stranded.
+- `src/components/ui/LanguageToggle.tsx`: render Darija as a disabled row with a "Coming soon" pill; clicking does nothing.
 
-### Vendor / provider side (`/eden/*`)
-1. **Leads** (`/eden/leads`) — incoming customers from search, content, referrals, community, navigator, insurance match. Filter by status (new, contacted, booked, completed, closed). Each lead shows source attribution (e.g. "from article: What to ask before your first IVF consultation"). Manual status updates + "Refer" / "Message" actions.
-2. **Referrals** (`/eden/referrals`) — sent + received tabs. Compose a referral (customer, reason, urgency, recommended partner, notes, documents to share, permission requested, follow-up due). Full status timeline: draft → sent → viewed → accepted → appointment requested → confirmed → checked in → completed → follow-up needed → closed / declined.
-3. **My Trusted Partners** (`/eden/partners`) — saved preferred OB-GYNs, IVF clinics, labs, pharmacies, therapists, nutritionists, lactation consultants, pediatricians, doulas/midwives, insurance partners, shops. Each card: name, category, verified badge, location, languages, payment options, "Why I recommend", Refer button.
-4. **Shared Care Documents** (`/eden/shared-docs`) — list of documents customers have explicitly shared. Actions: view, mark reviewed, add follow-up recommendation, refer, message, ask navigator. Customer-controls privacy note shown prominently.
-5. **Appointment + Referral Tracker** integrated into the referrals page and existing `/eden/appointments` — status pills (requested, confirmed, reminder sent, checked in, completed, no-show, rescheduled, follow-up needed) + update actions.
-6. **Content Studio analytics extension** — add `referrals_generated`, `new_leads`, `completed_bookings` columns alongside existing per-post analytics.
+## 3. Post-login language picker
+- New route `src/routes/choose-language.tsx`:
+  - Full-screen card with the app logo, heading "Choose your language", three large buttons (EN / FR / AR), and a muted "Darija — coming soon" row.
+  - On select: `setAppLanguage(code)` + `profiles.update({ language })` + `profiles.update({ language_chosen_at: now() })` → redirect to the destination the user was originally heading to (default `/eve/home` for mothers, `/eden/dashboard` for providers/vendors, etc.).
+- Trigger logic (in `src/routes/login.tsx` after successful auth, and in `ProtectedRoute` as a safety net):
+  - If `profiles.language_chosen_at` is null → send to `/choose-language?next=<intended path>`.
+  - Otherwise apply stored language and continue.
+- Keep the header `LanguageToggle` for changing later.
 
-### Customer side (`/eve/*`)
-1. **Care Passport** (`/eve/passport`) — single screen pulling from the user's saved profile (`useSavedProfile`) plus uploaded docs (labs, scans, prescriptions, insurance, appointments, referrals, care plan, family supporters). Granular sharing toggles per provider.
-2. **Incoming Referrals** (`/eve/referrals`) — "Your provider recommends this next step" cards. Shows recommended partner, reason, urgency, what to bring, documents to share, payment options. Actions: Accept & book, Save, Decline, Ask for another option, Ask navigator, Share selected passport info.
-3. **Document sharing controls** — embedded on Care Passport: share all / selected docs / labs only / Rx only / appointments only / insurance only / referral note only / hide sensitive.
-4. **Confirm appointment status** — quick actions on referral cards: I booked, I attended, Need to reschedule, Need help.
-5. **Lead source attribution** — when the user contacts a vendor from a content piece, the lead row captures the source content ID.
+## 4. Complete the translation map
+Audit each route file and replace hardcoded English/French strings with `t("…")` keys. Ensure the same key set exists in `en.json`, `fr.json`, `ar.json`.
 
-### Cross-cutting
-- **Closed-loop tracking**: referrals notify the referring provider when completed (only if customer consent allows).
-- **Safety disclaimers** reused from existing `SafetyDisclaimer` component on all clinical surfaces.
-- **Privacy note** ("The customer controls what information is shared.") shown on every provider-side document/passport view.
+Scope (existing gaps based on file list):
+- Eve customer: `eve.home`, `eve.providers(.id)(.book)`, `eve.vendors(.id)`, `eve.appointments`, `eve.community`, `eve.events`, `eve.guidance`, `eve.ask`, `eve.profile`, `eve.content.$id`, `eve.match.*`, `eve.passport`, `eve.referrals`, `eve.onboarding`.
+- Eden provider/vendor: `eden.dashboard`, `eden.vendor.dashboard`, `eden.leads`, `eden.referrals`, `eden.partners`, `eden.shared-docs`, `eden.appointments`, `eden.patients(.id)`, `eden.profile`, `eden.analytics`, `eden.vendor.*`, plus `EdenSidebar`, `CoordinationPanels`.
+- Auth + shared: `login`, `signup`, `partner`, `index`, `EveShell`, `BottomNav`, `SafetyDisclaimer`, `OfflineBanner`, `EmptyState`.
 
-## Technical details
+Key namespace additions to all 3 locale files:
+- `nav.*` (extend with leads, referrals, partners, sharedDocs, passport, content, analytics, patients, orders, products, listing)
+- `auth.*` (signIn, signUp, email, password, forgotPassword, googleContinue, errors)
+- `chooseLanguage.*` (title, subtitle, comingSoon, continue)
+- `eden.dashboard.*`, `eden.leads.*`, `eden.referrals.*`, `eden.partners.*`, `eden.sharedDocs.*` (panel titles, statuses, action labels)
+- `coordination.statuses.*` (new, contacted, booked, sent, accepted, completed, follow_up, …)
+- `safety.customer`, `safety.provider` (the two disclaimer strings)
+- `passport.*`, `referrals.*`, `content.*`, `community.*`, `events.*`, `vendors.*`, `providers.*`, `appointments.*` for missing items.
 
-### Database (one migration)
-New tables, all with RLS + GRANTs + `updated_at` triggers:
+For each route, the work is: import `useTranslation`, swap literals to `t("…")`, and add the matching keys to all three JSON files. Strings already covered (home greeting, ask, nav, onboarding) stay as-is.
 
-- `leads` — `vendor_id`, `customer_user_id` (nullable for walk-ins), `customer_display_name`, `life_stage`, `need`, `location`, `language`, `payment_preference`, `source` (enum: search/referral/article/video/community/navigator/insurance), `source_content_id` (fk vendor_content), `status` (new/contacted/booked/completed/closed), `notes`.
-- `referrals` — `from_vendor_id`, `to_vendor_id` (nullable, can be free-text suggestion), `to_category`, `customer_user_id`, `reason`, `urgency` (low/normal/urgent), `notes`, `documents_requested` jsonb, `permission_requested` bool, `follow_up_due`, `status` (draft/sent/viewed/accepted/appt_requested/appt_confirmed/checked_in/completed/follow_up/closed/declined), `customer_consent_share_completion` bool.
-- `trusted_partners` — `owner_vendor_id`, `partner_vendor_id` (nullable), `partner_name`, `category`, `location`, `languages` text[], `payment_options` text[], `recommendation_note`, `verified` bool.
-- `care_documents` — `customer_user_id`, `doc_type` (lab/scan/rx/discharge/insurance/claim/care_note/referral_note), `title`, `file_url`, `notes`, `sensitive` bool.
-- `document_shares` — `document_id`, `customer_user_id`, `vendor_id`, `granted_at`, `revoked_at`, `reviewed_at`, `follow_up_note`.
-- `passport_shares` — `customer_user_id`, `vendor_id`, `scope` jsonb (`{all, labs, rx, appointments, insurance, referral_note, hide_sensitive}`), `granted_at`, `revoked_at`.
+## 5. Out of scope
+- Actually translating Darija content.
+- Re-translating already-covered keys.
+- Visual redesign of any screen.
 
-RLS:
-- Customers manage their own care_documents, document_shares, passport_shares, and can read referrals where they're the customer.
-- Vendors can read leads/referrals/trusted_partners/document_shares scoped to `vendor_id` via existing `vendors.user_id = auth.uid()` join (security definer helper `is_vendor_owner(_vendor_id)`).
-- Vendors can read care_documents only via an active `document_shares` row (no revoked_at).
-
-Extend `vendor_content` analytics: add `referrals_generated`, `new_leads`, `completed_bookings` integer columns (default 0).
-
-### Routes (TanStack file-based)
-
-Provider/vendor:
-- `src/routes/eden.leads.tsx`
-- `src/routes/eden.referrals.tsx` (sent + received tabs; compose modal)
-- `src/routes/eden.partners.tsx`
-- `src/routes/eden.shared-docs.tsx`
-
-Customer:
-- `src/routes/eve.passport.tsx`
-- `src/routes/eve.referrals.tsx`
-
-### Sidebar / dashboard wiring
-- `src/components/shells/EdenSidebar.tsx` — add Leads, Referrals, Trusted Partners, Shared Docs to both `PROVIDER_NAV` and `VENDOR_NAV`.
-- `src/routes/eden.dashboard.tsx` — add 4 quick-action cards mirroring above.
-- `src/components/shells/EveShell.tsx` — add Passport + Referrals link.
-- `src/routes/eve.home.tsx` — surface latest incoming referrals as a card in the dashboard.
-
-### Components (reused style)
-- `ReferralCard`, `LeadRow`, `PartnerCard`, `PassportSection`, `ShareToggleRow`, `StatusPill`. All use existing tokens (`eve-teal`, rounded-2xl, etc.) — no new design system.
-
-### Personalization
-Reuse `useSavedProfile()` to prefill Care Passport (stage, language, location, payment preference, current providers from match results).
-
-### Source attribution
-When user clicks a vendor's CTA from `eve.content.$id.tsx` or `eve.vendors.$id.tsx`, insert a `leads` row with `source` + `source_content_id` populated (RPC `create_lead_from_source`).
-
-## Out of scope
-- Full EHR / clinical records.
-- Provider-to-provider messaging beyond referral notes.
-- Real file upload UI for documents (we'll accept file_url strings; storage bucket can be added later).
-- Insurance claim automation.
-
-## Build order
-1. Migration (tables + RLS + GRANTs + content analytics columns).
-2. Vendor side: leads, referrals, partners, shared-docs pages + sidebar links + dashboard cards.
-3. Customer side: passport + referrals pages + EveShell links + home card.
-4. Source attribution hooks on vendor profile + content reader.
-5. Content Studio analytics columns rendering.
+## Technical notes
+- New column needed: `profiles.language_chosen_at timestamptz` (single migration, GRANTed). Used solely to detect first-time language picker.
+- RTL handling already exists via `applyDir` — unchanged for Arabic.
+- Legacy `ber`/`zgh` profile values: on read, treat as "not chosen" so the user is sent to the picker on next login.
+- Build order: (1) migration, (2) i18n config + LanguageToggle + legacy alias, (3) `choose-language` route + login wiring, (4) translation key audit per route group, (5) JSON file updates for en/fr/ar.

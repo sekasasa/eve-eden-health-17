@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 /**
- * Globe icon + dropdown with the 4 supported languages. Persists the
- * choice to profile.language and reloads i18n.
+ * Globe icon + dropdown with the supported languages. Darija is listed as
+ * "coming soon" and is not selectable. Persists the choice to
+ * profile.language.
  */
 export function LanguageToggle({
   className = "",
@@ -22,7 +23,6 @@ export function LanguageToggle({
   const { lang, changeLanguage } = useLanguage();
   const { t, i18n } = useTranslation();
 
-  // Make sure the trigger label re-renders on language change
   useEffect(() => {}, [i18n.language]);
 
   return (
@@ -33,19 +33,33 @@ export function LanguageToggle({
       >
         <Globe className="h-4 w-4" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[160px]">
-        {LANGS.map((l) => (
-          <DropdownMenuItem
-            key={l.code}
-            onSelect={() => void changeLanguage(l.code as AppLang)}
-            className="flex items-center justify-between gap-3 font-sans text-sm"
-          >
-            <span>{l.native}</span>
-            {lang === l.code && (
-              <Check className="h-3.5 w-3.5 text-eve-teal" strokeWidth={3} />
-            )}
-          </DropdownMenuItem>
-        ))}
+      <DropdownMenuContent align="end" className="min-w-[200px]">
+        {LANGS.map((l) =>
+          l.comingSoon ? (
+            <DropdownMenuItem
+              key={l.code}
+              disabled
+              className="flex items-center justify-between gap-3 font-sans text-sm opacity-60"
+              onSelect={(e) => e.preventDefault()}
+            >
+              <span>{l.native}</span>
+              <span className="rounded-full bg-eve-cream px-2 py-0.5 text-[10px] uppercase tracking-wide text-eve-muted">
+                {t("language.comingSoon")}
+              </span>
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem
+              key={l.code}
+              onSelect={() => void changeLanguage(l.code as AppLang)}
+              className="flex items-center justify-between gap-3 font-sans text-sm"
+            >
+              <span>{l.native}</span>
+              {lang === l.code && (
+                <Check className="h-3.5 w-3.5 text-eve-teal" strokeWidth={3} />
+              )}
+            </DropdownMenuItem>
+          ),
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

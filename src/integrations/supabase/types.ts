@@ -677,6 +677,7 @@ export type Database = {
           id: string
           is_active: boolean
           language: string | null
+          language_chosen_at: string | null
           phone: string | null
           user_type: string
         }
@@ -687,6 +688,7 @@ export type Database = {
           id: string
           is_active?: boolean
           language?: string | null
+          language_chosen_at?: string | null
           phone?: string | null
           user_type: string
         }
@@ -697,6 +699,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           language?: string | null
+          language_chosen_at?: string | null
           phone?: string | null
           user_type?: string
         }

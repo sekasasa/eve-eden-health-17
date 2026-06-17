@@ -97,9 +97,10 @@
   },
   "language": {
     "label": "اللغة",
+    "comingSoon": "قريبًا",
     "fr": "Français",
     "ar": "العربية",
     "en": "English",
-    "ber": "Tamazight"
+    "darija": "الدارجة"
   }
 }

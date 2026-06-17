@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import i18n, { applyDir, setAppLanguage, AppLang } from "@/i18n";
+import i18n, { applyDir, setAppLanguage, AppLang, normalizeLang } from "@/i18n";
 
 /**
  * Loads the current user's profile.language on mount, applies it to i18n,
@@ -8,7 +8,7 @@ import i18n, { applyDir, setAppLanguage, AppLang } from "@/i18n";
  */
 export function useLanguage() {
   const [lang, setLang] = useState<AppLang>(
-    (i18n.language as AppLang) ?? "fr",
+    normalizeLang(i18n.language) ?? "en",
   );
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export function useLanguage() {
         .select("language")
         .eq("id", uid)
         .maybeSingle();
-      const next = (p?.language as AppLang) || "fr";
+      const next = normalizeLang(p?.language);
       if (cancelled) return;
       await setAppLanguage(next);
       setLang(next);
@@ -36,13 +36,14 @@ export function useLanguage() {
   }, []);
 
   async function changeLanguage(next: AppLang) {
-    await setAppLanguage(next);
-    setLang(next);
+    const safe = normalizeLang(next);
+    await setAppLanguage(safe);
+    setLang(safe);
     const { data } = await supabase.auth.getUser();
     if (data.user?.id) {
       await supabase
         .from("profiles")
-        .update({ language: next })
+        .update({ language: safe, language_chosen_at: new Date().toISOString() })
         .eq("id", data.user.id);
     }
   }

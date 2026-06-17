@@ -30,10 +30,10 @@ type Mother = {
 };
 
 const LANGS = [
-  { code: "fr", label: "Français" },
-  { code: "ar", label: "العربية" },
-  { code: "en", label: "English" },
-  { code: "drj", label: "Darija" },
+  { code: "en", label: "English", comingSoon: false },
+  { code: "fr", label: "Français", comingSoon: false },
+  { code: "ar", label: "العربية", comingSoon: false },
+  { code: "darija", label: "Darija — coming soon", comingSoon: true },
 ] as const;
 
 function initials(n?: string | null) {
@@ -128,12 +128,15 @@ function EveProfile() {
             {LANGS.map((l) => (
               <button
                 key={l.code}
-                onClick={() => update("language", l.code)}
+                disabled={l.comingSoon}
+                onClick={() => !l.comingSoon && update("language", l.code)}
                 className={cn(
                   "rounded-full border px-3 py-2 font-sans text-sm transition",
-                  m?.language === l.code
-                    ? "border-eve-teal bg-eve-teal text-white"
-                    : "border-eve-muted/30 bg-white text-eve-teal-dark",
+                  l.comingSoon
+                    ? "cursor-not-allowed border-eve-muted/20 bg-eve-cream/50 text-eve-muted"
+                    : m?.language === l.code
+                      ? "border-eve-teal bg-eve-teal text-white"
+                      : "border-eve-muted/30 bg-white text-eve-teal-dark",
                 )}
               >
                 {l.label}

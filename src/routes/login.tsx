@@ -30,7 +30,7 @@ function LoginPage() {
   const routeUser = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
-      .select("user_type")
+      .select("user_type, language_chosen_at")
       .eq("id", userId)
       .maybeSingle();
     let userType = data?.user_type as string | undefined;
@@ -44,6 +44,10 @@ function LoginPage() {
       sessionStorage.removeItem("eve_pending_user_type");
     }
     const dest = REDIRECT_BY_TYPE[userType] ?? "/eve/home";
+    if (!data?.language_chosen_at) {
+      navigate({ to: "/choose-language", search: { next: dest } });
+      return;
+    }
     navigate({ to: dest });
   };
 

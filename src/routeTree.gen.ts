@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ChooseLanguageRouteImport } from './routes/choose-language'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProgramSettingsRouteImport } from './routes/program.settings'
 import { Route as ProgramReportsRouteImport } from './routes/program.reports'
@@ -86,6 +87,11 @@ const PartnerRoute = PartnerRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChooseLanguageRoute = ChooseLanguageRouteImport.update({
+  id: '/choose-language',
+  path: '/choose-language',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -391,6 +397,7 @@ const EdenVendorContentIdEditRoute = EdenVendorContentIdEditRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/choose-language': typeof ChooseLanguageRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
   '/signup': typeof SignupRoute
@@ -456,6 +463,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/choose-language': typeof ChooseLanguageRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
   '/signup': typeof SignupRoute
@@ -522,6 +530,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/choose-language': typeof ChooseLanguageRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
   '/signup': typeof SignupRoute
@@ -589,6 +598,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/choose-language'
     | '/login'
     | '/partner'
     | '/signup'
@@ -654,6 +664,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/choose-language'
     | '/login'
     | '/partner'
     | '/signup'
@@ -719,6 +730,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/choose-language'
     | '/login'
     | '/partner'
     | '/signup'
@@ -785,6 +797,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChooseLanguageRoute: typeof ChooseLanguageRoute
   LoginRoute: typeof LoginRoute
   PartnerRoute: typeof PartnerRoute
   SignupRoute: typeof SignupRoute
@@ -857,6 +870,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/choose-language': {
+      id: '/choose-language'
+      path: '/choose-language'
+      fullPath: '/choose-language'
+      preLoaderRoute: typeof ChooseLanguageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -1379,6 +1399,7 @@ const EdenVendorContentRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChooseLanguageRoute: ChooseLanguageRoute,
   LoginRoute: LoginRoute,
   PartnerRoute: PartnerRoute,
   SignupRoute: SignupRoute,
