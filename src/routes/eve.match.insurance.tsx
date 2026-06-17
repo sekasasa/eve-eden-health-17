@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
+import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
@@ -259,6 +260,9 @@ function InsurancePage() {
         Estimated prices are guidance only. Final premiums depend on age, location,
         and coverage selected.
       </p>
+      <div className="mt-4">
+        <NavigatorHelp />
+      </div>
     </EveShell>
   );
 }

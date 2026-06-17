@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, AlertTriangle, Camera } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
+import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
@@ -190,6 +191,9 @@ function RxSupport() {
         Eve & Eden provides education only. Do not start, stop, or change medication
         without speaking with a licensed clinician.
       </p>
+      <div className="mt-4">
+        <NavigatorHelp />
+      </div>
     </EveShell>
   );
 }

@@ -11,6 +11,7 @@ import {
   Store,
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
+import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { LAB_CATEGORIES, LAB_GUIDANCE, type LifeStage } from "@/lib/match-data";
@@ -239,6 +240,9 @@ function LabSupport() {
         This is not a diagnosis or medical treatment. Please speak with a licensed
         clinician before making medical decisions.
       </p>
+      <div className="mt-4">
+        <NavigatorHelp />
+      </div>
     </EveShell>
   );
 }

@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 
 const left = [
   { to: "/eve/home", label: "Home", icon: Home },
-  { to: "/eve/providers", label: "Find Care", icon: Stethoscope },
+  { to: "/eve/providers", label: "Find care", icon: Stethoscope },
 ] as const;
 
 const right = [
-  { to: "/eve/match/results", label: "Care Plan", icon: ClipboardList },
+  { to: "/eve/match/results", label: "My plan", icon: ClipboardList },
   { to: "/eve/profile", label: "Profile", icon: User },
 ] as const;
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { ArrowLeft, FlaskConical, Pill, ShieldCheck, ArrowRight } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
+import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { cn } from "@/lib/utils";
@@ -92,6 +93,10 @@ function CareSupport() {
           ]}
         />
       )}
+
+      <div className="mt-5">
+        <NavigatorHelp />
+      </div>
 
       <p className="mt-5 px-3 pb-2 text-[10px] leading-relaxed text-eve-muted">
         Eve & Eden provides education and care navigation — not diagnosis. Please confirm

@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Search, Star, Stethoscope, MapPin, Languages, CheckCircle2, Sparkles } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { TrustBadge } from "@/components/ui/TrustBadge";
+import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
@@ -155,7 +156,7 @@ function EveProviders() {
         <ArrowLeft className="h-3 w-3" /> Back to dashboard
       </button>
       <h1 className="font-serif text-[26px] leading-tight text-eve-forest">
-        Find care
+        Find the right provider
       </h1>
       <p className="mt-1 font-sans text-xs text-eve-muted">
         Doctors, midwives, doulas, labs, pharmacies, insurance and wellness — all in one place.
@@ -238,6 +239,10 @@ function EveProviders() {
             />
           ))
         )}
+      </div>
+
+      <div className="mt-6">
+        <NavigatorHelp />
       </div>
     </EveShell>
   );
