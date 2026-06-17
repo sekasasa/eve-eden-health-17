@@ -59,9 +59,9 @@ function EventsPage() {
   return (
     <EveShell>
       <div className="pt-2">
-        <h1 className="font-serif text-3xl text-eve-teal-dark">Events & workshops</h1>
+        <h1 className="font-serif text-3xl text-eve-teal-dark">Events & Workshops</h1>
         <p className="mt-1 font-sans text-sm text-eve-muted">
-          Prenatal classes, support groups, and maternal health gatherings from vetted partners.
+          Classes, talks, wellness sessions, and community events for mothers and families.
         </p>
       </div>
 
@@ -123,7 +123,7 @@ function EventCard({ ev }: { ev: EventRow }) {
   const isExternal = ev.cta_type === "register" && ev.cta_url;
   const cta = isExternal
     ? { href: ev.cta_url!, label: "Register for event", external: true as const }
-    : { to: "/eve/vendors/$id" as const, params: { id: ev.vendor_id }, label: "View event", external: false as const };
+    : { to: "/eve/events/$id" as const, params: { id: ev.id }, label: "View event", external: false as const };
 
   return (
     <article className="rounded-2xl border border-eve-teal/15 bg-white p-4 shadow-sm">

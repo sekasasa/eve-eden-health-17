@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import {
   ArrowLeft,
   ArrowRight,
-  Calendar,
   FlaskConical,
-  MapPin,
   Pill,
   ShieldCheck,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { EveShell } from "@/components/shells/EveShell";
 import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -102,13 +99,10 @@ function CareSupport() {
           ]}
         />
       )}
-      <UpcomingEvents />
 
       <div className="mt-5">
         <NavigatorHelp />
       </div>
-
-
 
       <p className="mt-5 px-3 pb-2 text-[10px] leading-relaxed text-eve-muted">
         Eve & Eden provides education and care navigation — not diagnosis. Please confirm
@@ -180,93 +174,4 @@ function Panel({
   );
 }
 
-type EventRow = {
-  id: string;
-  title: string;
-  location: string | null;
-  event_at: string | null;
-  language: string | null;
-  category: string | null;
-  vendor_id: string;
-  vendors?: { name: string | null } | null;
-};
-
-function UpcomingEvents() {
-  const [events, setEvents] = useState<EventRow[] | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const nowIso = new Date().toISOString();
-      const { data } = await supabase
-        .from("vendor_content")
-        .select("id,title,location,event_at,language,category,vendor_id,vendors(name)")
-        .eq("content_type", "event")
-        .eq("status", "published")
-        .or(`event_at.gte.${nowIso},event_at.is.null`)
-        .order("event_at", { ascending: true, nullsFirst: false })
-        .limit(4);
-      setEvents((data as unknown as EventRow[]) ?? []);
-    })();
-  }, []);
-
-  if (events === null) return null;
-
-  return (
-    <section className="mx-3 mt-6">
-      <div className="flex items-center justify-between">
-        <h2 className="font-serif text-eve-forest" style={{ fontSize: "17px" }}>
-          Upcoming events & workshops
-        </h2>
-        {events.length > 0 && (
-          <Link to="/eve/events" className="text-[11px] font-medium text-eve-teal">
-            See all
-          </Link>
-        )}
-      </div>
-
-      {events.length === 0 ? (
-        <div className="mt-3 rounded-2xl border border-dashed border-eve-muted/30 bg-eve-cream/40 p-4 text-center">
-          <p className="font-sans text-sm text-eve-forest">
-            Events and workshops are coming soon.
-          </p>
-          <Link
-            to="/eve/ask"
-            className="mt-2 inline-block text-[12px] font-medium text-eve-teal"
-          >
-            Ask a navigator →
-          </Link>
-        </div>
-      ) : (
-        <div className="mt-3 space-y-2">
-          {events.map((e) => (
-            <Link
-              key={e.id}
-              to="/eve/events"
-              className="block rounded-2xl border border-eve-teal/15 bg-white p-3"
-            >
-              <p className="font-serif text-sm font-semibold text-eve-teal-dark">{e.title}</p>
-              <p className="mt-0.5 text-[11px] text-eve-teal">
-                Hosted by {e.vendors?.name ?? "Verified partner"}
-              </p>
-              <div className="mt-1 flex flex-wrap items-center gap-x-3 text-[11px] text-eve-muted">
-                <span className="inline-flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  {e.event_at
-                    ? new Date(e.event_at).toLocaleDateString(undefined, {
-                        day: "numeric",
-                        month: "short",
-                      })
-                    : "Date to be confirmed"}
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <MapPin className="h-3 w-3" /> {e.location || "Online"}
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
 

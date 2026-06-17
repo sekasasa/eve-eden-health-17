@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Heart, MessageCircle, Bookmark, Flame, Plus, X, ArrowLeft, Users, ShieldCheck, Sparkles } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Flame, Plus, X, ArrowLeft, Users, ShieldCheck, Sparkles, Calendar } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { ContentCard } from "@/components/ui/ContentCard";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -273,6 +273,26 @@ function CommunityPage() {
           </div>
         </div>
       </section>
+
+      {/* Events entry */}
+      <Link
+        to="/eve/events"
+        className="mt-3 flex items-center justify-between rounded-2xl border border-eve-teal/20 bg-white p-4"
+      >
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-rose-light">
+            <Calendar className="h-4 w-4 text-eve-rose" />
+          </div>
+          <div>
+            <p className="font-sans text-sm font-semibold text-eve-teal-dark">Events & workshops</p>
+            <p className="mt-0.5 text-[12px] text-eve-muted">
+              Classes, talks, and wellness sessions for mothers and families.
+            </p>
+          </div>
+        </div>
+        <span className="text-[12px] font-medium text-eve-teal">Browse →</span>
+      </Link>
+
 
       {/* Helpful guides from trusted partners */}
       {personalizedContent.length > 0 && (

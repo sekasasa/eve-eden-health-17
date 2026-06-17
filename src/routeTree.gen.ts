@@ -63,6 +63,7 @@ import { Route as EveMatchLabsRouteImport } from './routes/eve.match.labs'
 import { Route as EveMatchInsuranceRouteImport } from './routes/eve.match.insurance'
 import { Route as EveMatchHistoryRouteImport } from './routes/eve.match.history'
 import { Route as EveMatchFamilyRouteImport } from './routes/eve.match.family'
+import { Route as EveEventsIdRouteImport } from './routes/eve.events.$id'
 import { Route as EveContentIdRouteImport } from './routes/eve.content.$id'
 import { Route as EdenVendorProductsRouteImport } from './routes/eden.vendor.products'
 import { Route as EdenVendorOrdersRouteImport } from './routes/eden.vendor.orders'
@@ -346,6 +347,11 @@ const EveMatchFamilyRoute = EveMatchFamilyRouteImport.update({
   path: '/family',
   getParentRoute: () => EveMatchRoute,
 } as any)
+const EveEventsIdRoute = EveEventsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => EveEventsRoute,
+} as any)
 const EveContentIdRoute = EveContentIdRouteImport.update({
   id: '/eve/content/$id',
   path: '/eve/content/$id',
@@ -438,7 +444,7 @@ export interface FileRoutesByFullPath {
   '/eve/care-support': typeof EveCareSupportRoute
   '/eve/coming-soon': typeof EveComingSoonRoute
   '/eve/community': typeof EveCommunityRoute
-  '/eve/events': typeof EveEventsRoute
+  '/eve/events': typeof EveEventsRouteWithChildren
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
   '/eve/match': typeof EveMatchRouteWithChildren
@@ -462,6 +468,7 @@ export interface FileRoutesByFullPath {
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
   '/eve/content/$id': typeof EveContentIdRoute
+  '/eve/events/$id': typeof EveEventsIdRoute
   '/eve/match/family': typeof EveMatchFamilyRoute
   '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
@@ -506,7 +513,7 @@ export interface FileRoutesByTo {
   '/eve/care-support': typeof EveCareSupportRoute
   '/eve/coming-soon': typeof EveComingSoonRoute
   '/eve/community': typeof EveCommunityRoute
-  '/eve/events': typeof EveEventsRoute
+  '/eve/events': typeof EveEventsRouteWithChildren
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
   '/eve/match': typeof EveMatchRouteWithChildren
@@ -530,6 +537,7 @@ export interface FileRoutesByTo {
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
   '/eve/content/$id': typeof EveContentIdRoute
+  '/eve/events/$id': typeof EveEventsIdRoute
   '/eve/match/family': typeof EveMatchFamilyRoute
   '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
@@ -575,7 +583,7 @@ export interface FileRoutesById {
   '/eve/care-support': typeof EveCareSupportRoute
   '/eve/coming-soon': typeof EveComingSoonRoute
   '/eve/community': typeof EveCommunityRoute
-  '/eve/events': typeof EveEventsRoute
+  '/eve/events': typeof EveEventsRouteWithChildren
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
   '/eve/match': typeof EveMatchRouteWithChildren
@@ -599,6 +607,7 @@ export interface FileRoutesById {
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
   '/eve/content/$id': typeof EveContentIdRoute
+  '/eve/events/$id': typeof EveEventsIdRoute
   '/eve/match/family': typeof EveMatchFamilyRoute
   '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
@@ -669,6 +678,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
     | '/eve/content/$id'
+    | '/eve/events/$id'
     | '/eve/match/family'
     | '/eve/match/history'
     | '/eve/match/insurance'
@@ -737,6 +747,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
     | '/eve/content/$id'
+    | '/eve/events/$id'
     | '/eve/match/family'
     | '/eve/match/history'
     | '/eve/match/insurance'
@@ -805,6 +816,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
     | '/eve/content/$id'
+    | '/eve/events/$id'
     | '/eve/match/family'
     | '/eve/match/history'
     | '/eve/match/insurance'
@@ -850,7 +862,7 @@ export interface RootRouteChildren {
   EveCareSupportRoute: typeof EveCareSupportRoute
   EveComingSoonRoute: typeof EveComingSoonRoute
   EveCommunityRoute: typeof EveCommunityRoute
-  EveEventsRoute: typeof EveEventsRoute
+  EveEventsRoute: typeof EveEventsRouteWithChildren
   EveGuidanceRoute: typeof EveGuidanceRoute
   EveHomeRoute: typeof EveHomeRoute
   EveMatchRoute: typeof EveMatchRouteWithChildren
@@ -1255,6 +1267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveMatchFamilyRouteImport
       parentRoute: typeof EveMatchRoute
     }
+    '/eve/events/$id': {
+      id: '/eve/events/$id'
+      path: '/$id'
+      fullPath: '/eve/events/$id'
+      preLoaderRoute: typeof EveEventsIdRouteImport
+      parentRoute: typeof EveEventsRoute
+    }
     '/eve/content/$id': {
       id: '/eve/content/$id'
       path: '/eve/content/$id'
@@ -1366,6 +1385,18 @@ const EdenPatientsRouteWithChildren = EdenPatientsRoute._addFileChildren(
   EdenPatientsRouteChildren,
 )
 
+interface EveEventsRouteChildren {
+  EveEventsIdRoute: typeof EveEventsIdRoute
+}
+
+const EveEventsRouteChildren: EveEventsRouteChildren = {
+  EveEventsIdRoute: EveEventsIdRoute,
+}
+
+const EveEventsRouteWithChildren = EveEventsRoute._addFileChildren(
+  EveEventsRouteChildren,
+)
+
 interface EveMatchRouteChildren {
   EveMatchFamilyRoute: typeof EveMatchFamilyRoute
   EveMatchHistoryRoute: typeof EveMatchHistoryRoute
@@ -1468,7 +1499,7 @@ const rootRouteChildren: RootRouteChildren = {
   EveCareSupportRoute: EveCareSupportRoute,
   EveComingSoonRoute: EveComingSoonRoute,
   EveCommunityRoute: EveCommunityRoute,
-  EveEventsRoute: EveEventsRoute,
+  EveEventsRoute: EveEventsRouteWithChildren,
   EveGuidanceRoute: EveGuidanceRoute,
   EveHomeRoute: EveHomeRoute,
   EveMatchRoute: EveMatchRouteWithChildren,
