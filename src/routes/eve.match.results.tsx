@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
-  CheckCircle2,
   ShieldCheck,
   MessageCircle,
-  Bookmark,
   FlaskConical,
   Pill,
   Users,
@@ -13,23 +11,19 @@ import {
   History,
   Stethoscope,
   Sparkles,
-  Heart,
-  Baby,
   ShoppingBag,
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import {
   readIntake,
   resetIntake,
   hydrateIntakeFromCloud,
   type MatchIntake,
 } from "@/lib/match-store";
-import { MATCH_PROVIDERS, type LifeStage } from "@/lib/match-data";
+import { type LifeStage } from "@/lib/match-data";
 import { eveToast } from "@/lib/eve-toast";
-import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/eve/match/results")({
   component: MatchResults,
