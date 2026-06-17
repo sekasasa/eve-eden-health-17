@@ -151,7 +151,12 @@ function orderForStage(stage?: LifeStage): QAKey[] {
 
 function EveHome() {
   const { t, i18n } = useTranslation();
-  const lang: "en" | "fr" = i18n.language?.startsWith("fr") ? "fr" : "en";
+  const lang: "en" | "fr" | "ar" = i18n.language?.startsWith("fr")
+    ? "fr"
+    : i18n.language?.startsWith("ar")
+      ? "ar"
+      : "en";
+
   const [loading, setLoading] = useState(true);
   const [mother, setMother] = useState<Mother | null>(null);
   const [guidance, setGuidance] = useState<Guidance | null>(null);
