@@ -105,9 +105,10 @@
   },
   "language": {
     "label": "Language",
+    "comingSoon": "Coming soon",
     "fr": "Français",
     "ar": "العربية",
     "en": "English",
-    "ber": "Tamazight"
+    "darija": "Darija"
   }
 }
