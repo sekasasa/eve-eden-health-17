@@ -118,7 +118,7 @@ function EveVendors() {
   const filtered = useMemo(() => {
     return vendors
       .filter((v) => (v.country ?? "MA") === country)
-      .filter((v) => (cat === "All" ? true : v.category === cat));
+      .filter((v) => (cat === "All" ? true : v.category === CATEGORY_VALUE[cat]));
   }, [vendors, country, cat]);
 
   const featured = useMemo(() => vendors.filter((v) => v.is_featured), [vendors]);
