@@ -59,9 +59,9 @@ function EventsPage() {
   return (
     <EveShell>
       <div className="pt-2">
-        <h1 className="font-serif text-3xl text-eve-teal-dark">Events & workshops</h1>
+        <h1 className="font-serif text-3xl text-eve-teal-dark">Events & Workshops</h1>
         <p className="mt-1 font-sans text-sm text-eve-muted">
-          Prenatal classes, support groups, and maternal health gatherings from vetted partners.
+          Classes, talks, wellness sessions, and community events for mothers and families.
         </p>
       </div>
 
