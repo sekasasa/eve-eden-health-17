@@ -49,8 +49,8 @@ function Landing() {
         The operating system for modern pregnancy in Africa.
       </p>
       <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-        <Link to="/eve/onboarding">
-          <PrimaryButton>I am expecting</PrimaryButton>
+        <Link to="/signup" search={{ type: "mother" }}>
+          <PrimaryButton>Get started</PrimaryButton>
         </Link>
         <Link to="/eden/login">
           <SecondaryButton>I am a provider</SecondaryButton>

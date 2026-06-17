@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, User } from "lucide-react";
+import { User } from "lucide-react";
 import { BottomNav } from "@/components/ui/BottomNav";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -30,12 +30,7 @@ export function EveShell({ children, hideNav, unprotected }: Props) {
           </Link>
           <div className="flex items-center gap-3 rtl:flex-row-reverse">
             <LanguageToggle />
-            <button
-              aria-label="Notifications"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-eve-cream text-eve-teal-dark"
-            >
-              <Bell className="h-4 w-4" />
-            </button>
+            {/* Notifications bell hidden until notifications ship. */}
             <Link
               to="/eve/profile"
               aria-label="Profile"
