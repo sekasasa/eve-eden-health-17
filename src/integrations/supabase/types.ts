@@ -963,11 +963,13 @@ export type Database = {
           cta_url: string | null
           event_at: string | null
           event_registrations: number
+          event_sections: Json | null
           excerpt: string | null
           id: string
           language: string | null
           life_stage: string | null
           location: string | null
+          map_embed_url: string | null
           media_url: string | null
           messages: number
           new_leads: number
@@ -1000,11 +1002,13 @@ export type Database = {
           cta_url?: string | null
           event_at?: string | null
           event_registrations?: number
+          event_sections?: Json | null
           excerpt?: string | null
           id?: string
           language?: string | null
           life_stage?: string | null
           location?: string | null
+          map_embed_url?: string | null
           media_url?: string | null
           messages?: number
           new_leads?: number
@@ -1037,11 +1041,13 @@ export type Database = {
           cta_url?: string | null
           event_at?: string | null
           event_registrations?: number
+          event_sections?: Json | null
           excerpt?: string | null
           id?: string
           language?: string | null
           life_stage?: string | null
           location?: string | null
+          map_embed_url?: string | null
           media_url?: string | null
           messages?: number
           new_leads?: number
