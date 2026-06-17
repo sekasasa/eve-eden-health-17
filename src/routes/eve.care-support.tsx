@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { Calendar, MapPin } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Calendar,
+  FlaskConical,
+  MapPin,
+  Pill,
+  ShieldCheck,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, FlaskConical, Pill, ShieldCheck, ArrowRight } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { SectionLabel } from "@/components/ui/SectionLabel";
