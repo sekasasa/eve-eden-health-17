@@ -85,7 +85,9 @@ function EveVendors() {
   const [language, setLanguage] = useState<string>("");
   const [credential, setCredential] = useState<string>("");
   const [userCity, setUserCity] = useState<string>("");
-  const [sortBy, setSortBy] = useState<"recommended" | "nearest" | "newest" | "highest_rated">("recommended");
+  const [sortBy, setSortBy] = useState<"recommended" | "nearest" | "newest" | "highest_rated">(
+    "recommended",
+  );
 
   useEffect(() => {
     (async () => {
@@ -101,10 +103,7 @@ function EveVendors() {
         if (m?.city) setUserCity(m.city);
       }
 
-      const { data } = await supabase
-        .from("vendors")
-        .select("*")
-        .eq("is_verified", true);
+      const { data } = await supabase.from("vendors").select("*").eq("is_verified", true);
 
       const vs = (data ?? []) as Vendor[];
       setVendors(vs);
@@ -140,7 +139,9 @@ function EveVendors() {
           : true,
       )
       .filter((v) =>
-        language ? (v.languages ?? []).some((l) => l?.toLowerCase() === language.toLowerCase()) : true,
+        language
+          ? (v.languages ?? []).some((l) => l?.toLowerCase() === language.toLowerCase())
+          : true,
       )
       .filter((v) => (cq ? (v.credentials ?? "").toLowerCase().includes(cq) : true));
 
@@ -204,7 +205,13 @@ function EveVendors() {
     return Array.from(set).sort();
   }, [vendors]);
 
-  const hasActiveFilters = !!(serviceQuery || language || credential || cat !== "All" || sortBy !== "recommended");
+  const hasActiveFilters = !!(
+    serviceQuery ||
+    language ||
+    credential ||
+    cat !== "All" ||
+    sortBy !== "recommended"
+  );
 
   const featured = useMemo(() => vendors.filter((v) => v.is_featured), [vendors]);
 
@@ -298,7 +305,9 @@ function EveVendors() {
           >
             <option value="">All languages</option>
             {languageOptions.map((l) => (
-              <option key={l} value={l}>{l}</option>
+              <option key={l} value={l}>
+                {l}
+              </option>
             ))}
           </select>
           <select
@@ -308,7 +317,9 @@ function EveVendors() {
           >
             <option value="">All credentials</option>
             {credentialOptions.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </select>
         </div>
@@ -341,8 +352,6 @@ function EveVendors() {
         )}
       </div>
 
-
-
       {/* List */}
       <section className="mt-4 flex flex-col gap-3">
         {loading ? (
@@ -350,7 +359,9 @@ function EveVendors() {
         ) : filtered.length === 0 ? (
           <EveCard className="text-center">
             <Store className="mx-auto h-6 w-6 text-eve-teal" />
-            <p className="mt-2 font-sans text-sm text-eve-muted">No vendors yet in this category.</p>
+            <p className="mt-2 font-sans text-sm text-eve-muted">
+              No vendors yet in this category.
+            </p>
           </EveCard>
         ) : (
           filtered.map((v) => (
