@@ -194,8 +194,8 @@ function Onboarding() {
   const totalDots = 5;
 
   return (
-    <div className="min-h-screen bg-eve-sand">
-      <div className="mx-auto flex min-h-screen max-w-sm flex-col px-5 pb-8 pt-8">
+    <div className="min-h-dvh bg-eve-sand">
+      <div className="mx-auto flex min-h-dvh max-w-sm flex-col px-5 pb-8 pt-8">
         {/* Progress dots */}
         <div className="flex items-center justify-center gap-2">
           {[0, 1, 2, 3, 4].map((i) => (

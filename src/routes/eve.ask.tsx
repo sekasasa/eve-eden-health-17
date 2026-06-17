@@ -210,8 +210,8 @@ function AskEveInner() {
   };
 
   return (
-    <div className="min-h-screen bg-eve-sand">
-      <div className="mx-auto flex min-h-screen max-w-sm flex-col">
+    <div className="min-h-dvh bg-eve-sand">
+      <div className="mx-auto flex min-h-dvh max-w-sm flex-col">
         {/* Header */}
         <header className="sticky top-0 z-30 flex items-center justify-between border-b border-eve-muted/15 bg-eve-sand/95 px-3 py-3 backdrop-blur">
           <button

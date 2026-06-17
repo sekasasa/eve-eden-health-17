@@ -89,7 +89,7 @@ function SignupPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-eve-sand px-6 py-12">
+    <main className="flex min-h-dvh items-center justify-center bg-eve-sand px-6 py-12">
       <div className="w-full max-w-md">
         <SectionLabel>Create account</SectionLabel>
         <h1 className="mt-2 font-serif text-4xl text-eve-teal">Welcome</h1>
