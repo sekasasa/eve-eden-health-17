@@ -571,6 +571,35 @@ function EveHome() {
             </button>
           </div>
 
+          {/* Events entry */}
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/eve/events" })}
+            className="mt-3 flex w-full items-center justify-between rounded-2xl bg-white px-3 py-3 text-left"
+          >
+            <span className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-eve-teal" />
+              <span>
+                <span className="block font-sans text-sm font-semibold text-eve-teal-dark">
+                  {lang === "fr"
+                    ? "Événements & ateliers"
+                    : lang === "ar"
+                      ? "الفعاليات وورش العمل"
+                      : "Events & Workshops"}
+                </span>
+                <span className="mt-0.5 block font-sans text-[11px] text-eve-muted">
+                  {lang === "fr"
+                    ? "Cours, rencontres et bien-être pour mamans"
+                    : lang === "ar"
+                      ? "دروس ولقاءات وعافية للأمهات"
+                      : "Classes, talks, and wellness for mothers"}
+                </span>
+              </span>
+            </span>
+            <ArrowRight className="h-4 w-4 text-eve-teal" />
+          </button>
+
+
           {/* Update care profile entry */}
           <button
             type="button"
