@@ -710,70 +710,100 @@ export type Database = {
           accepting_patients: boolean | null
           avg_rating: number | null
           bio: string | null
+          booking_url: string | null
           city: string | null
           clinic_address: string | null
           clinic_name: string | null
           consultation_fee_mad: number | null
           country: string | null
           created_at: string | null
+          credentials: string | null
+          email: string | null
+          facebook: string | null
           full_name: string | null
           id: string
+          instagram: string | null
           is_verified: boolean | null
           languages: string[] | null
           lat: number | null
           license_number: string | null
           lng: number | null
+          neighborhood: string | null
+          phone: string | null
           rejection_reason: string | null
           review_count: number | null
           review_status: string
+          services: string | null
           specialty: string | null
           user_id: string
+          website: string | null
+          years_in_practice: number | null
         }
         Insert: {
           accepting_patients?: boolean | null
           avg_rating?: number | null
           bio?: string | null
+          booking_url?: string | null
           city?: string | null
           clinic_address?: string | null
           clinic_name?: string | null
           consultation_fee_mad?: number | null
           country?: string | null
           created_at?: string | null
+          credentials?: string | null
+          email?: string | null
+          facebook?: string | null
           full_name?: string | null
           id?: string
+          instagram?: string | null
           is_verified?: boolean | null
           languages?: string[] | null
           lat?: number | null
           license_number?: string | null
           lng?: number | null
+          neighborhood?: string | null
+          phone?: string | null
           rejection_reason?: string | null
           review_count?: number | null
           review_status?: string
+          services?: string | null
           specialty?: string | null
           user_id: string
+          website?: string | null
+          years_in_practice?: number | null
         }
         Update: {
           accepting_patients?: boolean | null
           avg_rating?: number | null
           bio?: string | null
+          booking_url?: string | null
           city?: string | null
           clinic_address?: string | null
           clinic_name?: string | null
           consultation_fee_mad?: number | null
           country?: string | null
           created_at?: string | null
+          credentials?: string | null
+          email?: string | null
+          facebook?: string | null
           full_name?: string | null
           id?: string
+          instagram?: string | null
           is_verified?: boolean | null
           languages?: string[] | null
           lat?: number | null
           license_number?: string | null
           lng?: number | null
+          neighborhood?: string | null
+          phone?: string | null
           rejection_reason?: string | null
           review_count?: number | null
           review_status?: string
+          services?: string | null
           specialty?: string | null
           user_id?: string
+          website?: string | null
+          years_in_practice?: number | null
         }
         Relationships: [
           {
@@ -1058,52 +1088,100 @@ export type Database = {
       }
       vendors: {
         Row: {
+          address: string | null
+          bio: string | null
+          booking_url: string | null
           business_name: string | null
           category: string | null
           city: string | null
           commission_rate: number | null
           country: string | null
           created_at: string | null
+          credentials: string | null
           description: string | null
+          email: string | null
+          facebook: string | null
+          google_maps_url: string | null
           id: string
+          instagram: string | null
           is_featured: boolean | null
           is_verified: boolean | null
+          languages: string[] | null
+          linkedin: string | null
           logo_url: string | null
+          neighborhood: string | null
+          phone: string | null
           rejection_reason: string | null
           review_status: string
+          secondary_website: string | null
+          services: string | null
           user_id: string
+          website: string | null
+          years_in_practice: number | null
         }
         Insert: {
+          address?: string | null
+          bio?: string | null
+          booking_url?: string | null
           business_name?: string | null
           category?: string | null
           city?: string | null
           commission_rate?: number | null
           country?: string | null
           created_at?: string | null
+          credentials?: string | null
           description?: string | null
+          email?: string | null
+          facebook?: string | null
+          google_maps_url?: string | null
           id?: string
+          instagram?: string | null
           is_featured?: boolean | null
           is_verified?: boolean | null
+          languages?: string[] | null
+          linkedin?: string | null
           logo_url?: string | null
+          neighborhood?: string | null
+          phone?: string | null
           rejection_reason?: string | null
           review_status?: string
+          secondary_website?: string | null
+          services?: string | null
           user_id: string
+          website?: string | null
+          years_in_practice?: number | null
         }
         Update: {
+          address?: string | null
+          bio?: string | null
+          booking_url?: string | null
           business_name?: string | null
           category?: string | null
           city?: string | null
           commission_rate?: number | null
           country?: string | null
           created_at?: string | null
+          credentials?: string | null
           description?: string | null
+          email?: string | null
+          facebook?: string | null
+          google_maps_url?: string | null
           id?: string
+          instagram?: string | null
           is_featured?: boolean | null
           is_verified?: boolean | null
+          languages?: string[] | null
+          linkedin?: string | null
           logo_url?: string | null
+          neighborhood?: string | null
+          phone?: string | null
           rejection_reason?: string | null
           review_status?: string
+          secondary_website?: string | null
+          services?: string | null
           user_id?: string
+          website?: string | null
+          years_in_practice?: number | null
         }
         Relationships: [
           {
