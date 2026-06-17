@@ -45,7 +45,15 @@ const VENDOR_NAV = [
   { to: "/eden/vendor/listing", label: "My Listing", icon: Star },
 ];
 
-export function EdenSidebar({ variant = "provider" }: { variant?: "provider" | "vendor" }) {
+export function EdenSidebar({
+  variant = "provider",
+  mobile = false,
+  onNavigate,
+}: {
+  variant?: "provider" | "vendor";
+  mobile?: boolean;
+  onNavigate?: () => void;
+}) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const items = variant === "vendor" ? VENDOR_NAV : PROVIDER_NAV;
@@ -78,20 +86,27 @@ export function EdenSidebar({ variant = "provider" }: { variant?: "provider" | "
     navigate({ to: "/login" });
   };
 
+  // On mobile, render full-height flex without the `hidden md:flex` constraint so
+  // the overlay shows real navigation. On desktop, the aside stays hidden below md.
+  const asideCls = mobile
+    ? "flex h-full w-full flex-col bg-eve-teal-dark text-white"
+    : "hidden md:flex md:w-60 md:flex-col md:bg-eve-teal-dark md:text-white md:sticky md:top-0 md:h-screen";
+
   return (
-    <aside className="hidden md:flex md:w-60 md:flex-col md:bg-eve-teal-dark md:text-white md:sticky md:top-0 md:h-screen">
+    <aside className={asideCls}>
       <div className="px-6 pt-8">
         <Link to="/eden/dashboard" className="font-sans text-[22px] font-bold tracking-tight">
           eden.
         </Link>
       </div>
-      <nav className="mt-10 flex-1 px-3">
+      <nav className="mt-10 flex-1 px-3 overflow-y-auto">
         {items.map((item) => {
           const active = pathname.startsWith(item.to);
           return (
             <Link
               key={item.to}
               to={item.to}
+              onClick={onNavigate}
               className={cn(
                 "mb-1 flex items-center gap-3 rounded-lg px-4 py-3 font-sans text-sm transition-colors",
                 active

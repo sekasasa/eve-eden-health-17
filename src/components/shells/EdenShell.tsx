@@ -26,9 +26,11 @@ export function EdenShell({ children, variant = "provider", allowedTypes }: Prop
               className="absolute inset-y-0 left-0 w-64"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="h-full bg-eve-teal-dark text-white">
-                <EdenSidebar variant={variant} />
-              </div>
+              <EdenSidebar
+                variant={variant}
+                mobile
+                onNavigate={() => setOpen(false)}
+              />
             </div>
           </div>
         )}
@@ -36,7 +38,7 @@ export function EdenShell({ children, variant = "provider", allowedTypes }: Prop
         <div className="flex flex-1 flex-col bg-gray-50">
           <header className="flex items-center border-b border-gray-200 bg-white px-4 py-3 md:hidden">
             <button
-              aria-label="Open menu"
+              aria-label={open ? "Close menu" : "Open menu"}
               onClick={() => setOpen(!open)}
               className="text-eve-teal-dark"
             >
