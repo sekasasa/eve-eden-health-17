@@ -155,7 +155,7 @@ function EveProviders() {
         <ArrowLeft className="h-3 w-3" /> Back to dashboard
       </button>
       <h1 className="font-serif text-[26px] leading-tight text-eve-forest">
-        Find care
+        Find the right provider
       </h1>
       <p className="mt-1 font-sans text-xs text-eve-muted">
         Doctors, midwives, doulas, labs, pharmacies, insurance and wellness — all in one place.
@@ -238,6 +238,10 @@ function EveProviders() {
             />
           ))
         )}
+      </div>
+
+      <div className="mt-6">
+        <NavigatorHelp />
       </div>
     </EveShell>
   );
