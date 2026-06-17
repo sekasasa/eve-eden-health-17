@@ -25,6 +25,17 @@ export const Route = createFileRoute("/eve/ask")({
   component: AskEvePage,
 });
 
+// EMERGENCY_NUMBER: Morocco-wide SAMU/emergency dispatch.
+// TODO: source this from the user's country / care location once geo + provider
+// settings are wired into the mother profile.
+const EMERGENCY_NUMBER = "150";
+
+type PreferredProvider = {
+  id: string;
+  full_name: string | null;
+  phone: string | null;
+};
+
 type Msg = {
   id: string;
   role: "user" | "assistant";
@@ -39,13 +50,17 @@ const URGENT_KEYWORDS = [
   "saigne",
   "saignement",
   "severe pain",
-  "douleur",
+  "douleur sévère",
+  "douleur intense",
   "no movement",
   "ne bouge",
   "emergency",
   "urgence",
   "fainting",
   "evanou",
+  "contractions",
+  "water broke",
+  "perte des eaux",
 ];
 
 const PROVIDER_HINTS = [
@@ -56,13 +71,20 @@ const PROVIDER_HINTS = [
   "docteur",
   "consult",
   "obstétric",
+  "ob-gyn",
 ];
 
-const QUICK_REPLIES = [
-  "What can I eat?",
-  "I have a symptom",
-  "Help me prepare for my appointment",
-  "Find me a doctor",
+type QuickReply = { label: string; chip: string };
+
+const QUICK_REPLIES: QuickReply[] = [
+  { chip: "Symptoms", label: "I have a symptom I want to understand" },
+  { chip: "Appointment prep", label: "Help me prepare for my appointment" },
+  { chip: "Food & supplements", label: "What can I eat? What supplements are safe?" },
+  { chip: "Labs", label: "Help me understand a lab result" },
+  { chip: "Prescriptions", label: "I have a question about a prescription" },
+  { chip: "Insurance", label: "Help me figure out insurance or payment" },
+  { chip: "Emotional support", label: "I need emotional support" },
+  { chip: "Provider search", label: "Help me find the right provider" },
 ];
 
 function isUrgent(text: string) {
@@ -104,6 +126,8 @@ function AskEveInner() {
     dietary_notes: string | null;
     country: string | null;
   } | null>(null);
+  const [preferredProvider, setPreferredProvider] =
+    useState<PreferredProvider | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -113,10 +137,21 @@ function AskEveInner() {
       if (!uid) return;
       const { data: m } = await supabase
         .from("mothers")
-        .select("pregnancy_week, language, dietary_notes, country")
+        .select("pregnancy_week, language, dietary_notes, country, preferred_provider_id")
         .eq("user_id", uid)
         .maybeSingle();
-      if (m) setProfile(m as any);
+      if (m) {
+        setProfile(m as any);
+        const pid = (m as any).preferred_provider_id as string | null;
+        if (pid) {
+          const { data: p } = await supabase
+            .from("providers")
+            .select("id, full_name, phone")
+            .eq("id", pid)
+            .maybeSingle();
+          if (p) setPreferredProvider(p as PreferredProvider);
+        }
+      }
     })();
   }, []);
 
@@ -130,11 +165,12 @@ function AskEveInner() {
   const send = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || pending) return;
+    const urgent = isUrgent(trimmed); // urgency derived ONLY from user message
     const userMsg: Msg = {
       id: crypto.randomUUID(),
       role: "user",
       content: trimmed,
-      urgent: isUrgent(trimmed),
+      urgent,
       createdAt: Date.now(),
     };
     const nextHistory = [...messages, userMsg];
@@ -205,6 +241,13 @@ function AskEveInner() {
           </button>
         </header>
 
+        {/* Thin persistent safety banner */}
+        <div className="border-b border-eve-muted/10 bg-eve-cream/60 px-3 py-2 text-center">
+          <p className="font-sans text-eve-teal-dark" style={{ fontSize: "10.5px", lineHeight: 1.4 }}>
+            Eve can help you prepare, understand your options, and find support. Eve does not diagnose or replace medical care.
+          </p>
+        </div>
+
         {/* Thread */}
         <div
           ref={scrollRef}
@@ -218,6 +261,7 @@ function AskEveInner() {
                 <MessageBubble
                   key={m.id}
                   msg={m}
+                  preferredProvider={preferredProvider}
                   onFindProvider={() => navigate({ to: "/eve/providers" })}
                 />
               ))}
@@ -237,8 +281,10 @@ function AskEveInner() {
           >
             <button
               type="button"
-              aria-label="Voice (coming soon)"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-eve-muted"
+              aria-label="Voice input coming soon"
+              title="Voice input coming soon"
+              disabled
+              className="flex h-9 w-9 shrink-0 cursor-not-allowed items-center justify-center rounded-full bg-white text-eve-muted opacity-50"
             >
               <Mic className="h-4 w-4" />
             </button>
@@ -281,31 +327,32 @@ function WelcomeState({ onPick }: { onPick: (q: string) => void }) {
             className="font-sans text-eve-teal-dark"
             style={{ fontSize: "13px", lineHeight: "1.45" }}
           >
-            Marhaban! I am Eve, your pregnancy companion. I can help with
-            nutrition questions, symptom guidance, appointment preparation,
-            and connecting you with vetted providers near you. What is on
-            your mind today?
+            Marhaban! I'm Eve — your maternal care guide. I can help you prepare for appointments, understand your options, organize questions, find trusted providers, and feel supported. What would you like help with today?
           </p>
           <p
             className="mt-2 font-sans italic text-eve-muted"
             style={{ fontSize: "10px" }}
           >
-            Eve provides general information only. Always consult your
-            provider for medical decisions.
+            Eve provides general information only. Always consult your provider for medical decisions.
           </p>
         </div>
       </div>
-      <div className="mt-4 flex flex-wrap gap-2 pl-10">
-        {QUICK_REPLIES.map((q) => (
-          <button
-            key={q}
-            onClick={() => onPick(q)}
-            className="rounded-full border border-eve-teal/30 bg-white px-3 py-1.5 font-sans text-eve-teal"
-            style={{ fontSize: "12px" }}
-          >
-            {q}
-          </button>
-        ))}
+      <div className="mt-4 pl-10">
+        <p className="mb-2 font-sans uppercase tracking-widest text-eve-muted" style={{ fontSize: "9.5px" }}>
+          What can Eve help with
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {QUICK_REPLIES.map((q) => (
+            <button
+              key={q.chip}
+              onClick={() => onPick(q.label)}
+              className="rounded-full border border-eve-teal/30 bg-white px-3 py-1.5 font-sans text-eve-teal"
+              style={{ fontSize: "12px" }}
+            >
+              {q.chip}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -313,14 +360,22 @@ function WelcomeState({ onPick }: { onPick: (q: string) => void }) {
 
 function MessageBubble({
   msg,
+  preferredProvider,
   onFindProvider,
 }: {
   msg: Msg;
+  preferredProvider: PreferredProvider | null;
   onFindProvider: () => void;
 }) {
   if (msg.role === "user") {
     return (
       <div className="flex flex-col items-end">
+        {/* Urgency banner triggered ONLY by user message keyword */}
+        {msg.urgent && (
+          <div className="mb-2 w-full">
+            <UrgencyCard preferredProvider={preferredProvider} />
+          </div>
+        )}
         <div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-eve-rose px-3 py-2 text-white">
           <p
             className="font-sans"
@@ -341,28 +396,15 @@ function MessageBubble({
 
   return (
     <div className="flex flex-col items-start">
-      {msg.content && msg.role === "assistant" && (
-        <>
-          {/* urgency banner derived from the preceding user message keyword? We render based on assistant content too */}
-        </>
-      )}
       <div className="flex items-start gap-2">
         <EveAvatar />
         <div className="max-w-[78%] space-y-2">
-          {isUrgent(msg.content) && <UrgencyCard />}
           <div className="rounded-2xl rounded-tl-sm border border-eve-muted/20 bg-eve-cream p-3">
             <p
               className="font-sans text-eve-teal-dark"
               style={{ fontSize: "13px", lineHeight: "1.45" }}
             >
               {msg.content}
-            </p>
-            <p
-              className="mt-2 font-sans italic text-eve-muted"
-              style={{ fontSize: "10px" }}
-            >
-              Eve provides general information only. Always consult your
-              provider for medical decisions.
             </p>
           </div>
           {msg.suggestProvider && (
@@ -399,7 +441,16 @@ function MessageBubble({
   );
 }
 
-function UrgencyCard() {
+function UrgencyCard({ preferredProvider }: { preferredProvider: PreferredProvider | null }) {
+  const hasProviderPhone =
+    !!preferredProvider && !!preferredProvider.phone && preferredProvider.phone.trim().length > 0;
+  const dialNumber = hasProviderPhone
+    ? preferredProvider!.phone!.trim()
+    : EMERGENCY_NUMBER;
+  const buttonLabel = hasProviderPhone
+    ? `Call ${preferredProvider!.full_name ?? "your doctor"}`
+    : "Call emergency services";
+
   return (
     <div className="rounded-2xl border border-red-300 bg-red-50 p-3">
       <div className="flex items-start gap-2">
@@ -409,15 +460,24 @@ function UrgencyCard() {
             className="font-sans font-medium text-red-700"
             style={{ fontSize: "12px" }}
           >
-            This sounds urgent. Please contact your doctor immediately.
+            This sounds urgent. Please get medical help right away.
           </p>
+          {/* dialNumber is guaranteed non-empty: provider phone OR EMERGENCY_NUMBER */}
           <a
-            href="tel:"
+            href={`tel:${dialNumber}`}
             className="mt-2 inline-flex items-center rounded-full bg-eve-rose px-3 py-1.5 font-sans font-medium text-white"
             style={{ fontSize: "11px" }}
           >
-            Call your doctor
+            {buttonLabel}
           </a>
+          {!hasProviderPhone && (
+            <p
+              className="mt-2 font-sans text-red-700/80"
+              style={{ fontSize: "10.5px", lineHeight: 1.4 }}
+            >
+              Or go to your nearest clinic or emergency department.
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -481,13 +541,10 @@ function DisclaimerModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
         <p className="mt-3 font-sans text-sm text-eve-teal-dark">
-          Eve is an AI-assisted companion. She offers general information
-          to help you understand your pregnancy.
+          Eve is your maternal care guide. She can help you prepare for appointments, understand your care options, organize questions, navigate insurance, and find trusted providers and emotional support.
         </p>
         <p className="mt-2 font-sans text-sm text-eve-muted">
-          Eve does not diagnose conditions or prescribe medication. For any
-          medical decision, please consult a qualified provider. In an
-          emergency, contact your doctor or go to the nearest clinic.
+          Eve does not diagnose conditions or prescribe medication. For any medical decision, please consult a qualified provider. In an emergency, call your doctor or {EMERGENCY_NUMBER}.
         </p>
         <button
           onClick={onClose}
