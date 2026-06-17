@@ -22,10 +22,9 @@ export const Route = createFileRoute("/eve/onboarding")({
 });
 
 const LANGUAGES = [
+  { code: "en", label: "English" },
   { code: "fr", label: "Français" },
   { code: "ar", label: "العربية" },
-  { code: "en", label: "English" },
-  { code: "zgh", label: "Tamazight" },
 ];
 
 const CITIES = [
@@ -54,7 +53,7 @@ function Onboarding() {
   const [fullName, setFullName] = useState("");
 
   // Step 1
-  const [language, setLanguage] = useState("fr");
+  const [language, setLanguage] = useState("en");
   // Step 2
   const [dueDate, setDueDate] = useState<Date | undefined>();
   const [isFirst, setIsFirst] = useState<boolean | null>(null);
