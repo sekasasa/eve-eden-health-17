@@ -12,6 +12,9 @@ export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [{ title: "Sign up — Eve & Eden Health" }],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    type: s.type === "provider" || s.type === "vendor" ? s.type : "mother",
+  }),
   component: SignupPage,
 });
 
@@ -25,7 +28,13 @@ const TYPE_OPTIONS: { value: UserType; label: string; redirect: string }[] = [
 
 function SignupPage() {
   const navigate = useNavigate();
-  const [userType, setUserType] = useState<UserType>("mother");
+  const search = Route.useSearch();
+  const initialType: UserType =
+    (search.type as UserType) ||
+    ((typeof window !== "undefined" &&
+      (sessionStorage.getItem("eve_pending_user_type") as UserType)) ||
+      "mother");
+  const [userType, setUserType] = useState<UserType>(initialType);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -192,11 +192,27 @@ function EveProviders() {
             />
           ))
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 rounded-2xl bg-white p-8 text-center">
+          <div className="flex flex-col items-center gap-3 rounded-2xl bg-white p-8 text-center">
             <Stethoscope className="h-6 w-6 text-eve-teal" />
             <p className="font-sans text-sm text-eve-muted">
-              No providers found.
+              We don't have a verified match for this yet.
             </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              {filter !== "All" && (
+                <button
+                  onClick={() => setFilter("All")}
+                  className="rounded-full border border-eve-teal/40 px-4 py-2 font-sans text-xs text-eve-teal"
+                >
+                  Browse all providers
+                </button>
+              )}
+              <Link
+                to="/eve/ask"
+                className="rounded-full bg-eve-teal px-4 py-2 font-sans text-xs text-white"
+              >
+                Ask a navigator
+              </Link>
+            </div>
           </div>
         ) : (
           filtered.map((p) => <ProviderCard key={p.id} p={p} />)

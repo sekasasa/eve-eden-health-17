@@ -1,21 +1,19 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, BookOpen, Sparkles, Calendar, User } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { Home, Stethoscope, Sparkles, ClipboardList, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const left = [
-  { to: "/eve/home", key: "home", icon: Home },
-  { to: "/eve/guidance", key: "guidance", icon: BookOpen },
+  { to: "/eve/home", label: "Home", icon: Home },
+  { to: "/eve/providers", label: "Find Care", icon: Stethoscope },
 ] as const;
 
 const right = [
-  { to: "/eve/appointments", key: "appointments", icon: Calendar },
-  { to: "/eve/profile", key: "profile", icon: User },
+  { to: "/eve/match/results", label: "Care Plan", icon: ClipboardList },
+  { to: "/eve/profile", label: "Profile", icon: User },
 ] as const;
 
 export function BottomNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { t } = useTranslation();
 
   return (
     <nav
@@ -27,16 +25,16 @@ export function BottomNav() {
           <NavItem
             key={item.to}
             to={item.to}
-            label={t(`nav.${item.key}`)}
+            label={item.label}
             icon={item.icon}
-            active={pathname === item.to}
+            active={pathname === item.to || pathname.startsWith(item.to + "/")}
           />
         ))}
 
         <Link
           to="/eve/ask"
           className="relative -mt-8 flex h-14 w-14 items-center justify-center rounded-full bg-eve-teal text-white shadow-lg transition-transform active:scale-95"
-          aria-label={t("nav.ask")}
+          aria-label="Ask Eve"
         >
           <Sparkles className="h-6 w-6" />
         </Link>
@@ -45,7 +43,7 @@ export function BottomNav() {
           <NavItem
             key={item.to}
             to={item.to}
-            label={t(`nav.${item.key}`)}
+            label={item.label}
             icon={item.icon}
             active={pathname.startsWith(item.to)}
           />

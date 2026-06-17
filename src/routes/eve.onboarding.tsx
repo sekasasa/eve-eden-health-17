@@ -12,6 +12,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { writeIntake } from "@/lib/match-store";
+import type { LifeStage } from "@/lib/match-data";
 
 export const Route = createFileRoute("/eve/onboarding")({
   component: () => (
@@ -39,6 +41,20 @@ const RELIGIONS = [
   { value: "none", label: "Prefer not to say" },
 ];
 
+// Stage list aligned with src/routes/eve.match.tsx so the two flows stay in sync.
+const STAGES: { key: LifeStage; label: string; sub: string; emoji: string }[] = [
+  { key: "ttc", label: "Trying to conceive", sub: "Fertility, cycle tracking, preconception", emoji: "🌱" },
+  { key: "ivf", label: "IVF or fertility support", sub: "Clinics, labs, medication, support", emoji: "🧬" },
+  { key: "pregnant", label: "Pregnant", sub: "Prenatal care, labs, providers", emoji: "🤰" },
+  { key: "postpartum", label: "Postpartum", sub: "Recovery, feeding, mood, follow-up", emoji: "🍼" },
+  { key: "newborn", label: "Newborn care", sub: "Pediatric care, feeding, milestones", emoji: "👶" },
+  { key: "pcos", label: "PCOS / hormonal health", sub: "Labs, symptoms, cycle support", emoji: "🌸" },
+  { key: "labs", label: "Labs or prescriptions", sub: "Results, medication questions", emoji: "🧪" },
+  { key: "insurance", label: "Insurance or payment help", sub: "Coverage, self-pay options", emoji: "🛡️" },
+  { key: "mood", label: "Emotional support", sub: "Mental health, stress, mood", emoji: "💛" },
+  { key: "family", label: "Helping a family member", sub: "Coordinate care or help pay", emoji: "🤝" },
+];
+
 interface Provider {
   id: string;
   full_name: string | null;
@@ -48,13 +64,15 @@ interface Provider {
 
 function Onboarding() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
 
+  // Step 0: stage
+  const [stage, setStage] = useState<LifeStage | null>(null);
   // Step 1
   const [language, setLanguage] = useState("en");
-  // Step 2
+  // Step 2 (pregnancy-only fields are optional for other stages)
   const [dueDate, setDueDate] = useState<Date | undefined>();
   const [isFirst, setIsFirst] = useState<boolean | null>(null);
   const [city, setCity] = useState("");
@@ -67,6 +85,8 @@ function Onboarding() {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [providerId, setProviderId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const isPregnant = stage === "pregnant";
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -110,44 +130,75 @@ function Onboarding() {
 
   async function saveLanguage() {
     if (!userId) return;
-    await supabase.from("profiles").update({ language }).eq("id", userId);
+    await supabase
+      .from("profiles")
+      .update({
+        language,
+        language_chosen_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
     setStep(2);
   }
 
   async function finish() {
-    if (!userId || !dueDate) return;
+    if (!userId) return;
     setSaving(true);
+    // Ensure language + language_chosen_at are persisted regardless of path
+    await supabase
+      .from("profiles")
+      .update({
+        language,
+        language_chosen_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
+
     await supabase.from("mothers").insert({
       user_id: userId,
       full_name: fullName || null,
-      due_date: format(dueDate, "yyyy-MM-dd"),
-      pregnancy_week: week,
-      is_first_pregnancy: isFirst,
+      due_date: isPregnant && dueDate ? format(dueDate, "yyyy-MM-dd") : null,
+      pregnancy_week: isPregnant && dueDate ? week : null,
+      is_first_pregnancy: isPregnant ? isFirst : null,
       city: city || null,
       religious_pref: religion || null,
       dietary_notes: diets.join(", ") || null,
       preferred_provider_id: providerId,
       whatsapp_opt_in: whatsapp,
       language,
+      stage: stage ?? null,
     });
+
+    // Pre-fill Match intake from onboarding so home doesn't immediately push
+    // the user into another multi-step flow.
+    writeIntake({
+      stage: stage ?? undefined,
+      city: city || undefined,
+      language: language === "fr" ? "French" : language === "ar" ? "Arabic" : "English",
+      languages: [language === "fr" ? "French" : language === "ar" ? "Arabic" : "English"],
+    });
+
     setSaving(false);
     navigate({ to: "/eve/home" });
   }
 
   const canContinue: Record<number, boolean> = {
+    0: !!stage,
     1: !!language,
-    2: !!dueDate && isFirst !== null && !!city,
-    3: diets.length > 0 && !!religion,
+    // Step 2 only requires due date / first-pregnancy when user is pregnant; city is required across all stages.
+    2: isPregnant ? !!dueDate && isFirst !== null && !!city : !!city,
+    3: true, // diet + religion are optional
     4: true,
     5: true,
   };
+
+  // Build dynamic step list. Step 0 = stage. Step 1 = language. Step 2 = stage details. Step 3 = preferences. Step 4 = provider (only for pregnant/ttc/ivf/postpartum/newborn). Step 5 = done.
+  const totalDots = 5;
 
   return (
     <div className="min-h-screen bg-eve-sand">
       <div className="mx-auto flex min-h-screen max-w-sm flex-col px-5 pb-8 pt-8">
         {/* Progress dots */}
         <div className="flex items-center justify-center gap-2">
-          {[1, 2, 3, 4, 5].map((i) => (
+          {[0, 1, 2, 3, 4].map((i) => (
             <div
               key={i}
               className={cn(
@@ -160,11 +211,44 @@ function Onboarding() {
         </div>
 
         <div className="mt-10 flex-1">
+          {step === 0 && (
+            <div>
+              <h1 className="font-serif text-3xl text-eve-teal-dark">
+                Where are you in your journey?
+              </h1>
+              <p className="mt-2 font-sans text-sm text-eve-muted">
+                Pick what fits best today. You can update this anytime.
+              </p>
+              <div className="mt-6 grid grid-cols-2 gap-2">
+                {STAGES.map((s) => (
+                  <button
+                    key={s.key}
+                    onClick={() => setStage(s.key)}
+                    className={cn(
+                      "rounded-2xl border p-3 text-left transition-all",
+                      stage === s.key
+                        ? "border-eve-teal bg-eve-teal-light"
+                        : "border-eve-muted/30 bg-white",
+                    )}
+                  >
+                    <span className="text-lg">{s.emoji}</span>
+                    <p className="mt-1 font-sans text-sm font-medium text-eve-teal-dark">
+                      {s.label}
+                    </p>
+                    <p className="mt-0.5 font-sans text-[11px] text-eve-muted">
+                      {s.sub}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {step === 1 && (
             <div>
               <h1 className="font-serif text-4xl text-eve-teal">Welcome to Eve</h1>
               <p className="mt-3 font-sans text-base text-eve-muted">
-                Your pregnancy companion, in the language you think in.
+                Your care companion, in the language you think in.
               </p>
               <div className="mt-8 grid grid-cols-2 gap-3">
                 {LANGUAGES.map((l) => (
@@ -188,68 +272,74 @@ function Onboarding() {
           {step === 2 && (
             <div className="space-y-6">
               <h1 className="font-serif text-3xl text-eve-teal-dark">
-                Tell us about your pregnancy
+                {isPregnant
+                  ? "Tell us about your pregnancy"
+                  : "A few details about you"}
               </h1>
 
-              <div>
-                <label className="font-sans text-sm font-medium text-eve-teal-dark">
-                  Due date
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button
-                      className={cn(
-                        "mt-2 flex w-full items-center justify-between rounded-2xl border border-eve-muted/30 bg-white px-4 py-3 font-sans text-left text-sm",
-                        !dueDate && "text-eve-muted",
-                      )}
-                    >
-                      {dueDate ? format(dueDate, "PPP") : "Pick your due date"}
-                      <CalendarIcon className="h-4 w-4 text-eve-muted" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={dueDate}
-                      onSelect={setDueDate}
-                      captionLayout="dropdown"
-                      disabled={(d) => d < new Date()}
-                      initialFocus
-                      className={cn("p-3 pointer-events-auto")}
-                    />
-                  </PopoverContent>
-                </Popover>
-                {dueDate && (
-                  <p className="mt-2 font-sans text-sm text-eve-teal">
-                    You are {week} weeks along
-                  </p>
-                )}
-              </div>
+              {isPregnant && (
+                <>
+                  <div>
+                    <label className="font-sans text-sm font-medium text-eve-teal-dark">
+                      Due date
+                    </label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={cn(
+                            "mt-2 flex w-full items-center justify-between rounded-2xl border border-eve-muted/30 bg-white px-4 py-3 font-sans text-left text-sm",
+                            !dueDate && "text-eve-muted",
+                          )}
+                        >
+                          {dueDate ? format(dueDate, "PPP") : "Pick your due date"}
+                          <CalendarIcon className="h-4 w-4 text-eve-muted" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={dueDate}
+                          onSelect={setDueDate}
+                          captionLayout="dropdown"
+                          disabled={(d) => d < new Date()}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    {dueDate && (
+                      <p className="mt-2 font-sans text-sm text-eve-teal">
+                        You are {week} weeks along
+                      </p>
+                    )}
+                  </div>
 
-              <div>
-                <label className="font-sans text-sm font-medium text-eve-teal-dark">
-                  Is this your first pregnancy?
-                </label>
-                <div className="mt-2 flex gap-3">
-                  {[
-                    { v: true, l: "Yes" },
-                    { v: false, l: "No" },
-                  ].map((o) => (
-                    <button
-                      key={o.l}
-                      onClick={() => setIsFirst(o.v)}
-                      className={cn(
-                        "flex-1 rounded-full border px-5 py-3 font-sans text-sm transition-all",
-                        isFirst === o.v
-                          ? "border-eve-teal bg-eve-teal text-white"
-                          : "border-eve-muted/30 bg-white text-eve-teal-dark",
-                      )}
-                    >
-                      {o.l}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                  <div>
+                    <label className="font-sans text-sm font-medium text-eve-teal-dark">
+                      Is this your first pregnancy?
+                    </label>
+                    <div className="mt-2 flex gap-3">
+                      {[
+                        { v: true, l: "Yes" },
+                        { v: false, l: "No" },
+                      ].map((o) => (
+                        <button
+                          key={o.l}
+                          onClick={() => setIsFirst(o.v)}
+                          className={cn(
+                            "flex-1 rounded-full border px-5 py-3 font-sans text-sm transition-all",
+                            isFirst === o.v
+                              ? "border-eve-teal bg-eve-teal text-white"
+                              : "border-eve-muted/30 bg-white text-eve-teal-dark",
+                          )}
+                        >
+                          {o.l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div>
                 <label className="font-sans text-sm font-medium text-eve-teal-dark">
@@ -289,10 +379,13 @@ function Onboarding() {
               <h1 className="font-serif text-3xl text-eve-teal-dark">
                 Help Eve understand you better
               </h1>
+              <p className="font-sans text-xs text-eve-muted">
+                Optional — this helps us match culturally familiar care when relevant.
+              </p>
 
               <div>
                 <label className="font-sans text-sm font-medium text-eve-teal-dark">
-                  Dietary preference
+                  Dietary preference <span className="font-normal text-eve-muted">(optional)</span>
                 </label>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {DIETS.map((d) => {
@@ -321,13 +414,13 @@ function Onboarding() {
 
               <div>
                 <label className="font-sans text-sm font-medium text-eve-teal-dark">
-                  Cultural context
+                  Cultural context <span className="font-normal text-eve-muted">(optional)</span>
                 </label>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {RELIGIONS.map((r) => (
                     <button
                       key={r.value}
-                      onClick={() => setReligion(r.value)}
+                      onClick={() => setReligion(religion === r.value ? "" : r.value)}
                       className={cn(
                         "rounded-full border px-4 py-2 font-sans text-sm transition-all",
                         religion === r.value
@@ -361,7 +454,9 @@ function Onboarding() {
           {step === 4 && (
             <div className="space-y-5">
               <h1 className="font-serif text-3xl text-eve-teal-dark">
-                Do you already have an OB-GYN?
+                {isPregnant
+                  ? "Do you already have an OB-GYN?"
+                  : "Do you already have a provider?"}
               </h1>
 
               <div className="relative">
@@ -378,7 +473,7 @@ function Onboarding() {
               <div className="space-y-3">
                 {providers.length === 0 && (
                   <p className="font-sans text-sm text-eve-muted">
-                    No verified providers found.
+                    We don't have a verified match here yet — you can skip and let Eve help you find one later.
                   </p>
                 )}
                 {providers.map((p) => {
@@ -428,7 +523,7 @@ function Onboarding() {
               <button
                 onClick={() => {
                   setProviderId(null);
-                  setStep(5);
+                  void finish();
                 }}
                 className="block w-full pt-2 text-center font-sans text-sm text-eve-muted underline"
               >
@@ -436,57 +531,31 @@ function Onboarding() {
               </button>
             </div>
           )}
-
-          {step === 5 && (
-            <div className="flex flex-col items-center pt-6 text-center">
-              <h1
-                className="font-serif text-eve-forest"
-                style={{ fontSize: 26 }}
-              >
-                You are ready{fullName ? `, ${fullName.split(" ")[0]}` : ""}
-              </h1>
-              <p className="mt-3 font-sans text-sm text-eve-muted">
-                Eve will guide you through every week of your pregnancy.
-              </p>
-              <div className="mt-10">
-                <StageRing week={week || 1} size={180} />
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Footer actions */}
         <div className="pt-8">
-          {step < 5 ? (
-            <div className="flex items-center gap-3">
-              {step > 1 && (
-                <button
-                  onClick={() => setStep(step - 1)}
-                  className="rounded-full px-5 py-3 font-sans text-sm text-eve-muted"
-                >
-                  Back
-                </button>
-              )}
-              <PrimaryButton
-                disabled={!canContinue[step]}
-                className="flex-1"
-                onClick={() => {
-                  if (step === 1) void saveLanguage();
-                  else setStep(step + 1);
-                }}
+          <div className="flex items-center gap-3">
+            {step > 0 && (
+              <button
+                onClick={() => setStep(step - 1)}
+                className="rounded-full px-5 py-3 font-sans text-sm text-eve-muted"
               >
-                Continue
-              </PrimaryButton>
-            </div>
-          ) : (
+                Back
+              </button>
+            )}
             <PrimaryButton
-              disabled={saving}
-              className="w-full"
-              onClick={() => void finish()}
+              disabled={!canContinue[step] || saving}
+              className="flex-1"
+              onClick={() => {
+                if (step === 1) void saveLanguage();
+                else if (step === 4) void finish();
+                else setStep(step + 1);
+              }}
             >
-              {saving ? "Saving…" : "Go to my home"}
+              {step === 4 ? (saving ? "Saving…" : "Finish") : "Continue"}
             </PrimaryButton>
-          )}
+          </div>
         </div>
       </div>
     </div>

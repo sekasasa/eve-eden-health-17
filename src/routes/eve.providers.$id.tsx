@@ -65,11 +65,8 @@ function initials(name?: string | null) {
     .join("");
 }
 
-const SAMPLE_REVIEWS = [
-  { rating: 5, body: "Listened to all my concerns and explained everything clearly." },
-  { rating: 5, body: "Calm, kind, and very thorough during my scan." },
-  { rating: 4, body: "Punctual and easy to talk to. Clinic was clean and welcoming." },
-];
+// Real reviews are not wired yet — never show fabricated reviews on production-facing pages.
+const REAL_REVIEWS: { rating: number; body: string }[] = [];
 
 function ProviderProfilePage() {
   const { id } = useParams({ from: "/eve/providers/$id" });
@@ -202,29 +199,34 @@ function ProviderProfilePage() {
       <section className="mt-6">
         <div className="flex items-center justify-between">
           <h2 className="font-serif text-lg text-eve-forest">Reviews</h2>
-          <button className="font-sans text-xs text-eve-teal">See all</button>
         </div>
-        <div className="mt-2 flex items-center gap-1 font-sans text-sm text-eve-terra">
-          <Star className="h-4 w-4 fill-eve-terra" />
-          {p.avg_rating?.toFixed(1) ?? "—"}
-          <span className="text-eve-muted">
-            {p.review_count ? `from ${p.review_count} reviews` : ""}
-          </span>
-        </div>
-        <ul className="mt-3 flex flex-col gap-2">
-          {SAMPLE_REVIEWS.map((r, i) => (
-            <li key={i} className="rounded-2xl bg-white p-3">
-              <div className="flex items-center gap-0.5 text-eve-terra">
-                {Array.from({ length: r.rating }).map((_, idx) => (
-                  <Star key={idx} className="h-3 w-3 fill-eve-terra" />
-                ))}
-              </div>
-              <p className="mt-1 font-sans text-sm text-eve-forest/80">
-                {r.body}
-              </p>
-            </li>
-          ))}
-        </ul>
+        {REAL_REVIEWS.length === 0 ? (
+          <p className="mt-2 font-sans text-sm text-eve-muted">No reviews yet.</p>
+        ) : (
+          <>
+            <div className="mt-2 flex items-center gap-1 font-sans text-sm text-eve-terra">
+              <Star className="h-4 w-4 fill-eve-terra" />
+              {p.avg_rating?.toFixed(1) ?? "—"}
+              <span className="text-eve-muted">
+                {p.review_count ? `from ${p.review_count} reviews` : ""}
+              </span>
+            </div>
+            <ul className="mt-3 flex flex-col gap-2">
+              {REAL_REVIEWS.map((r, i) => (
+                <li key={i} className="rounded-2xl bg-white p-3">
+                  <div className="flex items-center gap-0.5 text-eve-terra">
+                    {Array.from({ length: r.rating }).map((_, idx) => (
+                      <Star key={idx} className="h-3 w-3 fill-eve-terra" />
+                    ))}
+                  </div>
+                  <p className="mt-1 font-sans text-sm text-eve-forest/80">
+                    {r.body}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </section>
 
       <div className="h-24" />
@@ -284,18 +286,7 @@ const TYPES: { value: BookingType; icon: React.ComponentType<{ className?: strin
   { value: "Home visit", icon: HomeIcon },
 ];
 
-const TIME_SLOTS = [
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-];
+// Time slots are entered manually until live availability ships.
 
 function BookingSheet({
   open,
@@ -502,35 +493,27 @@ function BookingSheet({
 
               <p className="mt-5 font-sans text-sm text-eve-muted">
                 {date
-                  ? `Available times on ${date.toLocaleDateString(undefined, {
+                  ? `Pick a time on ${date.toLocaleDateString(undefined, {
                       weekday: "long",
                       day: "numeric",
                       month: "short",
                     })}`
-                  : "Pick a date to see available times"}
+                  : "Pick a date to request a time"}
               </p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {TIME_SLOTS.map((t, i) => {
-                  const booked = i % 7 === 3;
-                  const active = time === t;
-                  return (
-                    <button
-                      key={t}
-                      disabled={!date || booked}
-                      onClick={() => setTime(t)}
-                      className={cn(
-                        "rounded-full px-3 py-1.5 font-sans text-xs transition-colors",
-                        booked
-                          ? "bg-eve-muted/10 text-eve-muted/50 line-through"
-                          : active
-                            ? "bg-eve-teal text-white"
-                            : "bg-eve-teal-light text-eve-teal-dark",
-                      )}
-                    >
-                      {t}
-                    </button>
-                  );
-                })}
+              {/* Real availability is not wired yet — show a clearly labeled state instead of fake slots. */}
+              <div className="mt-2 rounded-xl border border-dashed border-eve-muted/30 bg-white p-3">
+                <p className="font-sans text-xs text-eve-muted">
+                  Live availability coming soon. For now, share a preferred time below and we'll confirm with the provider.
+                </p>
+              </div>
+              <div className="mt-3">
+                <label className="font-sans text-xs text-eve-muted">Preferred time</label>
+                <input
+                  type="time"
+                  value={time ?? ""}
+                  onChange={(e) => setTime(e.target.value || null)}
+                  className="mt-1 w-full rounded-xl border border-eve-muted/30 bg-white px-3 py-2 font-sans text-sm"
+                />
               </div>
 
               <div className="mt-6 flex gap-2">

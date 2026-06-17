@@ -34,6 +34,16 @@ function fmtTime(iso: string) {
   });
 }
 
+type ProfileStrength = {
+  hasLanguages: boolean;
+  hasBio: boolean;
+  hasFee: boolean;
+  hasClinic: boolean;
+  hasSpecialty: boolean;
+  hasPhone: boolean;
+  accepting: boolean;
+};
+
 function EdenDashboard() {
   const [name, setName] = useState<string>("");
   const [kpis, setKpis] = useState<KPI[]>([
@@ -47,6 +57,7 @@ function EdenDashboard() {
     { id: string; full_name: string | null; pregnancy_week: number | null; last_visit: string }[]
   >([]);
   const [loading, setLoading] = useState(true);
+  const [strength, setStrength] = useState<ProfileStrength | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -54,7 +65,7 @@ function EdenDashboard() {
       if (!auth.user) return;
       const { data: p } = await supabase
         .from("providers")
-        .select("id,full_name")
+        .select("id,full_name,specialty,clinic_name,bio,languages,consultation_fee_mad,phone,accepting_patients")
         .eq("user_id", auth.user.id)
         .maybeSingle();
       if (!p) {
@@ -62,6 +73,15 @@ function EdenDashboard() {
         return;
       }
       setName(p.full_name ?? "");
+      setStrength({
+        hasLanguages: !!(p.languages && p.languages.length),
+        hasBio: !!(p.bio && p.bio.trim().length > 30),
+        hasFee: p.consultation_fee_mad != null,
+        hasClinic: !!(p.clinic_name && p.clinic_name.trim()),
+        hasSpecialty: !!(p.specialty && p.specialty.trim()),
+        hasPhone: !!(p.phone && p.phone.trim()),
+        accepting: !!p.accepting_patients,
+      });
 
       const now = new Date();
       const startToday = new Date(now);
@@ -212,6 +232,9 @@ function EdenDashboard() {
         </div>
         <span className="font-sans text-xs font-medium text-eve-teal">Open →</span>
       </Link>
+
+      {/* Profile strength */}
+      {strength && <ProfileStrengthCard strength={strength} />}
 
       <CoordinationPanels />
 
@@ -389,5 +412,58 @@ function StatusPill({ status }: { status: string | null }) {
     >
       {s}
     </span>
+  );
+}
+
+function ProfileStrengthCard({ strength }: { strength: ProfileStrength }) {
+  const items: { key: keyof ProfileStrength; label: string }[] = [
+    { key: "hasSpecialty", label: "Confirm your specialty" },
+    { key: "hasClinic", label: "Add your clinic name" },
+    { key: "hasLanguages", label: "Add languages you speak" },
+    { key: "hasBio", label: "Write a short bio (30+ chars)" },
+    { key: "hasFee", label: "Set your consultation fee" },
+    { key: "hasPhone", label: "Add a phone number" },
+    { key: "accepting", label: "Mark whether you're accepting patients" },
+  ];
+  const done = items.filter((i) => strength[i.key]).length;
+  const pct = Math.round((done / items.length) * 100);
+  return (
+    <section className="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h2 className="font-sans text-base font-medium text-gray-900">Profile strength</h2>
+          <p className="mt-0.5 font-sans text-xs text-gray-500">
+            Complete your profile to help more mothers find and trust your care.
+          </p>
+        </div>
+        <span className="font-sans text-sm font-medium text-eve-teal-dark">{pct}%</span>
+      </div>
+      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+        <div className="h-full rounded-full bg-eve-teal transition-all" style={{ width: `${pct}%` }} />
+      </div>
+      <ul className="mt-4 space-y-2">
+        {items.map((i) => (
+          <li key={i.key} className="flex items-center gap-2 font-sans text-sm">
+            <span
+              className={cn(
+                "flex h-5 w-5 items-center justify-center rounded-full text-[10px]",
+                strength[i.key] ? "bg-eve-teal text-white" : "bg-gray-100 text-gray-400",
+              )}
+            >
+              {strength[i.key] ? "✓" : "•"}
+            </span>
+            <span className={cn(strength[i.key] ? "text-gray-500 line-through" : "text-gray-800")}>
+              {i.label}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <Link
+        to="/eden/onboarding"
+        className="mt-4 inline-flex rounded-full bg-eve-teal px-4 py-2 font-sans text-xs font-medium text-white"
+      >
+        Edit profile
+      </Link>
+    </section>
   );
 }
