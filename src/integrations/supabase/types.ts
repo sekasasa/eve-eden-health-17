@@ -952,6 +952,7 @@ export type Database = {
       }
       vendor_content: {
         Row: {
+          agenda: Json | null
           body: string | null
           booking_clicks: number
           category: string | null
@@ -970,13 +971,16 @@ export type Database = {
           media_url: string | null
           messages: number
           new_leads: number
+          price_label: string | null
           profile_visits: number
           quote_requests: number
           referrals_generated: number
           related_service: string | null
           requires_review: boolean
+          safety_note: string | null
           saves: number
           shop_clicks: number
+          speakers: Json | null
           status: string
           tags: string[] | null
           title: string
@@ -985,6 +989,7 @@ export type Database = {
           views: number
         }
         Insert: {
+          agenda?: Json | null
           body?: string | null
           booking_clicks?: number
           category?: string | null
@@ -1003,13 +1008,16 @@ export type Database = {
           media_url?: string | null
           messages?: number
           new_leads?: number
+          price_label?: string | null
           profile_visits?: number
           quote_requests?: number
           referrals_generated?: number
           related_service?: string | null
           requires_review?: boolean
+          safety_note?: string | null
           saves?: number
           shop_clicks?: number
+          speakers?: Json | null
           status?: string
           tags?: string[] | null
           title: string
@@ -1018,6 +1026,7 @@ export type Database = {
           views?: number
         }
         Update: {
+          agenda?: Json | null
           body?: string | null
           booking_clicks?: number
           category?: string | null
@@ -1036,13 +1045,16 @@ export type Database = {
           media_url?: string | null
           messages?: number
           new_leads?: number
+          price_label?: string | null
           profile_visits?: number
           quote_requests?: number
           referrals_generated?: number
           related_service?: string | null
           requires_review?: boolean
+          safety_note?: string | null
           saves?: number
           shop_clicks?: number
+          speakers?: Json | null
           status?: string
           tags?: string[] | null
           title?: string

@@ -32,8 +32,9 @@ type EventRow = {
   cta_type: string | null;
   cta_url: string | null;
   media_url: string | null;
+  price_label: string | null;
   vendor_id: string;
-  vendors?: { name: string | null } | null;
+  vendors?: { business_name: string | null } | null;
 };
 
 function EventsPage() {
@@ -45,7 +46,7 @@ function EventsPage() {
       const { data } = await supabase
         .from("vendor_content")
         .select(
-          "id,title,excerpt,location,language,category,life_stage,event_at,cta_type,cta_url,media_url,vendor_id,vendors(name)",
+          "id,title,excerpt,location,language,category,life_stage,event_at,cta_type,cta_url,media_url,price_label,vendor_id,vendors(business_name)",
         )
         .eq("content_type", "event")
         .eq("status", "published")
@@ -118,7 +119,7 @@ function formatDate(iso: string | null) {
 }
 
 function EventCard({ ev }: { ev: EventRow }) {
-  const organizer = ev.vendors?.name ?? "Verified partner";
+  const organizer = ev.vendors?.business_name ?? "Verified partner";
   const dateLabel = formatDate(ev.event_at);
   const isExternal = ev.cta_type === "register" && ev.cta_url;
   const cta = isExternal
@@ -147,8 +148,13 @@ function EventCard({ ev }: { ev: EventRow }) {
           </span>
         ) : null}
       </div>
-      {(ev.category || ev.life_stage) && (
+      {(ev.category || ev.life_stage || ev.price_label) && (
         <div className="mt-2 flex flex-wrap gap-1.5">
+          {ev.price_label ? (
+            <span className="rounded-full bg-eve-forest/10 px-2 py-0.5 text-[10px] font-medium text-eve-forest">
+              {ev.price_label}
+            </span>
+          ) : null}
           {ev.category ? (
             <span className="rounded-full bg-eve-teal-light px-2 py-0.5 text-[10px] font-medium text-eve-teal">
               {ev.category}

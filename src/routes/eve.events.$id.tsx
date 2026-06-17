@@ -9,6 +9,9 @@ import {
   Share2,
   Bookmark,
   Tag,
+  Clock,
+  Users,
+  ShieldCheck,
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
@@ -18,6 +21,22 @@ import { eveToast } from "@/lib/eve-toast";
 export const Route = createFileRoute("/eve/events/$id")({
   component: EventDetail,
 });
+
+type Speaker = {
+  name: string;
+  photo?: string | null;
+  role?: string | null;
+  specialty?: string | null;
+  organization?: string | null;
+  city?: string | null;
+  bio?: string | null;
+  session?: string | null;
+  languages?: string[] | null;
+  profile_url?: string | null;
+  placeholder?: boolean;
+};
+
+type AgendaItem = { time?: string | null; title?: string | null };
 
 type EventRow = {
   id: string;
@@ -33,8 +52,12 @@ type EventRow = {
   cta_url: string | null;
   media_url: string | null;
   tags: string[] | null;
+  speakers: Speaker[] | null;
+  agenda: AgendaItem[] | null;
+  safety_note: string | null;
+  price_label: string | null;
   vendor_id: string;
-  vendors?: { name: string | null; slug: string | null } | null;
+  vendors?: { business_name: string | null } | null;
 };
 
 function EventDetail() {
@@ -48,7 +71,7 @@ function EventDetail() {
       const { data } = await supabase
         .from("vendor_content")
         .select(
-          "id,title,excerpt,body,location,language,category,life_stage,event_at,cta_type,cta_url,media_url,tags,vendor_id,vendors(name,slug)",
+          "id,title,excerpt,body,location,language,category,life_stage,event_at,cta_type,cta_url,media_url,tags,speakers,agenda,safety_note,price_label,vendor_id,vendors(business_name)",
         )
         .eq("id", id)
         .eq("content_type", "event")
@@ -92,11 +115,12 @@ function EventDetail() {
         weekday: "long",
         day: "numeric",
         month: "long",
+        year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
       })
     : "Date to be confirmed";
-  const organizer = ev.vendors?.name ?? "Verified partner";
+  const organizer = ev.vendors?.business_name ?? "Verified partner";
   const isExternal = ev.cta_type === "register" && ev.cta_url;
 
   async function share() {
@@ -115,6 +139,13 @@ function EventDetail() {
     } catch {
       /* user cancelled */
     }
+  }
+
+  function reserve() {
+    if (isExternal) return;
+    eveToast.info(
+      "Registration is opening soon. Ask a navigator if you would like to be notified.",
+    );
   }
 
   return (
@@ -160,6 +191,11 @@ function EventDetail() {
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
+        {ev.price_label ? (
+          <span className="rounded-full bg-eve-forest/10 px-2 py-0.5 text-[11px] font-medium text-eve-forest">
+            {ev.price_label}
+          </span>
+        ) : null}
         {ev.category ? (
           <span className="rounded-full bg-eve-teal-light px-2 py-0.5 text-[11px] font-medium text-eve-teal">
             {ev.category}
@@ -193,6 +229,46 @@ function EventDetail() {
         </section>
       ) : null}
 
+      {Array.isArray(ev.speakers) && ev.speakers.length > 0 ? (
+        <section className="mt-6">
+          <h2 className="font-serif text-base text-eve-teal-dark">Speakers</h2>
+          <div className="mt-2 space-y-2">
+            {ev.speakers.map((s, i) => (
+              <SpeakerCard key={i} speaker={s} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {Array.isArray(ev.agenda) && ev.agenda.length > 0 ? (
+        <section className="mt-6">
+          <h2 className="font-serif text-base text-eve-teal-dark">Agenda</h2>
+          <ol className="mt-2 space-y-1 rounded-2xl border border-eve-teal/15 bg-white p-3">
+            {ev.agenda.map((a, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-3 border-b border-eve-cream/70 py-1.5 last:border-b-0"
+              >
+                <span className="inline-flex items-center gap-1 text-[12px] font-medium text-eve-teal">
+                  <Clock className="h-3 w-3" />
+                  {a.time ?? ""}
+                </span>
+                <span className="text-[13px] text-eve-forest">{a.title}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
+
+      {ev.safety_note ? (
+        <section className="mt-5 rounded-2xl border border-eve-teal/15 bg-eve-cream/50 p-3">
+          <p className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-eve-teal">
+            <ShieldCheck className="h-3 w-3" /> Safety note
+          </p>
+          <p className="mt-1 text-[12px] leading-relaxed text-eve-muted">{ev.safety_note}</p>
+        </section>
+      ) : null}
+
       <div className="mt-5 flex flex-col gap-2">
         {isExternal ? (
           <a
@@ -201,24 +277,28 @@ function EventDetail() {
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-1 rounded-full bg-eve-teal px-5 py-3 text-sm font-medium text-white"
           >
-            Register for event <ArrowRight className="h-4 w-4" />
+            Reserve my spot <ArrowRight className="h-4 w-4" />
           </a>
         ) : (
-          <Link
-            to="/eve/vendors/$id"
-            params={{ id: ev.vendor_id }}
+          <button
+            onClick={reserve}
             className="inline-flex items-center justify-center gap-1 rounded-full bg-eve-teal px-5 py-3 text-sm font-medium text-white"
           >
-            View organizer profile <ArrowRight className="h-4 w-4" />
-          </Link>
+            Reserve my spot <ArrowRight className="h-4 w-4" />
+          </button>
+        )}
+        {!isExternal && (
+          <p className="text-center text-[11px] text-eve-muted">
+            Registration is opening soon. Ask a navigator to be notified.
+          </p>
         )}
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <button
             onClick={share}
             className="inline-flex items-center justify-center gap-1 rounded-full border border-eve-teal/30 px-3 py-2 text-[12px] font-medium text-eve-teal-dark"
           >
-            <Share2 className="h-3.5 w-3.5" /> Share event
+            <Share2 className="h-3.5 w-3.5" /> Share
           </button>
           <button
             onClick={() => {
@@ -228,31 +308,89 @@ function EventDetail() {
             className="inline-flex items-center justify-center gap-1 rounded-full border border-eve-teal/30 px-3 py-2 text-[12px] font-medium text-eve-teal-dark"
           >
             <Bookmark className={"h-3.5 w-3.5 " + (saved ? "fill-current" : "")} />
-            {saved ? "Saved" : "Save event"}
+            {saved ? "Saved" : "Save"}
           </button>
+          <Link
+            to="/eve/vendors/$id"
+            params={{ id: ev.vendor_id }}
+            className="inline-flex items-center justify-center gap-1 rounded-full border border-eve-teal/30 px-3 py-2 text-[12px] font-medium text-eve-teal-dark"
+          >
+            <Users className="h-3.5 w-3.5" /> Host
+          </Link>
         </div>
-      </div>
-
-      <div className="mt-6">
-        <Link
-          to="/eve/vendors/$id"
-          params={{ id: ev.vendor_id }}
-          className="flex items-center justify-between rounded-2xl border border-eve-teal/15 bg-white p-4"
-        >
-          <div>
-            <p className="text-[11px] uppercase tracking-wide text-eve-muted">Organizer</p>
-            <p className="mt-0.5 font-serif text-sm text-eve-teal-dark">{organizer}</p>
-          </div>
-          <ArrowRight className="h-4 w-4 text-eve-teal" />
-        </Link>
       </div>
 
       <div className="mt-5">
         <NavigatorHelp
           label="Questions about this event?"
-          sub="A navigator can help you decide if it's right for you or suggest alternatives."
+          sub="A navigator can help you decide if it's right for you or notify you when registration opens."
         />
       </div>
     </EveShell>
+  );
+}
+
+function SpeakerCard({ speaker }: { speaker: Speaker }) {
+  const initials = (speaker.name ?? "")
+    .split(" ")
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("");
+  return (
+    <div className="flex items-start gap-3 rounded-2xl border border-eve-teal/15 bg-white p-3">
+      {speaker.photo ? (
+        <img
+          src={speaker.photo}
+          alt={speaker.name}
+          className="h-12 w-12 shrink-0 rounded-full object-cover"
+        />
+      ) : (
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-eve-cream text-sm font-semibold text-eve-teal">
+          {initials || "?"}
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+        <p className="font-serif text-sm font-semibold text-eve-teal-dark">
+          {speaker.name}
+          {speaker.placeholder ? (
+            <span className="ml-2 rounded-full bg-eve-cream px-2 py-0.5 align-middle text-[10px] font-medium uppercase tracking-wide text-eve-muted">
+              To be announced
+            </span>
+          ) : null}
+        </p>
+        {speaker.role || speaker.specialty ? (
+          <p className="text-[11px] text-eve-teal">
+            {[speaker.role, speaker.specialty].filter(Boolean).join(" · ")}
+          </p>
+        ) : null}
+        {speaker.organization || speaker.city ? (
+          <p className="text-[11px] text-eve-muted">
+            {[speaker.organization, speaker.city].filter(Boolean).join(" · ")}
+          </p>
+        ) : null}
+        {speaker.session ? (
+          <p className="mt-1 text-[12px] text-eve-forest">Session: {speaker.session}</p>
+        ) : null}
+        {speaker.bio ? (
+          <p className="mt-1 text-[12px] leading-snug text-eve-muted">{speaker.bio}</p>
+        ) : null}
+        {Array.isArray(speaker.languages) && speaker.languages.length > 0 ? (
+          <p className="mt-1 text-[10px] uppercase tracking-wide text-eve-muted">
+            {speaker.languages.join(" · ")}
+          </p>
+        ) : null}
+        {speaker.profile_url ? (
+          <a
+            href={speaker.profile_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-eve-teal"
+          >
+            View profile <ArrowRight className="h-3 w-3" />
+          </a>
+        ) : null}
+      </div>
+    </div>
   );
 }
