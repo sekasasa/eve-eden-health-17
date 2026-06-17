@@ -79,6 +79,9 @@ function EveVendors() {
   const [country, setCountry] = useState<string>("MA");
   const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("All");
   const [loading, setLoading] = useState(true);
+  const [serviceQuery, setServiceQuery] = useState("");
+  const [language, setLanguage] = useState<string>("");
+  const [credential, setCredential] = useState<string>("");
 
   useEffect(() => {
     (async () => {
