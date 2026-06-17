@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
+import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -186,6 +187,10 @@ function EveProfile() {
           Sign out
         </button>
         <span className="font-sans text-[10px] text-eve-muted">v0.1.0</span>
+      </div>
+
+      <div className="mt-6">
+        <NavigatorHelp />
       </div>
     </EveShell>
   );

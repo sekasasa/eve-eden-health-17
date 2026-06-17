@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin, RefreshCw, X, Check, Calendar as CalIcon, Baby, Heart, Star } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
+import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { PullToRefresh } from "@/components/ui/PullToRefresh";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -199,6 +200,9 @@ function EveAppointments() {
         </ol>
       </section>
       </PullToRefresh>
+      <div className="mt-5">
+        <NavigatorHelp />
+      </div>
     </EveShell>
   );
 }

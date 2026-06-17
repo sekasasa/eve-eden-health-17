@@ -423,6 +423,10 @@ function MatchResults() {
         </div>
       </section>
 
+      <div className="mt-5">
+        <NavigatorHelp />
+      </div>
+
       <p className="mt-5 px-3 pb-2 text-[10px] leading-relaxed text-eve-muted">
         Eve & Eden provides education and care navigation — not diagnosis. For
         urgent or life-threatening symptoms, please contact emergency services
