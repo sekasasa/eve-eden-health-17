@@ -123,7 +123,7 @@ function EventCard({ ev }: { ev: EventRow }) {
   const isExternal = ev.cta_type === "register" && ev.cta_url;
   const cta = isExternal
     ? { href: ev.cta_url!, label: "Register for event", external: true as const }
-    : { to: "/eve/vendors/$id" as const, params: { id: ev.vendor_id }, label: "View event", external: false as const };
+    : { to: "/eve/events/$id" as const, params: { id: ev.id }, label: "View event", external: false as const };
 
   return (
     <article className="rounded-2xl border border-eve-teal/15 bg-white p-4 shadow-sm">
