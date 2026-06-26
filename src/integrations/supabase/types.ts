@@ -855,6 +855,110 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_leads: {
+        Row: {
+          birth_preference_tags: string[] | null
+          business_name: string | null
+          certification_source: string | null
+          city: string | null
+          converted_provider_id: string | null
+          country: string | null
+          created_at: string
+          credential_text: string | null
+          cultural_fit_tags: string[] | null
+          display_in_app: boolean
+          display_name: string | null
+          doula_services: string[] | null
+          fee_or_rate_public_text: string | null
+          id: string
+          internal_notes: string | null
+          languages: string[] | null
+          last_checked_at: string | null
+          lead_ref: string | null
+          outreach_status: string | null
+          provider_type: string
+          region: string | null
+          service_area: string | null
+          source_name: string | null
+          source_type: string
+          source_url: string | null
+          specialties: string[] | null
+          state_or_province: string | null
+          updated_at: string
+          verification_status: string
+        }
+        Insert: {
+          birth_preference_tags?: string[] | null
+          business_name?: string | null
+          certification_source?: string | null
+          city?: string | null
+          converted_provider_id?: string | null
+          country?: string | null
+          created_at?: string
+          credential_text?: string | null
+          cultural_fit_tags?: string[] | null
+          display_in_app?: boolean
+          display_name?: string | null
+          doula_services?: string[] | null
+          fee_or_rate_public_text?: string | null
+          id?: string
+          internal_notes?: string | null
+          languages?: string[] | null
+          last_checked_at?: string | null
+          lead_ref?: string | null
+          outreach_status?: string | null
+          provider_type?: string
+          region?: string | null
+          service_area?: string | null
+          source_name?: string | null
+          source_type?: string
+          source_url?: string | null
+          specialties?: string[] | null
+          state_or_province?: string | null
+          updated_at?: string
+          verification_status?: string
+        }
+        Update: {
+          birth_preference_tags?: string[] | null
+          business_name?: string | null
+          certification_source?: string | null
+          city?: string | null
+          converted_provider_id?: string | null
+          country?: string | null
+          created_at?: string
+          credential_text?: string | null
+          cultural_fit_tags?: string[] | null
+          display_in_app?: boolean
+          display_name?: string | null
+          doula_services?: string[] | null
+          fee_or_rate_public_text?: string | null
+          id?: string
+          internal_notes?: string | null
+          languages?: string[] | null
+          last_checked_at?: string | null
+          lead_ref?: string | null
+          outreach_status?: string | null
+          provider_type?: string
+          region?: string | null
+          service_area?: string | null
+          source_name?: string | null
+          source_type?: string
+          source_url?: string | null
+          specialties?: string[] | null
+          state_or_province?: string | null
+          updated_at?: string
+          verification_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_leads_converted_provider_id_fkey"
+            columns: ["converted_provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_targets: {
         Row: {
           city: string | null
