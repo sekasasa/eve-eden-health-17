@@ -24,6 +24,8 @@ type Provider = {
   clinic_name: string | null;
   city: string | null;
   languages: string[] | null;
+  services: string[] | null;
+  credentials: string[] | null;
   avg_rating: number | null;
   review_count: number | null;
   consultation_fee_mad: number | null;
