@@ -60,10 +60,13 @@ function Landing() {
           <SecondaryButton>I am a provider</SecondaryButton>
         </Link>
       </div>
+      <p className="mt-6 font-sans text-xs text-eve-muted/70">
+        Starting with North America, Africa, South America, and Central America.
+      </p>
 
-      <div className="mt-8 flex flex-col items-center gap-2">
+      <div className="mt-6 flex flex-col items-center gap-2">
         <p className="font-sans text-xs uppercase tracking-widest text-eve-muted">
-          Explore without signing up
+          Explore Eve & Eden
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-sans text-sm">
           <button
