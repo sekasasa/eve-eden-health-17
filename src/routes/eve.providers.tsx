@@ -180,12 +180,20 @@ function EveProviders() {
         Doctors, midwives, doulas, labs, pharmacies, insurance and wellness — all in one place.
       </p>
 
-      {(profile.stage || profile.city || profile.language) && (
+      {(profile.stage || profile.city || profile.language || prefs.region) && (
         <div className="mt-3 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 text-[11px] text-eve-teal-dark">
-          Personalized for your saved profile
-          {profile.city ? ` · ${profile.city}` : ""}
-          {profile.language ? ` · ${profile.language}` : ""}
+          Personalized for your stated preferences
+          {prefs.region ? ` · ${prefs.region}` : ""}
+          {(prefs.city ?? profile.city) ? ` · ${prefs.city ?? profile.city}` : ""}
+          {(prefs.language ?? profile.language) ? ` · ${prefs.language ?? profile.language}` : ""}
           {filter !== "All" ? ` · ${filter}` : ""}
+        </div>
+      )}
+
+      {femalePreferred && (
+        <div className="mt-2 rounded-xl border border-eve-rose/30 bg-eve-rose-light px-3 py-2 text-[11px] text-eve-rose">
+          You asked for a female provider. We can't yet confirm a verified female-provider match in our directory.{" "}
+          <Link to="/eve/ask" className="font-medium underline">Ask a navigator for help</Link>.
         </div>
       )}
 
