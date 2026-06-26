@@ -428,6 +428,10 @@ function EveProviders() {
         />
       )}
 
+      <div className="mt-3">
+        <LanguageFallbackNotice language={prefs.language} />
+      </div>
+
       <p className="mt-3 font-sans text-[11px] text-eve-muted">
         {loading ? "Searching…" : `${matched} provider${matched === 1 ? "" : "s"} match your preferences`}
       </p>
