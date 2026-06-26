@@ -532,65 +532,8 @@ function CommunityPage() {
       </button>
 
       {/* New post sheet */}
-      {open && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 sm:items-center">
-          <div className="w-full max-w-sm rounded-t-3xl bg-white p-5 shadow-xl sm:rounded-3xl">
-            <div className="flex items-start justify-between">
-              <h3 className="font-serif text-xl font-semibold text-eve-teal-dark">
-                Share with the community
-              </h3>
-              <button onClick={() => setOpen(false)} aria-label="Close">
-                <X className="h-5 w-5 text-eve-muted" />
-              </button>
-            </div>
+      {open && <NewPostSheet onClose={() => setOpen(false)} prefs={prefs} />}
 
-            <div className="mt-3 rounded-xl bg-eve-teal-light px-3 py-2 text-[12px] text-eve-teal">
-              Your post will be shared anonymously. Your name is never shown.
-            </div>
-
-            <label className="mt-4 block text-[11px] font-medium uppercase tracking-wide text-eve-muted">
-              Category
-            </label>
-            <select className="mt-1 w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm">
-              {CATEGORIES.filter((c) => c.key !== "all").map((c) => (
-                <option key={c.key}>{c.label}</option>
-              ))}
-            </select>
-
-            <label className="mt-3 block text-[11px] font-medium uppercase tracking-wide text-eve-muted">
-              Title
-            </label>
-            <input
-              placeholder="What's on your mind?"
-              className="mt-1 w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
-            />
-
-            <label className="mt-3 block text-[11px] font-medium uppercase tracking-wide text-eve-muted">
-              Your post
-            </label>
-            <textarea
-              rows={4}
-              placeholder="Share your experience, ask a question, or offer support..."
-              className="mt-1 w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
-            />
-
-            <p className="mt-2 text-[12px] text-eve-teal">You'll post as: Mama Doe</p>
-
-            <button
-              onClick={() => setOpen(false)}
-              className="mt-4 w-full rounded-full bg-eve-teal py-3 text-sm font-medium text-white"
-            >
-              Post anonymously
-            </button>
-            <button
-              onClick={() => setOpen(false)}
-              className="mt-2 w-full text-center text-xs text-eve-muted"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </EveShell>
   );
 }
