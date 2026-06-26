@@ -404,54 +404,81 @@ export type Database = {
       }
       mothers: {
         Row: {
+          birth_prefs: string[] | null
+          care_setting: string | null
           city: string | null
           country: string | null
           created_at: string | null
+          cultural_other: string | null
+          cultural_prefs: string[] | null
+          dialect: string | null
           dietary_notes: string | null
+          dietary_other: string | null
+          dietary_prefs: string[] | null
           due_date: string | null
           full_name: string | null
           id: string
           is_first_pregnancy: boolean | null
           language: string | null
+          personalize_opt: string | null
           phone: string | null
           preferred_provider_id: string | null
           pregnancy_week: number | null
+          region: string | null
           religious_pref: string | null
           stage: string | null
           user_id: string
           whatsapp_opt_in: boolean | null
         }
         Insert: {
+          birth_prefs?: string[] | null
+          care_setting?: string | null
           city?: string | null
           country?: string | null
           created_at?: string | null
+          cultural_other?: string | null
+          cultural_prefs?: string[] | null
+          dialect?: string | null
           dietary_notes?: string | null
+          dietary_other?: string | null
+          dietary_prefs?: string[] | null
           due_date?: string | null
           full_name?: string | null
           id?: string
           is_first_pregnancy?: boolean | null
           language?: string | null
+          personalize_opt?: string | null
           phone?: string | null
           preferred_provider_id?: string | null
           pregnancy_week?: number | null
+          region?: string | null
           religious_pref?: string | null
           stage?: string | null
           user_id: string
           whatsapp_opt_in?: boolean | null
         }
         Update: {
+          birth_prefs?: string[] | null
+          care_setting?: string | null
           city?: string | null
           country?: string | null
           created_at?: string | null
+          cultural_other?: string | null
+          cultural_prefs?: string[] | null
+          dialect?: string | null
           dietary_notes?: string | null
+          dietary_other?: string | null
+          dietary_prefs?: string[] | null
           due_date?: string | null
           full_name?: string | null
           id?: string
           is_first_pregnancy?: boolean | null
           language?: string | null
+          personalize_opt?: string | null
           phone?: string | null
           preferred_provider_id?: string | null
           pregnancy_week?: number | null
+          region?: string | null
           religious_pref?: string | null
           stage?: string | null
           user_id?: string
