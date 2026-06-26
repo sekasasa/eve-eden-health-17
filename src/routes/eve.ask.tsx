@@ -613,7 +613,7 @@ function DisclaimerModal({ onClose }: { onClose: () => void }) {
           Eve is your maternal care guide. She can help you prepare for appointments, understand your care options, organize questions, navigate insurance, and find trusted providers and emotional support.
         </p>
         <p className="mt-2 font-sans text-sm text-eve-muted">
-          Eve does not diagnose conditions or prescribe medication. For any medical decision, please consult a qualified provider. In an emergency, call your doctor or {emergency.label} ({emergency.number}).
+          Eve does not diagnose conditions or prescribe medication. For any medical decision, please consult a qualified provider. In an emergency, {emergency.available ? `call your doctor or ${emergency.label} (${emergency.number}).` : "contact your local emergency service or go to the nearest emergency department."}
         </p>
         <button
           onClick={onClose}
