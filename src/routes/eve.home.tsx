@@ -160,7 +160,8 @@ function EveHome() {
       : "en";
   const { prefs } = useCarePreferences();
   const callouts = homeCalloutsFromPrefs(prefs);
-  const promoteFamily = prefHelpers.familyInvolved(prefs) && !prefHelpers.privateFromFamily(prefs);
+  // Reserved: gate family supporter widgets when family is preferred and not private.
+  void prefHelpers; // tree-shake guard
 
   const [loading, setLoading] = useState(true);
   const [mother, setMother] = useState<Mother | null>(null);
