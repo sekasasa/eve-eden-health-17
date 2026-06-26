@@ -28,6 +28,8 @@ import { babySizeFor } from "@/lib/babySize";
 import { cn } from "@/lib/utils";
 import { hydrateIntakeFromCloud, type MatchIntake } from "@/lib/match-store";
 import type { LifeStage } from "@/lib/match-data";
+import { useCarePreferences } from "@/hooks/useCarePreferences";
+import { homeCalloutsFromPrefs, prefHelpers } from "@/lib/personalization";
 
 export const Route = createFileRoute("/eve/home")({
   component: EveHome,
