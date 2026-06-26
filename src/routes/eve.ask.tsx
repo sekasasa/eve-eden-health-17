@@ -402,10 +402,14 @@ function WelcomeState({
 function MessageBubble({
   msg,
   preferredProvider,
+  emergencyNumber,
+  emergencyLabel,
   onFindProvider,
 }: {
   msg: Msg;
   preferredProvider: PreferredProvider | null;
+  emergencyNumber: string;
+  emergencyLabel: string;
   onFindProvider: () => void;
 }) {
   if (msg.role === "user") {
@@ -414,7 +418,11 @@ function MessageBubble({
         {/* Urgency banner triggered ONLY by user message keyword */}
         {msg.urgent && (
           <div className="mb-2 w-full">
-            <UrgencyCard preferredProvider={preferredProvider} />
+            <UrgencyCard
+              preferredProvider={preferredProvider}
+              emergencyNumber={emergencyNumber}
+              emergencyLabel={emergencyLabel}
+            />
           </div>
         )}
         <div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-eve-rose px-3 py-2 text-white">
@@ -482,15 +490,23 @@ function MessageBubble({
   );
 }
 
-function UrgencyCard({ preferredProvider }: { preferredProvider: PreferredProvider | null }) {
+function UrgencyCard({
+  preferredProvider,
+  emergencyNumber,
+  emergencyLabel,
+}: {
+  preferredProvider: PreferredProvider | null;
+  emergencyNumber: string;
+  emergencyLabel: string;
+}) {
   const hasProviderPhone =
     !!preferredProvider && !!preferredProvider.phone && preferredProvider.phone.trim().length > 0;
   const dialNumber = hasProviderPhone
     ? preferredProvider!.phone!.trim()
-    : EMERGENCY_NUMBER;
+    : emergencyNumber;
   const buttonLabel = hasProviderPhone
     ? `Call ${preferredProvider!.full_name ?? "your doctor"}`
-    : "Call emergency services";
+    : `Call ${emergencyLabel} (${emergencyNumber})`;
 
   return (
     <div className="rounded-2xl border border-red-300 bg-red-50 p-3">
