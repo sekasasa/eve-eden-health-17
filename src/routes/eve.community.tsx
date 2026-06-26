@@ -18,26 +18,57 @@ export const Route = createFileRoute("/eve/community")({
 
 type CategoryKey =
   | "all"
-  | "first"
-  | "second"
-  | "third"
+  | "ttc"
+  | "ivf"
+  | "pregnancy"
   | "postpartum"
+  | "newborn"
   | "symptoms"
-  | "family"
   | "provider"
-  | "chat";
+  | "nutrition"
+  | "labs"
+  | "insurance"
+  | "fasting"
+  | "culture"
+  | "birth"
+  | "emotional";
 
 const CATEGORIES: { key: CategoryKey; label: string; tone: "teal" | "rose" | "gold" | "muted" }[] = [
   { key: "all", label: "🌟 All", tone: "teal" },
-  { key: "first", label: "🤰 First Trimester", tone: "rose" },
-  { key: "second", label: "👶 Second Trimester", tone: "teal" },
-  { key: "third", label: "🌸 Third Trimester", tone: "rose" },
+  { key: "ttc", label: "🌱 Trying to Conceive", tone: "rose" },
+  { key: "ivf", label: "🧬 IVF / Fertility", tone: "teal" },
+  { key: "pregnancy", label: "🤰 Pregnancy", tone: "rose" },
   { key: "postpartum", label: "🍼 Postpartum", tone: "teal" },
+  { key: "newborn", label: "👶 Newborn Care", tone: "gold" },
   { key: "symptoms", label: "💊 Symptoms & Health", tone: "rose" },
-  { key: "family", label: "👨‍👩‍👧 Family & Partners", tone: "gold" },
   { key: "provider", label: "🏥 Finding a Provider", tone: "teal" },
-  { key: "chat", label: "💬 Just Chatting", tone: "muted" },
+  { key: "nutrition", label: "🥗 Nutrition", tone: "gold" },
+  { key: "labs", label: "🧪 Labs & Prescriptions", tone: "teal" },
+  { key: "insurance", label: "💳 Insurance & Payment", tone: "muted" },
+  { key: "fasting", label: "🌙 Fasting & Faith", tone: "rose" },
+  { key: "culture", label: "👨‍👩‍👧 Culture & Family", tone: "gold" },
+  { key: "birth", label: "🌸 Birth Preferences", tone: "teal" },
+  { key: "emotional", label: "💛 Emotional Support", tone: "rose" },
 ];
+
+const POST_TAGS = [
+  "Ramadan",
+  "Lent/Fasting",
+  "Halal",
+  "Kosher",
+  "Vegan",
+  "Vegetarian",
+  "Female provider",
+  "Modesty",
+  "Family support",
+  "C-section questions",
+  "VBAC",
+  "Midwife",
+  "Doula",
+  "Postpartum traditions",
+];
+
+const LIFE_STAGES = ["trying", "fertility", "pregnant", "postpartum", "newborn", "family"];
 
 const toneBg: Record<string, string> = {
   teal: "bg-eve-teal text-white",
@@ -70,7 +101,7 @@ type Post = {
 const SEED_POSTS: Post[] = [
   {
     id: "1",
-    category: "first",
+    category: "pregnancy",
     anonName: "First-time Mama",
     avatarLetter: "A",
     avatarColor: "bg-eve-rose",
@@ -96,7 +127,7 @@ const SEED_POSTS: Post[] = [
   },
   {
     id: "3",
-    category: "third",
+    category: "pregnancy",
     anonName: "Anonymous Mama",
     avatarLetter: "Z",
     avatarColor: "bg-eve-terra",
@@ -136,7 +167,7 @@ const SEED_POSTS: Post[] = [
   },
   {
     id: "6",
-    category: "family",
+    category: "culture",
     anonName: "Mama F.",
     avatarLetter: "F",
     avatarColor: "bg-eve-terra",
@@ -148,7 +179,7 @@ const SEED_POSTS: Post[] = [
   },
   {
     id: "7",
-    category: "chat",
+    category: "emotional",
     anonName: "Mama A.",
     avatarLetter: "A",
     avatarColor: "bg-eve-teal",
@@ -169,13 +200,12 @@ function CommunityPage() {
   // Default category from stage
   const defaultCategory: CategoryKey = useMemo(() => {
     const s = prefs.stage ?? profile.stage;
-    if (s === "postpartum" || s === "newborn") return "postpartum";
-    if (s === "family") return "family";
-    if (s === "pregnant") {
-      const w = profile.stage ? 0 : 0; // we don't have week here, default to "all"
-      void w;
-      return "all";
-    }
+    if (s === "postpartum") return "postpartum";
+    if (s === "newborn") return "newborn";
+    if (s === "pregnant") return "pregnancy";
+    if (s === "trying") return "ttc";
+    if (s === "fertility") return "ivf";
+    if (s === "family") return "culture";
     return "all";
   }, [prefs.stage, profile.stage]);
   const [active, setActive] = useState<CategoryKey>(defaultCategory);
@@ -388,161 +418,302 @@ function CommunityPage() {
 
       {/* Posts */}
       <div className="mt-5 space-y-3">
-        {filtered.map((p) => {
-          const cat = CATEGORIES.find((c) => c.key === p.category)!;
-          const liked = hearts[p.id] ?? 0;
-          return (
-            <article
-              key={p.id}
-              className="relative overflow-hidden rounded-2xl bg-eve-cream p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        {filtered.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-eve-muted/30 bg-eve-cream/40 px-6 py-10 text-center">
+            <p className="font-serif text-lg text-eve-forest">
+              Be the first to start a conversation in your community.
+            </p>
+            <p className="mt-1 text-sm text-eve-muted">
+              Share a question or experience. Posts are anonymous by default.
+            </p>
+            <button
+              onClick={() => setOpen(true)}
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-eve-teal px-4 py-2 text-sm font-medium text-white"
             >
-              <span className="absolute inset-y-0 left-0 w-[3px] bg-eve-teal" />
+              <Plus className="h-4 w-4" /> New Post
+            </button>
+          </div>
+        ) : (
+          filtered.map((p) => {
+            const cat = CATEGORIES.find((c) => c.key === p.category)!;
+            const liked = hearts[p.id] ?? 0;
+            return (
+              <article
+                key={p.id}
+                className="relative overflow-hidden rounded-2xl bg-eve-cream p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <span className="absolute inset-y-0 left-0 w-[3px] bg-eve-teal" />
 
-              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold text-white",
+                      p.avatarColor,
+                    )}
+                  >
+                    {p.avatarLetter}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13px] font-medium text-eve-teal-dark">{p.anonName}</p>
+                    <p className="text-[11px] text-eve-muted">{p.timeAgo}</p>
+                  </div>
+                  {p.trending && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[10px] font-semibold text-eve-terra">
+                      <Flame className="h-3 w-3" /> Trending
+                    </span>
+                  )}
+                </div>
+
                 <span
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold text-white",
-                    p.avatarColor,
+                    "mt-3 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
+                    toneBadge[cat.tone],
                   )}
                 >
-                  {p.avatarLetter}
+                  {cat.label}
                 </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-medium text-eve-teal-dark">{p.anonName}</p>
-                  <p className="text-[11px] text-eve-muted">{p.timeAgo}</p>
-                </div>
-                {p.trending && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[10px] font-semibold text-eve-terra">
-                    <Flame className="h-3 w-3" /> Trending
+
+                <h2 className="mt-2 font-serif text-[17px] font-semibold leading-snug text-eve-teal-dark">
+                  {p.title}
+                </h2>
+                <p className="mt-1 line-clamp-2 text-[13px] text-eve-muted">{p.body}</p>
+                <Link
+                  to="/eve/community"
+                  className="mt-1 inline-block text-[12px] font-medium text-eve-teal"
+                >
+                  Read more
+                </Link>
+
+                <div className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[12px] text-eve-muted">
+                  <button
+                    onClick={() =>
+                      setHearts((h) => ({ ...h, [p.id]: (h[p.id] ?? 0) === 0 ? 1 : 0 }))
+                    }
+                    className={cn(
+                      "inline-flex items-center gap-1 transition active:scale-110",
+                      liked > 0 && "text-eve-rose",
+                    )}
+                  >
+                    <Heart className={cn("h-4 w-4", liked > 0 && "fill-current")} />
+                    {p.hearts + liked}
+                  </button>
+                  <span className="inline-flex items-center gap-1">
+                    <MessageCircle className="h-4 w-4" />
+                    {p.replies}
                   </span>
-                )}
-              </div>
-
-              <span
-                className={cn(
-                  "mt-3 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
-                  toneBadge[cat.tone],
-                )}
-              >
-                {cat.label}
-              </span>
-
-              <h2 className="mt-2 font-serif text-[17px] font-semibold leading-snug text-eve-teal-dark">
-                {p.title}
-              </h2>
-              <p className="mt-1 line-clamp-2 text-[13px] text-eve-muted">{p.body}</p>
-              <Link
-                to="/eve/community"
-                className="mt-1 inline-block text-[12px] font-medium text-eve-teal"
-              >
-                Read more
-              </Link>
-
-              <div className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[12px] text-eve-muted">
-                <button
-                  onClick={() =>
-                    setHearts((h) => ({ ...h, [p.id]: (h[p.id] ?? 0) === 0 ? 1 : 0 }))
-                  }
-                  className={cn(
-                    "inline-flex items-center gap-1 transition active:scale-110",
-                    liked > 0 && "text-eve-rose",
-                  )}
-                >
-                  <Heart className={cn("h-4 w-4", liked > 0 && "fill-current")} />
-                  {p.hearts + liked}
-                </button>
-                <span className="inline-flex items-center gap-1">
-                  <MessageCircle className="h-4 w-4" />
-                  {p.replies}
-                </span>
-                <button
-                  onClick={() => setSaved((s) => ({ ...s, [p.id]: !s[p.id] }))}
-                  className={cn(
-                    "ml-auto inline-flex items-center gap-1",
-                    saved[p.id] && "text-eve-teal",
-                  )}
-                >
-                  <Bookmark className={cn("h-4 w-4", saved[p.id] && "fill-current")} />
-                </button>
-              </div>
-
-              {p.topAnswer && (
-                <div className="mt-3 border-t border-eve-sand pt-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-eve-teal">
-                    Top answer
-                  </p>
-                  <p className="mt-1 line-clamp-2 text-[12px] text-eve-muted">{p.topAnswer}</p>
+                  <button
+                    onClick={() => setSaved((s) => ({ ...s, [p.id]: !s[p.id] }))}
+                    className={cn(
+                      "ml-auto inline-flex items-center gap-1",
+                      saved[p.id] && "text-eve-teal",
+                    )}
+                  >
+                    <Bookmark className={cn("h-4 w-4", saved[p.id] && "fill-current")} />
+                  </button>
                 </div>
-              )}
-            </article>
-          );
-        })}
+
+                {p.topAnswer && (
+                  <div className="mt-3 border-t border-eve-sand pt-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-eve-teal">
+                      Top answer
+                    </p>
+                    <p className="mt-1 line-clamp-2 text-[12px] text-eve-muted">{p.topAnswer}</p>
+                  </div>
+                )}
+              </article>
+            );
+          })
+        )}
       </div>
+
 
       <button className="mt-5 w-full rounded-full border border-eve-teal py-2.5 text-sm font-medium text-eve-teal transition hover:bg-eve-teal-light">
         Load more
       </button>
 
       {/* New post sheet */}
-      {open && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 sm:items-center">
-          <div className="w-full max-w-sm rounded-t-3xl bg-white p-5 shadow-xl sm:rounded-3xl">
-            <div className="flex items-start justify-between">
-              <h3 className="font-serif text-xl font-semibold text-eve-teal-dark">
-                Share with the community
-              </h3>
-              <button onClick={() => setOpen(false)} aria-label="Close">
-                <X className="h-5 w-5 text-eve-muted" />
-              </button>
-            </div>
+      {open && <NewPostSheet onClose={() => setOpen(false)} prefs={prefs} />}
 
-            <div className="mt-3 rounded-xl bg-eve-teal-light px-3 py-2 text-[12px] text-eve-teal">
-              Your post will be shared anonymously. Your name is never shown.
-            </div>
-
-            <label className="mt-4 block text-[11px] font-medium uppercase tracking-wide text-eve-muted">
-              Category
-            </label>
-            <select className="mt-1 w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm">
-              {CATEGORIES.filter((c) => c.key !== "all").map((c) => (
-                <option key={c.key}>{c.label}</option>
-              ))}
-            </select>
-
-            <label className="mt-3 block text-[11px] font-medium uppercase tracking-wide text-eve-muted">
-              Title
-            </label>
-            <input
-              placeholder="What's on your mind?"
-              className="mt-1 w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
-            />
-
-            <label className="mt-3 block text-[11px] font-medium uppercase tracking-wide text-eve-muted">
-              Your post
-            </label>
-            <textarea
-              rows={4}
-              placeholder="Share your experience, ask a question, or offer support..."
-              className="mt-1 w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
-            />
-
-            <p className="mt-2 text-[12px] text-eve-teal">You'll post as: Mama Doe</p>
-
-            <button
-              onClick={() => setOpen(false)}
-              className="mt-4 w-full rounded-full bg-eve-teal py-3 text-sm font-medium text-white"
-            >
-              Post anonymously
-            </button>
-            <button
-              onClick={() => setOpen(false)}
-              className="mt-2 w-full text-center text-xs text-eve-muted"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </EveShell>
   );
 }
+
+function NewPostSheet({
+  onClose,
+  prefs,
+}: {
+  onClose: () => void;
+  prefs: ReturnType<typeof useCarePreferences>["prefs"];
+}) {
+  const [anonymous, setAnonymous] = useState(true);
+  const [category, setCategory] = useState<CategoryKey>("pregnancy");
+  const [country, setCountry] = useState(prefs.country ?? "");
+  const [city, setCity] = useState(prefs.city ?? "");
+  const [language, setLanguage] = useState(prefs.language ?? "");
+  const [dialect, setDialect] = useState(prefs.dialect ?? "");
+  const [stage, setStage] = useState(prefs.stage ?? "");
+  const [tags, setTags] = useState<string[]>([]);
+
+  function toggleTag(t: string) {
+    setTags((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
+  }
+
+  function submit() {
+    eveToast.success(
+      anonymous ? "Post shared anonymously" : "Post shared",
+    );
+    onClose();
+  }
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 sm:items-center">
+      <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl bg-white p-5 shadow-xl sm:rounded-3xl">
+        <div className="flex items-start justify-between">
+          <h3 className="font-serif text-xl font-semibold text-eve-teal-dark">
+            Share with the community
+          </h3>
+          <button onClick={onClose} aria-label="Close">
+            <X className="h-5 w-5 text-eve-muted" />
+          </button>
+        </div>
+
+        <label className="mt-4 flex items-center justify-between rounded-xl bg-eve-teal-light px-3 py-2 text-[12px] text-eve-teal">
+          <span>Post anonymously</span>
+          <input
+            type="checkbox"
+            checked={anonymous}
+            onChange={(e) => setAnonymous(e.target.checked)}
+            className="h-4 w-4"
+          />
+        </label>
+
+        <Field label="Category">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value as CategoryKey)}
+            className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+          >
+            {CATEGORIES.filter((c) => c.key !== "all").map((c) => (
+              <option key={c.key} value={c.key}>{c.label}</option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label="Life stage (optional)">
+          <select
+            value={stage}
+            onChange={(e) => setStage(e.target.value)}
+            className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+          >
+            <option value="">Not specified</option>
+            {LIFE_STAGES.map((s) => (
+              <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+            ))}
+          </select>
+        </Field>
+
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Field label="Country">
+            <input
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              placeholder="e.g. Morocco"
+              className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+            />
+          </Field>
+          <Field label="City or region">
+            <input
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="e.g. Casablanca"
+              className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+            />
+          </Field>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Field label="Language">
+            <input
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              placeholder="e.g. English"
+              className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+            />
+          </Field>
+          <Field label="Dialect (optional)">
+            <input
+              value={dialect}
+              onChange={(e) => setDialect(e.target.value)}
+              placeholder="e.g. Darija"
+              className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+            />
+          </Field>
+        </div>
+
+        <Field label="Title">
+          <input
+            placeholder="What's on your mind?"
+            className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+          />
+        </Field>
+
+        <Field label="Your post">
+          <textarea
+            rows={4}
+            placeholder="Share your experience, ask a question, or offer support..."
+            className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+          />
+        </Field>
+
+        <div className="mt-3">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-eve-muted">Tags (optional)</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {POST_TAGS.map((t) => (
+              <button
+                key={t}
+                onClick={() => toggleTag(t)}
+                className={cn(
+                  "rounded-full px-3 py-1 text-[11px] font-medium border",
+                  tags.includes(t)
+                    ? "bg-eve-teal text-white border-eve-teal"
+                    : "bg-white text-eve-muted border-eve-sand",
+                )}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <p className="mt-3 text-[11px] text-eve-muted">
+          You choose what to share. Country and language help us show your post to mothers nearby — they are never used to identify you.
+        </p>
+
+        <button
+          onClick={submit}
+          className="mt-4 w-full rounded-full bg-eve-teal py-3 text-sm font-medium text-white"
+        >
+          {anonymous ? "Post anonymously" : "Post"}
+        </button>
+        <button
+          onClick={onClose}
+          className="mt-2 w-full text-center text-xs text-eve-muted"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="mt-3">
+      <label className="block text-[11px] font-medium uppercase tracking-wide text-eve-muted">
+        {label}
+      </label>
+      <div className="mt-1">{children}</div>
+    </div>
+  );
+}
+
