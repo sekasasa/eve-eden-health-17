@@ -146,8 +146,8 @@ function EveProfile() {
           </div>
         </Section>
 
-        <Section value="diet" title="Dietary and cultural preferences">
-          <Row label="Religious preference" value={m?.religious_pref ?? "—"} />
+        <Section value="diet" title="What matters to you (optional)">
+          <Row label="Personal preferences" value={m?.religious_pref ?? "—"} />
           <Row label="Dietary notes" value={m?.dietary_notes ?? "—"} />
         </Section>
 
