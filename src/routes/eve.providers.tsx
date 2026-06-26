@@ -17,6 +17,7 @@ import {
 import { EveShell } from "@/components/shells/EveShell";
 import { TrustBadge } from "@/components/ui/TrustBadge";
 import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
+import { LanguageFallbackNotice } from "@/components/LanguageFallbackNotice";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
