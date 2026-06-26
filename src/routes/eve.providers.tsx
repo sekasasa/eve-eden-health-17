@@ -7,6 +7,8 @@ import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
+import { useCarePreferences } from "@/hooks/useCarePreferences";
+import { prefHelpers, providerPersonalizationScore, priorityLanguagesForRegion, regionOf } from "@/lib/personalization";
 import type { LifeStage } from "@/lib/match-data";
 import { cn } from "@/lib/utils";
 
