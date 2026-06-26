@@ -20,15 +20,15 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { supabase } from "@/integrations/supabase/client";
 import { askEve } from "@/lib/ask-eve.functions";
 import { cn } from "@/lib/utils";
+import { useCarePreferences } from "@/hooks/useCarePreferences";
+import {
+  emergencyContact,
+  suggestedPromptsFromPrefs,
+} from "@/lib/personalization";
 
 export const Route = createFileRoute("/eve/ask")({
   component: AskEvePage,
 });
-
-// EMERGENCY_NUMBER: Morocco-wide SAMU/emergency dispatch.
-// TODO: source this from the user's country / care location once geo + provider
-// settings are wired into the mother profile.
-const EMERGENCY_NUMBER = "150";
 
 type PreferredProvider = {
   id: string;
