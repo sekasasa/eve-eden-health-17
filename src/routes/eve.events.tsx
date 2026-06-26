@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Calendar, MapPin, Globe, ArrowRight, Sparkles, SlidersHorizontal, X, Users, Tag } from "lucide-react";
+import { Calendar, MapPin, Globe, ArrowRight, Sparkles, SlidersHorizontal, Users, Tag } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
