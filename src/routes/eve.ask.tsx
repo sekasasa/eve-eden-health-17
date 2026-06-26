@@ -333,7 +333,13 @@ function AskEveInner() {
   );
 }
 
-function WelcomeState({ onPick }: { onPick: (q: string) => void }) {
+function WelcomeState({
+  onPick,
+  extraPrompts,
+}: {
+  onPick: (q: string) => void;
+  extraPrompts: { chip: string; label: string }[];
+}) {
   return (
     <div>
       <div className="flex items-start gap-2">
@@ -353,6 +359,25 @@ function WelcomeState({ onPick }: { onPick: (q: string) => void }) {
           </p>
         </div>
       </div>
+      {extraPrompts.length > 0 && (
+        <div className="mt-4 pl-10">
+          <p className="mb-2 font-sans uppercase tracking-widest text-eve-muted" style={{ fontSize: "9.5px" }}>
+            Based on your preferences
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {extraPrompts.map((q) => (
+              <button
+                key={q.chip}
+                onClick={() => onPick(q.label)}
+                className="rounded-full border border-eve-rose/40 bg-eve-rose-light px-3 py-1.5 font-sans text-eve-rose"
+                style={{ fontSize: "12px" }}
+              >
+                {q.chip}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="mt-4 pl-10">
         <p className="mb-2 font-sans uppercase tracking-widest text-eve-muted" style={{ fontSize: "9.5px" }}>
           What can Eve help with
