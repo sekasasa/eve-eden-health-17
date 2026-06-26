@@ -101,7 +101,7 @@ type Post = {
 const SEED_POSTS: Post[] = [
   {
     id: "1",
-    category: "first",
+    category: "pregnancy",
     anonName: "First-time Mama",
     avatarLetter: "A",
     avatarColor: "bg-eve-rose",
@@ -127,7 +127,7 @@ const SEED_POSTS: Post[] = [
   },
   {
     id: "3",
-    category: "third",
+    category: "pregnancy",
     anonName: "Anonymous Mama",
     avatarLetter: "Z",
     avatarColor: "bg-eve-terra",
@@ -167,7 +167,7 @@ const SEED_POSTS: Post[] = [
   },
   {
     id: "6",
-    category: "family",
+    category: "culture",
     anonName: "Mama F.",
     avatarLetter: "F",
     avatarColor: "bg-eve-terra",
@@ -179,7 +179,7 @@ const SEED_POSTS: Post[] = [
   },
   {
     id: "7",
-    category: "chat",
+    category: "emotional",
     anonName: "Mama A.",
     avatarLetter: "A",
     avatarColor: "bg-eve-teal",
@@ -200,13 +200,12 @@ function CommunityPage() {
   // Default category from stage
   const defaultCategory: CategoryKey = useMemo(() => {
     const s = prefs.stage ?? profile.stage;
-    if (s === "postpartum" || s === "newborn") return "postpartum";
-    if (s === "family") return "family";
-    if (s === "pregnant") {
-      const w = profile.stage ? 0 : 0; // we don't have week here, default to "all"
-      void w;
-      return "all";
-    }
+    if (s === "postpartum") return "postpartum";
+    if (s === "newborn") return "newborn";
+    if (s === "pregnant") return "pregnancy";
+    if (s === "trying") return "ttc";
+    if (s === "fertility") return "ivf";
+    if (s === "family") return "culture";
     return "all";
   }, [prefs.stage, profile.stage]);
   const [active, setActive] = useState<CategoryKey>(defaultCategory);
