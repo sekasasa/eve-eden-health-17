@@ -266,36 +266,38 @@ function EventsPage() {
             <EmptyState
               icon={Calendar}
               title="No events yet in your area"
-              description="We're still building our event partners in your country. In the meantime, online events are open to everyone."
-            >
-              <div className="mt-2 flex flex-wrap justify-center gap-2">
-                <button
-                  onClick={() => setFilters((f) => ({ ...f, country: "", city: "", online: "online" }))}
-                  className="rounded-full bg-eve-teal px-4 py-2 text-xs font-medium text-white"
-                >
-                  See online events
-                </button>
-                <Link
-                  to="/eve/ask"
-                  className="rounded-full border border-eve-teal px-4 py-2 text-xs font-medium text-eve-teal"
-                >
-                  Ask a navigator
-                </Link>
-              </div>
-            </EmptyState>
+              description="We're still building event partners in your country. Online events are open to everyone."
+              action={
+                <div className="flex flex-wrap justify-center gap-2">
+                  <button
+                    onClick={() => setFilters((f) => ({ ...f, country: "", city: "", online: "online" }))}
+                    className="rounded-full bg-eve-teal px-4 py-2 text-xs font-medium text-white"
+                  >
+                    See online events
+                  </button>
+                  <Link
+                    to="/eve/ask"
+                    className="rounded-full border border-eve-teal px-4 py-2 text-xs font-medium text-eve-teal"
+                  >
+                    Ask a navigator
+                  </Link>
+                </div>
+              }
+            />
           ) : (
             <EmptyState
               icon={Calendar}
               title="No events match these filters"
               description="Try removing a filter or browse online events open to everyone."
-            >
-              <button
-                onClick={clearAll}
-                className="mt-2 rounded-full border border-eve-teal px-4 py-2 text-xs font-medium text-eve-teal"
-              >
-                Clear filters
-              </button>
-            </EmptyState>
+              action={
+                <button
+                  onClick={clearAll}
+                  className="rounded-full border border-eve-teal px-4 py-2 text-xs font-medium text-eve-teal"
+                >
+                  Clear filters
+                </button>
+              }
+            />
           )}
           <NavigatorHelp
             label="Looking for a class or support group?"
