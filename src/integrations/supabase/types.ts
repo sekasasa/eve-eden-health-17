@@ -420,12 +420,14 @@ export type Database = {
           id: string
           is_first_pregnancy: boolean | null
           language: string | null
+          language_other: string | null
           personalize_opt: string | null
           phone: string | null
           preferred_provider_id: string | null
           pregnancy_week: number | null
           region: string | null
           religious_pref: string | null
+          secondary_language: string | null
           stage: string | null
           user_id: string
           whatsapp_opt_in: boolean | null
@@ -447,12 +449,14 @@ export type Database = {
           id?: string
           is_first_pregnancy?: boolean | null
           language?: string | null
+          language_other?: string | null
           personalize_opt?: string | null
           phone?: string | null
           preferred_provider_id?: string | null
           pregnancy_week?: number | null
           region?: string | null
           religious_pref?: string | null
+          secondary_language?: string | null
           stage?: string | null
           user_id: string
           whatsapp_opt_in?: boolean | null
@@ -474,12 +478,14 @@ export type Database = {
           id?: string
           is_first_pregnancy?: boolean | null
           language?: string | null
+          language_other?: string | null
           personalize_opt?: string | null
           phone?: string | null
           preferred_provider_id?: string | null
           pregnancy_week?: number | null
           region?: string | null
           religious_pref?: string | null
+          secondary_language?: string | null
           stage?: string | null
           user_id?: string
           whatsapp_opt_in?: boolean | null

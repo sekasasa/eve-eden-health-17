@@ -57,6 +57,7 @@ import { Route as AdminGuidanceRouteImport } from './routes/admin.guidance'
 import { Route as AdminAlertsRouteImport } from './routes/admin.alerts'
 import { Route as EveVendorsIdRouteImport } from './routes/eve.vendors.$id'
 import { Route as EveProvidersIdRouteImport } from './routes/eve.providers.$id'
+import { Route as EveProfileCarePreferencesRouteImport } from './routes/eve.profile.care-preferences'
 import { Route as EveMatchResultsRouteImport } from './routes/eve.match.results'
 import { Route as EveMatchPrescriptionsRouteImport } from './routes/eve.match.prescriptions'
 import { Route as EveMatchLabsRouteImport } from './routes/eve.match.labs'
@@ -317,6 +318,12 @@ const EveProvidersIdRoute = EveProvidersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => EveProvidersRoute,
 } as any)
+const EveProfileCarePreferencesRoute =
+  EveProfileCarePreferencesRouteImport.update({
+    id: '/care-preferences',
+    path: '/care-preferences',
+    getParentRoute: () => EveProfileRoute,
+  } as any)
 const EveMatchResultsRoute = EveMatchResultsRouteImport.update({
   id: '/results',
   path: '/results',
@@ -450,7 +457,7 @@ export interface FileRoutesByFullPath {
   '/eve/match': typeof EveMatchRouteWithChildren
   '/eve/onboarding': typeof EveOnboardingRoute
   '/eve/passport': typeof EvePassportRoute
-  '/eve/profile': typeof EveProfileRoute
+  '/eve/profile': typeof EveProfileRouteWithChildren
   '/eve/providers': typeof EveProvidersRouteWithChildren
   '/eve/referrals': typeof EveReferralsRoute
   '/eve/vendors': typeof EveVendorsRouteWithChildren
@@ -475,6 +482,7 @@ export interface FileRoutesByFullPath {
   '/eve/match/labs': typeof EveMatchLabsRoute
   '/eve/match/prescriptions': typeof EveMatchPrescriptionsRoute
   '/eve/match/results': typeof EveMatchResultsRoute
+  '/eve/profile/care-preferences': typeof EveProfileCarePreferencesRoute
   '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
@@ -519,7 +527,7 @@ export interface FileRoutesByTo {
   '/eve/match': typeof EveMatchRouteWithChildren
   '/eve/onboarding': typeof EveOnboardingRoute
   '/eve/passport': typeof EvePassportRoute
-  '/eve/profile': typeof EveProfileRoute
+  '/eve/profile': typeof EveProfileRouteWithChildren
   '/eve/providers': typeof EveProvidersRouteWithChildren
   '/eve/referrals': typeof EveReferralsRoute
   '/eve/vendors': typeof EveVendorsRouteWithChildren
@@ -544,6 +552,7 @@ export interface FileRoutesByTo {
   '/eve/match/labs': typeof EveMatchLabsRoute
   '/eve/match/prescriptions': typeof EveMatchPrescriptionsRoute
   '/eve/match/results': typeof EveMatchResultsRoute
+  '/eve/profile/care-preferences': typeof EveProfileCarePreferencesRoute
   '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
@@ -589,7 +598,7 @@ export interface FileRoutesById {
   '/eve/match': typeof EveMatchRouteWithChildren
   '/eve/onboarding': typeof EveOnboardingRoute
   '/eve/passport': typeof EvePassportRoute
-  '/eve/profile': typeof EveProfileRoute
+  '/eve/profile': typeof EveProfileRouteWithChildren
   '/eve/providers': typeof EveProvidersRouteWithChildren
   '/eve/referrals': typeof EveReferralsRoute
   '/eve/vendors': typeof EveVendorsRouteWithChildren
@@ -614,6 +623,7 @@ export interface FileRoutesById {
   '/eve/match/labs': typeof EveMatchLabsRoute
   '/eve/match/prescriptions': typeof EveMatchPrescriptionsRoute
   '/eve/match/results': typeof EveMatchResultsRoute
+  '/eve/profile/care-preferences': typeof EveProfileCarePreferencesRoute
   '/eve/providers/$id': typeof EveProvidersIdRouteWithChildren
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
@@ -685,6 +695,7 @@ export interface FileRouteTypes {
     | '/eve/match/labs'
     | '/eve/match/prescriptions'
     | '/eve/match/results'
+    | '/eve/profile/care-preferences'
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
@@ -754,6 +765,7 @@ export interface FileRouteTypes {
     | '/eve/match/labs'
     | '/eve/match/prescriptions'
     | '/eve/match/results'
+    | '/eve/profile/care-preferences'
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
@@ -823,6 +835,7 @@ export interface FileRouteTypes {
     | '/eve/match/labs'
     | '/eve/match/prescriptions'
     | '/eve/match/results'
+    | '/eve/profile/care-preferences'
     | '/eve/providers/$id'
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
@@ -868,7 +881,7 @@ export interface RootRouteChildren {
   EveMatchRoute: typeof EveMatchRouteWithChildren
   EveOnboardingRoute: typeof EveOnboardingRoute
   EvePassportRoute: typeof EvePassportRoute
-  EveProfileRoute: typeof EveProfileRoute
+  EveProfileRoute: typeof EveProfileRouteWithChildren
   EveProvidersRoute: typeof EveProvidersRouteWithChildren
   EveReferralsRoute: typeof EveReferralsRoute
   EveVendorsRoute: typeof EveVendorsRouteWithChildren
@@ -1225,6 +1238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveProvidersIdRouteImport
       parentRoute: typeof EveProvidersRoute
     }
+    '/eve/profile/care-preferences': {
+      id: '/eve/profile/care-preferences'
+      path: '/care-preferences'
+      fullPath: '/eve/profile/care-preferences'
+      preLoaderRoute: typeof EveProfileCarePreferencesRouteImport
+      parentRoute: typeof EveProfileRoute
+    }
     '/eve/match/results': {
       id: '/eve/match/results'
       path: '/results'
@@ -1419,6 +1439,18 @@ const EveMatchRouteWithChildren = EveMatchRoute._addFileChildren(
   EveMatchRouteChildren,
 )
 
+interface EveProfileRouteChildren {
+  EveProfileCarePreferencesRoute: typeof EveProfileCarePreferencesRoute
+}
+
+const EveProfileRouteChildren: EveProfileRouteChildren = {
+  EveProfileCarePreferencesRoute: EveProfileCarePreferencesRoute,
+}
+
+const EveProfileRouteWithChildren = EveProfileRoute._addFileChildren(
+  EveProfileRouteChildren,
+)
+
 interface EveProvidersIdRouteChildren {
   EveProvidersIdBookRoute: typeof EveProvidersIdBookRoute
 }
@@ -1505,7 +1537,7 @@ const rootRouteChildren: RootRouteChildren = {
   EveMatchRoute: EveMatchRouteWithChildren,
   EveOnboardingRoute: EveOnboardingRoute,
   EvePassportRoute: EvePassportRoute,
-  EveProfileRoute: EveProfileRoute,
+  EveProfileRoute: EveProfileRouteWithChildren,
   EveProvidersRoute: EveProvidersRouteWithChildren,
   EveReferralsRoute: EveReferralsRoute,
   EveVendorsRoute: EveVendorsRouteWithChildren,

@@ -102,15 +102,15 @@ function EveProfile() {
 
       <button
         type="button"
-        onClick={() => navigate({ to: "/eve/match" })}
+        onClick={() => navigate({ to: "/eve/profile/care-preferences" })}
         className="mt-6 flex w-full items-center justify-between rounded-2xl border border-eve-teal/20 bg-white px-4 py-3 text-left"
       >
         <div>
           <p className="font-sans text-sm font-medium text-eve-teal-dark">
-            Update my care profile
+            Care Preferences
           </p>
           <p className="font-sans text-[11px] text-eve-muted">
-            Refresh life stage, language, location, and care preferences
+            Region, language, cultural, diet, and birth preferences
           </p>
         </div>
         <Pencil className="h-4 w-4 text-eve-teal" />
