@@ -158,6 +158,9 @@ function EveHome() {
     : i18n.language?.startsWith("ar")
       ? "ar"
       : "en";
+  const { prefs } = useCarePreferences();
+  const callouts = homeCalloutsFromPrefs(prefs);
+  const promoteFamily = prefHelpers.familyInvolved(prefs) && !prefHelpers.privateFromFamily(prefs);
 
   const [loading, setLoading] = useState(true);
   const [mother, setMother] = useState<Mother | null>(null);
