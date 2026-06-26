@@ -265,7 +265,10 @@ function AskEveInner() {
           className="flex-1 overflow-y-auto px-3 pb-40 pt-4"
         >
           {messages.length === 0 ? (
-            <WelcomeState onPick={send} />
+            <WelcomeState
+              onPick={send}
+              extraPrompts={suggestedPromptsFromPrefs(prefs)}
+            />
           ) : (
             <div className="space-y-3">
               {messages.map((m) => (
@@ -273,6 +276,8 @@ function AskEveInner() {
                   key={m.id}
                   msg={m}
                   preferredProvider={preferredProvider}
+                  emergencyNumber={emergency.number}
+                  emergencyLabel={emergency.label}
                   onFindProvider={() => navigate({ to: "/eve/providers" })}
                 />
               ))}
