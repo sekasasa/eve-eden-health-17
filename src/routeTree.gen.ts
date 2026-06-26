@@ -53,6 +53,7 @@ import { Route as ChwFlagRouteImport } from './routes/chw.flag'
 import { Route as AdminVendorsRouteImport } from './routes/admin.vendors'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminProvidersRouteImport } from './routes/admin.providers'
+import { Route as AdminProviderLeadsRouteImport } from './routes/admin.provider-leads'
 import { Route as AdminGuidanceRouteImport } from './routes/admin.guidance'
 import { Route as AdminAlertsRouteImport } from './routes/admin.alerts'
 import { Route as EveVendorsIdRouteImport } from './routes/eve.vendors.$id'
@@ -298,6 +299,11 @@ const AdminProvidersRoute = AdminProvidersRouteImport.update({
   path: '/admin/providers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProviderLeadsRoute = AdminProviderLeadsRouteImport.update({
+  id: '/admin/provider-leads',
+  path: '/admin/provider-leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminGuidanceRoute = AdminGuidanceRouteImport.update({
   id: '/admin/guidance',
   path: '/admin/guidance',
@@ -428,6 +434,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
+  '/admin/provider-leads': typeof AdminProviderLeadsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/vendors': typeof AdminVendorsRoute
@@ -498,6 +505,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
+  '/admin/provider-leads': typeof AdminProviderLeadsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/vendors': typeof AdminVendorsRoute
@@ -569,6 +577,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
+  '/admin/provider-leads': typeof AdminProviderLeadsRoute
   '/admin/providers': typeof AdminProvidersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/vendors': typeof AdminVendorsRoute
@@ -641,6 +650,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/alerts'
     | '/admin/guidance'
+    | '/admin/provider-leads'
     | '/admin/providers'
     | '/admin/users'
     | '/admin/vendors'
@@ -711,6 +721,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/alerts'
     | '/admin/guidance'
+    | '/admin/provider-leads'
     | '/admin/providers'
     | '/admin/users'
     | '/admin/vendors'
@@ -781,6 +792,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/alerts'
     | '/admin/guidance'
+    | '/admin/provider-leads'
     | '/admin/providers'
     | '/admin/users'
     | '/admin/vendors'
@@ -852,6 +864,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   AdminAlertsRoute: typeof AdminAlertsRoute
   AdminGuidanceRoute: typeof AdminGuidanceRoute
+  AdminProviderLeadsRoute: typeof AdminProviderLeadsRoute
   AdminProvidersRoute: typeof AdminProvidersRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminVendorsRoute: typeof AdminVendorsRoute
@@ -1210,6 +1223,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProvidersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/provider-leads': {
+      id: '/admin/provider-leads'
+      path: '/admin/provider-leads'
+      fullPath: '/admin/provider-leads'
+      preLoaderRoute: typeof AdminProviderLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/guidance': {
       id: '/admin/guidance'
       path: '/admin/guidance'
@@ -1508,6 +1528,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   AdminAlertsRoute: AdminAlertsRoute,
   AdminGuidanceRoute: AdminGuidanceRoute,
+  AdminProviderLeadsRoute: AdminProviderLeadsRoute,
   AdminProvidersRoute: AdminProvidersRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminVendorsRoute: AdminVendorsRoute,
