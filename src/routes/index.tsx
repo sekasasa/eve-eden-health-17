@@ -7,16 +7,17 @@ import { enterDemo } from "@/lib/demo";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Eve & Eden Health — Modern pregnancy in Africa" },
+      { title: "Eve & Eden Health — Maternal care navigation" },
       {
         name: "description",
         content:
-          "The operating system for modern pregnancy in Africa. Trusted guidance for expecting parents and providers.",
+          "Personalized maternal care navigation for every stage, culture, and country. Find support for fertility, pregnancy, postpartum, providers, community, events, and care preferences.",
       },
       { property: "og:title", content: "Eve & Eden Health" },
       {
         property: "og:description",
-        content: "The operating system for modern pregnancy in Africa.",
+        content:
+          "Personalized maternal care navigation for every stage, culture, and country.",
       },
     ],
   }),
@@ -46,9 +47,12 @@ function Landing() {
         eve &amp; eden health
       </h1>
       <p className="mt-6 max-w-md font-sans text-base text-eve-muted sm:text-lg">
-        The operating system for modern pregnancy in Africa.
+        Maternal care navigation for every stage, culture, and country.
       </p>
-      <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+      <p className="mt-4 max-w-lg font-sans text-sm text-eve-muted/80 sm:text-base">
+        Find support for fertility, pregnancy, postpartum, providers, community, events, and care preferences — in the language and context that feels right for you.
+      </p>
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <Link to="/signup" search={{ type: "mother" }}>
           <PrimaryButton>Get started</PrimaryButton>
         </Link>
@@ -56,10 +60,13 @@ function Landing() {
           <SecondaryButton>I am a provider</SecondaryButton>
         </Link>
       </div>
+      <p className="mt-6 font-sans text-xs text-eve-muted/70">
+        Starting with North America, Africa, South America, and Central America.
+      </p>
 
-      <div className="mt-8 flex flex-col items-center gap-2">
+      <div className="mt-6 flex flex-col items-center gap-2">
         <p className="font-sans text-xs uppercase tracking-widest text-eve-muted">
-          Explore without signing up
+          Explore Eve & Eden
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-sans text-sm">
           <button
