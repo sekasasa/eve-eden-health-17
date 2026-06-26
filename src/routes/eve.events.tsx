@@ -105,13 +105,21 @@ function EventsPage() {
         </p>
       </div>
 
+      {personalized && (
+        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-eve-teal-light px-3 py-1 text-[11px] text-eve-teal-dark">
+          <Sparkles className="h-3 w-3" />
+          Sorted by your saved preferences
+          {prefs.city ? ` · ${prefs.city}` : prefs.region ? ` · ${prefs.region}` : ""}
+        </div>
+      )}
+
       {events === null ? (
         <div className="mt-6 space-y-3">
           {[0, 1, 2].map((i) => (
             <div key={i} className="h-24 animate-pulse rounded-2xl bg-eve-cream/60" />
           ))}
         </div>
-      ) : events.length === 0 ? (
+      ) : (sorted ?? events).length === 0 ? (
         <div className="mt-6 space-y-4">
           <EmptyState
             icon={Calendar}
@@ -125,7 +133,7 @@ function EventsPage() {
         </div>
       ) : (
         <div className="mt-5 space-y-3">
-          {events.map((e) => (
+          {(sorted ?? events).map((e) => (
             <EventCard key={e.id} ev={e} />
           ))}
           <div className="pt-2">
