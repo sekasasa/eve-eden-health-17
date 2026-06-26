@@ -154,11 +154,13 @@ const LANGUAGES = ["English", "French", "Arabic", "Darija", "Spanish", "Other", 
 const PREFERENCES = [
   "Female provider preferred",
   "Culturally familiar care",
-  "Religious preferences considered",
+  "Faith-sensitive care",
+  "Modesty-sensitive care",
   "Home visit preferred",
   "Telehealth preferred",
   "In-person preferred",
   "Family member involved",
+  "Prefer not to say",
   "No preference",
 ];
 

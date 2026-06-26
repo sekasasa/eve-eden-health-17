@@ -284,10 +284,10 @@ function CarePreferencesPage() {
           />
         </Card>
 
-        {/* 4. Cultural */}
+        {/* 4. What matters to you */}
         <Card
-          title="Cultural, religious, and privacy preferences"
-          subtitle="Optional — choose what helps us care for you the way you want."
+          title="What matters to you"
+          subtitle="Optional. This helps Eve & Eden personalize recommendations while respecting what matters to you. Skip anything you'd rather not share."
         >
           <Pills
             options={CULTURAL_OPTIONS}

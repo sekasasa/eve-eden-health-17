@@ -258,13 +258,13 @@ function EdenPatientProfile() {
               />
               <Field label="Risk" value={r} />
             </Card>
-            <Card title="Contact & culture">
+            <Card title="Contact & stated preferences">
               <Field label="Phone" value={mother.phone ?? "—"} />
               <Field label="City" value={mother.city ?? "—"} />
               <Field label="Country" value={mother.country ?? "—"} />
-              <Field label="Language" value={mother.language ?? "—"} />
-              <Field label="Religious preference" value={mother.religious_pref ?? "—"} />
-              <Field label="Dietary notes" value={mother.dietary_notes ?? "—"} />
+              <Field label="Preferred language" value={mother.language ?? "—"} />
+              <Field label="Personal preferences (mother-stated)" value={mother.religious_pref ?? "—"} />
+              <Field label="Dietary notes (mother-stated)" value={mother.dietary_notes ?? "—"} />
             </Card>
           </div>
         )}
@@ -381,13 +381,13 @@ function EdenPatientProfile() {
         {tab === "preferences" && (
           <div className="space-y-4">
             <div className="rounded-lg border border-eve-teal/30 bg-eve-teal/5 p-3 font-sans text-xs text-eve-teal-dark">
-              These are the mother's stated preferences to guide culturally
-              appropriate care conversations.
+              The mother's stated preferences. Use them to invite conversation —
+              never to assume care decisions. All fields are optional and may be blank.
             </div>
             <Card title="Stated preferences">
-              <Field label="Language" value={mother.language ?? "—"} />
-              <Field label="Dietary notes" value={mother.dietary_notes ?? "—"} />
-              <Field label="Religious preference" value={mother.religious_pref ?? "—"} />
+              <Field label="Preferred language" value={mother.language ?? "—"} />
+              <Field label="Dietary notes (mother-stated)" value={mother.dietary_notes ?? "—"} />
+              <Field label="Personal preferences (mother-stated)" value={mother.religious_pref ?? "—"} />
             </Card>
           </div>
         )}
