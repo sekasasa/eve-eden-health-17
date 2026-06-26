@@ -238,6 +238,17 @@ function EventsPage() {
 
     const score = (e: EventRow) => {
       let s = 0;
+      // Featured launch event always pinned for matching Morocco/Casablanca/Rabat audiences
+      if (e.is_featured) {
+        const loc = (e.location ?? "").toLowerCase();
+        const matchesMa =
+          !country ||
+          country === "morocco" ||
+          loc.includes("morocco") ||
+          loc.includes("casablanca") ||
+          loc.includes("rabat");
+        if (matchesMa) s += 100;
+      }
       if (stage && e.life_stage === stage) s += 5;
       if (lang && (e.language ?? "").toLowerCase() === lang) s += 4;
       else if (regionalLangs.length && e.language && regionalLangs.includes(e.language.toLowerCase())) s += 2;
