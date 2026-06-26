@@ -79,17 +79,15 @@ const STAGES: { key: LifeStage; label: string; sub: string; emoji: string }[] = 
 
 const CULTURAL_OPTIONS = [
   "I prefer a female provider",
-  "I want modesty-sensitive care",
-  "I want faith-sensitive care",
-  "I want culturally familiar care",
-  "I want family involved in care",
-  "I want privacy from family or supporters",
-  "I observe religious fasting",
-  "I want support navigating Ramadan, Lent, or other fasts",
-  "I want help balancing cultural practices with medical advice",
-  "I want support with postpartum traditions",
-  "I want support with family decision-making",
-  "I prefer a provider who explains decisions clearly",
+  "Modesty-sensitive care matters to me",
+  "Faith-sensitive care matters to me",
+  "Culturally familiar care matters to me",
+  "I'd like family involved in my care",
+  "I'd like privacy from family or supporters",
+  "I'd like fasting-aware support",
+  "I'd like postpartum tradition support",
+  "I'd like support with family decision-making",
+  "I prefer a provider who explains options clearly",
   "I prefer not to say",
   "Other",
 ];
@@ -449,9 +447,11 @@ function Onboarding() {
 
           {step === 4 && (
             <div className="space-y-4">
-              <h1 className="font-serif text-3xl text-eve-teal-dark">Personalize your recommendations?</h1>
+              <h1 className="font-serif text-3xl text-eve-teal-dark">
+                Would you like recommendations based on religious, cultural, dietary, privacy, or birth preferences?
+              </h1>
               <p className="font-sans text-sm text-eve-muted">
-                Optional. This helps us recommend care, content, events, and providers that better respect what matters to you. You can skip this or update it anytime.
+                Optional. This helps Eve &amp; Eden personalize recommendations while respecting what matters to you. You can skip this or update it anytime.
               </p>
               <div className="space-y-2">
                 {[
@@ -476,8 +476,8 @@ function Onboarding() {
 
           {step === 5 && (
             <div className="space-y-4">
-              <h1 className="font-serif text-3xl text-eve-teal-dark">Are there any preferences you want us to consider?</h1>
-              <p className="font-sans text-xs text-eve-muted">All optional. Select any that apply.</p>
+              <h1 className="font-serif text-3xl text-eve-teal-dark">What matters to you in your care?</h1>
+              <p className="font-sans text-xs text-eve-muted">All optional. Select any that apply — skip anything you'd rather not share.</p>
               <div className="flex flex-wrap gap-2">
                 {CULTURAL_OPTIONS.map((o) => (
                   <Chip key={o} active={cultural.includes(o)} onClick={() => toggle(cultural, setCultural, o)}>{o}</Chip>
