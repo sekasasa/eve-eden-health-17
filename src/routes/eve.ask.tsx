@@ -264,6 +264,7 @@ function AskEveInner() {
           ref={scrollRef}
           className="flex-1 overflow-y-auto px-3 pb-40 pt-4"
         >
+          <LanguageFallbackNotice language={prefs.language} />
           {messages.length === 0 ? (
             <WelcomeState
               onPick={send}
