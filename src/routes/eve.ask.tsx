@@ -408,7 +408,7 @@ function MessageBubble({
 }: {
   msg: Msg;
   preferredProvider: PreferredProvider | null;
-  emergencyNumber: string;
+  emergencyNumber: string | null;
   emergencyLabel: string;
   onFindProvider: () => void;
 }) {
