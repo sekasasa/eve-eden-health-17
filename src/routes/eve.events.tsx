@@ -38,6 +38,21 @@ type EventRow = {
   price_label: string | null;
   vendor_id: string;
   vendors?: { business_name: string | null } | null;
+  is_featured?: boolean;
+  source?: "vendor" | "seed";
+};
+
+type DirectoryRow = {
+  id: string;
+  resource_name: string;
+  category: string | null;
+  region: string | null;
+  country: string | null;
+  city_scope: string | null;
+  language_support: string | null;
+  display_section: string | null;
+  source_url: string | null;
+  notes: string | null;
 };
 
 const REGIONS: { key: Region; label: string }[] = [
