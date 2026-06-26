@@ -20,15 +20,15 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { supabase } from "@/integrations/supabase/client";
 import { askEve } from "@/lib/ask-eve.functions";
 import { cn } from "@/lib/utils";
+import { useCarePreferences } from "@/hooks/useCarePreferences";
+import {
+  emergencyContact,
+  suggestedPromptsFromPrefs,
+} from "@/lib/personalization";
 
 export const Route = createFileRoute("/eve/ask")({
   component: AskEvePage,
 });
-
-// EMERGENCY_NUMBER: Morocco-wide SAMU/emergency dispatch.
-// TODO: source this from the user's country / care location once geo + provider
-// settings are wired into the mother profile.
-const EMERGENCY_NUMBER = "150";
 
 type PreferredProvider = {
   id: string;
@@ -116,6 +116,8 @@ function AskEveInner() {
   const router = useRouter();
   const navigate = useNavigate();
   const askFn = useServerFn(askEve);
+  const { prefs } = useCarePreferences();
+  const emergency = emergencyContact(prefs.country);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
@@ -187,9 +189,18 @@ function AskEveInner() {
       data: {
         message: trimmed,
         pregnancy_week: profile?.pregnancy_week ?? null,
-        language: profile?.language ?? null,
+        language: profile?.language ?? prefs.language ?? null,
         dietary_pref: profile?.dietary_notes ?? null,
-        country: profile?.country ?? null,
+        country: profile?.country ?? prefs.country ?? null,
+        prefs: {
+          stage: prefs.stage,
+          region: prefs.region,
+          city: prefs.city,
+          dialect: prefs.dialect,
+          cultural: prefs.cultural_prefs,
+          dietary: prefs.dietary_prefs,
+          birth: prefs.birth_prefs,
+        },
         history,
       },
     });
@@ -254,7 +265,10 @@ function AskEveInner() {
           className="flex-1 overflow-y-auto px-3 pb-40 pt-4"
         >
           {messages.length === 0 ? (
-            <WelcomeState onPick={send} />
+            <WelcomeState
+              onPick={send}
+              extraPrompts={suggestedPromptsFromPrefs(prefs)}
+            />
           ) : (
             <div className="space-y-3">
               {messages.map((m) => (
@@ -262,6 +276,8 @@ function AskEveInner() {
                   key={m.id}
                   msg={m}
                   preferredProvider={preferredProvider}
+                  emergencyNumber={emergency.number}
+                  emergencyLabel={emergency.label}
                   onFindProvider={() => navigate({ to: "/eve/providers" })}
                 />
               ))}
@@ -317,7 +333,13 @@ function AskEveInner() {
   );
 }
 
-function WelcomeState({ onPick }: { onPick: (q: string) => void }) {
+function WelcomeState({
+  onPick,
+  extraPrompts,
+}: {
+  onPick: (q: string) => void;
+  extraPrompts: { chip: string; label: string }[];
+}) {
   return (
     <div>
       <div className="flex items-start gap-2">
@@ -337,6 +359,25 @@ function WelcomeState({ onPick }: { onPick: (q: string) => void }) {
           </p>
         </div>
       </div>
+      {extraPrompts.length > 0 && (
+        <div className="mt-4 pl-10">
+          <p className="mb-2 font-sans uppercase tracking-widest text-eve-muted" style={{ fontSize: "9.5px" }}>
+            Based on your preferences
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {extraPrompts.map((q) => (
+              <button
+                key={q.chip}
+                onClick={() => onPick(q.label)}
+                className="rounded-full border border-eve-rose/40 bg-eve-rose-light px-3 py-1.5 font-sans text-eve-rose"
+                style={{ fontSize: "12px" }}
+              >
+                {q.chip}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="mt-4 pl-10">
         <p className="mb-2 font-sans uppercase tracking-widest text-eve-muted" style={{ fontSize: "9.5px" }}>
           What can Eve help with
@@ -361,10 +402,14 @@ function WelcomeState({ onPick }: { onPick: (q: string) => void }) {
 function MessageBubble({
   msg,
   preferredProvider,
+  emergencyNumber,
+  emergencyLabel,
   onFindProvider,
 }: {
   msg: Msg;
   preferredProvider: PreferredProvider | null;
+  emergencyNumber: string;
+  emergencyLabel: string;
   onFindProvider: () => void;
 }) {
   if (msg.role === "user") {
@@ -373,7 +418,11 @@ function MessageBubble({
         {/* Urgency banner triggered ONLY by user message keyword */}
         {msg.urgent && (
           <div className="mb-2 w-full">
-            <UrgencyCard preferredProvider={preferredProvider} />
+            <UrgencyCard
+              preferredProvider={preferredProvider}
+              emergencyNumber={emergencyNumber}
+              emergencyLabel={emergencyLabel}
+            />
           </div>
         )}
         <div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-eve-rose px-3 py-2 text-white">
@@ -441,15 +490,23 @@ function MessageBubble({
   );
 }
 
-function UrgencyCard({ preferredProvider }: { preferredProvider: PreferredProvider | null }) {
+function UrgencyCard({
+  preferredProvider,
+  emergencyNumber,
+  emergencyLabel,
+}: {
+  preferredProvider: PreferredProvider | null;
+  emergencyNumber: string;
+  emergencyLabel: string;
+}) {
   const hasProviderPhone =
     !!preferredProvider && !!preferredProvider.phone && preferredProvider.phone.trim().length > 0;
   const dialNumber = hasProviderPhone
     ? preferredProvider!.phone!.trim()
-    : EMERGENCY_NUMBER;
+    : emergencyNumber;
   const buttonLabel = hasProviderPhone
     ? `Call ${preferredProvider!.full_name ?? "your doctor"}`
-    : "Call emergency services";
+    : `Call ${emergencyLabel} (${emergencyNumber})`;
 
   return (
     <div className="rounded-2xl border border-red-300 bg-red-50 p-3">
@@ -519,6 +576,8 @@ function EveAvatar() {
 }
 
 function DisclaimerModal({ onClose }: { onClose: () => void }) {
+  const { prefs } = useCarePreferences();
+  const emergency = emergencyContact(prefs.country);
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 px-3 pb-4"
@@ -544,7 +603,7 @@ function DisclaimerModal({ onClose }: { onClose: () => void }) {
           Eve is your maternal care guide. She can help you prepare for appointments, understand your care options, organize questions, navigate insurance, and find trusted providers and emotional support.
         </p>
         <p className="mt-2 font-sans text-sm text-eve-muted">
-          Eve does not diagnose conditions or prescribe medication. For any medical decision, please consult a qualified provider. In an emergency, call your doctor or {EMERGENCY_NUMBER}.
+          Eve does not diagnose conditions or prescribe medication. For any medical decision, please consult a qualified provider. In an emergency, call your doctor or {emergency.label} ({emergency.number}).
         </p>
         <button
           onClick={onClose}

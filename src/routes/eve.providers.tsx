@@ -7,6 +7,8 @@ import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
+import { useCarePreferences } from "@/hooks/useCarePreferences";
+import { prefHelpers, providerPersonalizationScore, priorityLanguagesForRegion, regionOf } from "@/lib/personalization";
 import type { LifeStage } from "@/lib/match-data";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +24,8 @@ type Provider = {
   clinic_name: string | null;
   city: string | null;
   languages: string[] | null;
+  services: string[] | null;
+  credentials: string[] | null;
   avg_rating: number | null;
   review_count: number | null;
   consultation_fee_mad: number | null;
@@ -71,6 +75,7 @@ const STAGE_FILTER: Partial<Record<LifeStage, (typeof FILTERS)[number]>> = {
 function EveProviders() {
   const nav = useNavigate();
   const { profile, hydrated } = useSavedProfile();
+  const { prefs } = useCarePreferences();
   const [country, setCountry] = useState<string | null>(null);
   const [items, setItems] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,7 +115,7 @@ function EveProviders() {
       let q = supabase
         .from("providers")
         .select(
-          "id,full_name,specialty,clinic_name,city,languages,avg_rating,review_count,consultation_fee_mad,is_verified,accepting_patients",
+          "id,full_name,specialty,clinic_name,city,languages,services,credentials,avg_rating,review_count,consultation_fee_mad,is_verified,accepting_patients",
         )
         .eq("is_verified", true)
         .eq("country", country)
@@ -131,20 +136,33 @@ function EveProviders() {
     const base = filter === "All"
       ? items
       : items.filter((p) => (p.specialty ?? "").toLowerCase().includes(filter.toLowerCase()));
-    // Personalized re-ranking: language match → city match → accepting → rating
-    const userLang = (profile.language ?? "").toLowerCase();
-    const userCity = (profile.city ?? "").toLowerCase();
+
+    const region = regionOf(prefs);
+    const regionalLangs = priorityLanguagesForRegion(region);
+
     const score = (p: Provider) => {
-      let s = 0;
-      if (userLang && (p.languages ?? []).some((l) => l.toLowerCase().includes(userLang))) s += 4;
-      if (userCity && (p.city ?? "").toLowerCase().includes(userCity)) s += 3;
+      // Base personalization (uses explicit prefs only)
+      let s = providerPersonalizationScore(p, prefs);
+      // Regional language priority (small boost)
+      if (regionalLangs.length && (p.languages ?? []).some((l) => regionalLangs.includes(l.toLowerCase()))) {
+        s += 1;
+      }
+      // Match-intake fallbacks for users who haven't filled care prefs yet
+      const userLang = (profile.language ?? "").toLowerCase();
+      const userCity = (profile.city ?? "").toLowerCase();
+      if (!prefs.language && userLang && (p.languages ?? []).some((l) => l.toLowerCase().includes(userLang))) s += 2;
+      if (!prefs.city && userCity && (p.city ?? "").toLowerCase().includes(userCity)) s += 2;
       if (p.accepting_patients) s += 1;
       if (p.is_verified) s += 1;
       s += (p.avg_rating ?? 0) / 5;
       return s;
     };
     return [...base].sort((a, b) => score(b) - score(a));
-  }, [items, filter, profile.language, profile.city]);
+  }, [items, filter, prefs, profile.language, profile.city]);
+
+  // We can't filter by provider gender (no column), but if female is preferred,
+  // we show a clear note so the user knows we can't confirm a match.
+  const femalePreferred = prefHelpers.femalePreferred(prefs);
 
 
   return (
@@ -162,12 +180,20 @@ function EveProviders() {
         Doctors, midwives, doulas, labs, pharmacies, insurance and wellness — all in one place.
       </p>
 
-      {(profile.stage || profile.city || profile.language) && (
+      {(profile.stage || profile.city || profile.language || prefs.region) && (
         <div className="mt-3 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 text-[11px] text-eve-teal-dark">
-          Personalized for your saved profile
-          {profile.city ? ` · ${profile.city}` : ""}
-          {profile.language ? ` · ${profile.language}` : ""}
+          Personalized for your stated preferences
+          {prefs.region ? ` · ${prefs.region}` : ""}
+          {(prefs.city ?? profile.city) ? ` · ${prefs.city ?? profile.city}` : ""}
+          {(prefs.language ?? profile.language) ? ` · ${prefs.language ?? profile.language}` : ""}
           {filter !== "All" ? ` · ${filter}` : ""}
+        </div>
+      )}
+
+      {femalePreferred && (
+        <div className="mt-2 rounded-xl border border-eve-rose/30 bg-eve-rose-light px-3 py-2 text-[11px] text-eve-rose">
+          You asked for a female provider. We can't yet confirm a verified female-provider match in our directory.{" "}
+          <Link to="/eve/ask" className="font-medium underline">Ask a navigator for help</Link>.
         </div>
       )}
 

@@ -7,6 +7,17 @@ const askInput = z.object({
   language: z.string().max(8).nullable().optional(),
   dietary_pref: z.string().max(200).nullable().optional(),
   country: z.string().max(8).nullable().optional(),
+  prefs: z
+    .object({
+      stage: z.string().max(40).nullable().optional(),
+      region: z.string().max(40).nullable().optional(),
+      city: z.string().max(80).nullable().optional(),
+      dialect: z.string().max(40).nullable().optional(),
+      cultural: z.array(z.string().max(80)).max(20).optional(),
+      dietary: z.array(z.string().max(80)).max(20).optional(),
+      birth: z.array(z.string().max(80)).max(20).optional(),
+    })
+    .optional(),
   history: z
     .array(
       z.object({
@@ -37,6 +48,11 @@ export const askEve = createServerFn({ method: "POST" })
           ? "Arabic"
           : "English";
 
+    const prefs = data.prefs ?? {};
+    const culturalList = (prefs.cultural ?? []).join(", ");
+    const dietaryList = (prefs.dietary ?? []).join(", ");
+    const birthList = (prefs.birth ?? []).join(", ");
+
     const system = [
       "You are Eve, a warm maternal-care guide for mothers across the world.",
       `Always reply in ${langName}.`,
@@ -49,8 +65,15 @@ export const askEve = createServerFn({ method: "POST" })
       "If the question hints at an emergency (heavy bleeding, severe pain, no fetal movement, fainting, contractions before 37 weeks), urgently advise contacting a doctor or going to the nearest clinic.",
       "Frame answers as: prepare questions, understand options, find supportive care. Remind the user their preferences are optional and can be updated anytime.",
       data.pregnancy_week ? `User is at week ${data.pregnancy_week} of pregnancy.` : "",
-      data.dietary_pref ? `User-stated dietary notes: ${data.dietary_pref}. Treat these as personal preferences, not as assumptions about beliefs.` : "",
+      prefs.stage ? `User-stated life stage: ${prefs.stage}.` : "",
+      prefs.region ? `User-stated region: ${prefs.region}. Use only to scope examples to the region; never to infer beliefs.` : "",
       data.country ? `User-stated country: ${data.country}. Do not infer religion, culture, or diet from this.` : "",
+      prefs.city ? `User-stated city: ${prefs.city}.` : "",
+      prefs.dialect ? `User-stated language/dialect: ${prefs.dialect}. Mirror common terms where natural; never assume culture or religion from this.` : "",
+      culturalList ? `User-stated cultural/privacy preferences: ${culturalList}. Honor them. If "female provider preferred" is set and you suggest a provider, suggest finding a female clinician. If "Ramadan support" is set, help prepare questions about fasting during pregnancy without issuing religious rulings. If "family involved" is set, you may suggest sharing a care summary; if "keep care private from family" is set, do not promote family-sharing features.` : "",
+      dietaryList ? `User-stated dietary preferences: ${dietaryList}. Tailor nutrition guidance accordingly. Treat as preferences, not beliefs.` : "",
+      birthList ? `User-stated birth preferences: ${birthList}. Discuss them neutrally and always include "when medically appropriate". Never claim one type of birth is better than another.` : "",
+      data.dietary_pref ? `Additional dietary notes: ${data.dietary_pref}.` : "",
     ]
       .filter(Boolean)
       .join(" ");

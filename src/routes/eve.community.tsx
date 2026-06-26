@@ -5,6 +5,8 @@ import { EveShell } from "@/components/shells/EveShell";
 import { ContentCard } from "@/components/ui/ContentCard";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
+import { useCarePreferences } from "@/hooks/useCarePreferences";
+import { prefHelpers } from "@/lib/personalization";
 import { eveToast } from "@/lib/eve-toast";
 import { rankForProfile, type ContentRow } from "@/lib/content-filter";
 import { supabase } from "@/integrations/supabase/client";
@@ -162,7 +164,21 @@ const SEED_POSTS: Post[] = [
 function CommunityPage() {
   const nav = useNavigate();
   const { profile } = useSavedProfile();
-  const [active, setActive] = useState<CategoryKey>("all");
+  const { prefs } = useCarePreferences();
+  const hideFamilyPromo = prefHelpers.privateFromFamily(prefs);
+  // Default category from stage
+  const defaultCategory: CategoryKey = useMemo(() => {
+    const s = prefs.stage ?? profile.stage;
+    if (s === "postpartum" || s === "newborn") return "postpartum";
+    if (s === "family") return "family";
+    if (s === "pregnant") {
+      const w = profile.stage ? 0 : 0; // we don't have week here, default to "all"
+      void w;
+      return "all";
+    }
+    return "all";
+  }, [prefs.stage, profile.stage]);
+  const [active, setActive] = useState<CategoryKey>(defaultCategory);
   const [open, setOpen] = useState(false);
   const [hearts, setHearts] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -241,38 +257,59 @@ function CommunityPage() {
         </div>
       </section>
 
-      {/* Family Support */}
-      <section className="mt-3 rounded-2xl border border-eve-muted/20 bg-white p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-cream">
-            <Users className="h-4 w-4 text-eve-terra" />
-          </div>
-          <div className="flex-1">
-            <p className="font-sans text-sm font-semibold text-eve-teal-dark">Family support</p>
-            <p className="mt-0.5 text-[12px] text-eve-muted">
-              Invite a family supporter to help pay, coordinate, or follow along.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                onClick={() => eveToast.success("Invite link copied")}
-                className="rounded-full bg-eve-teal px-3 py-1 text-[11px] text-white"
-              >
-                Invite family supporter
-              </button>
-              <button
-                onClick={() => eveToast.info("Privacy settings opening soon")}
-                className="rounded-full border border-eve-teal px-3 py-1 text-[11px] text-eve-teal"
-              >
-                Privacy settings
-              </button>
+      {/* Family Support — hidden when user prefers to keep care private from family */}
+      {!hideFamilyPromo && (
+        <section className="mt-3 rounded-2xl border border-eve-muted/20 bg-white p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-cream">
+              <Users className="h-4 w-4 text-eve-terra" />
             </div>
-            <p className="mt-2 inline-flex items-center gap-1 text-[10px] text-eve-muted">
-              <ShieldCheck className="h-3 w-3" />
-              You choose what your family supporter can see.
-            </p>
+            <div className="flex-1">
+              <p className="font-sans text-sm font-semibold text-eve-teal-dark">Family support</p>
+              <p className="mt-0.5 text-[12px] text-eve-muted">
+                Invite a family supporter to help pay, coordinate, or follow along.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  onClick={() => eveToast.success("Invite link copied")}
+                  className="rounded-full bg-eve-teal px-3 py-1 text-[11px] text-white"
+                >
+                  Invite family supporter
+                </button>
+                <button
+                  onClick={() => eveToast.info("Privacy settings opening soon")}
+                  className="rounded-full border border-eve-teal px-3 py-1 text-[11px] text-eve-teal"
+                >
+                  Privacy settings
+                </button>
+              </div>
+              <p className="mt-2 inline-flex items-center gap-1 text-[10px] text-eve-muted">
+                <ShieldCheck className="h-3 w-3" />
+                You choose what your family supporter can see.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+      {hideFamilyPromo && (
+        <section className="mt-3 rounded-2xl border border-eve-teal/20 bg-white p-4">
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="mt-0.5 h-4 w-4 text-eve-teal" />
+            <div className="flex-1">
+              <p className="font-sans text-sm font-semibold text-eve-teal-dark">Your privacy controls</p>
+              <p className="mt-0.5 text-[12px] text-eve-muted">
+                You asked to keep your care private from family. Family-sharing features are off — you can change this anytime in Care Preferences.
+              </p>
+              <Link
+                to="/eve/profile/care-preferences"
+                className="mt-3 inline-block rounded-full border border-eve-teal px-3 py-1 text-[11px] text-eve-teal"
+              >
+                Privacy preferences
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Events entry */}
       <Link

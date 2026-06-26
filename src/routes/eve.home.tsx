@@ -28,6 +28,8 @@ import { babySizeFor } from "@/lib/babySize";
 import { cn } from "@/lib/utils";
 import { hydrateIntakeFromCloud, type MatchIntake } from "@/lib/match-store";
 import type { LifeStage } from "@/lib/match-data";
+import { useCarePreferences } from "@/hooks/useCarePreferences";
+import { homeCalloutsFromPrefs, prefHelpers } from "@/lib/personalization";
 
 export const Route = createFileRoute("/eve/home")({
   component: EveHome,
@@ -156,6 +158,10 @@ function EveHome() {
     : i18n.language?.startsWith("ar")
       ? "ar"
       : "en";
+  const { prefs } = useCarePreferences();
+  const callouts = homeCalloutsFromPrefs(prefs);
+  // Reserved: gate family supporter widgets when family is preferred and not private.
+  void prefHelpers; // tree-shake guard
 
   const [loading, setLoading] = useState(true);
   const [mother, setMother] = useState<Mother | null>(null);
@@ -518,6 +524,28 @@ function EveHome() {
             </GuidanceCard>
           )}
         </div>
+
+        {/* Personalized callouts (only from explicit prefs) */}
+        {callouts.length > 0 && (
+          <div className="mt-4 px-3">
+            <SectionLabel>
+              {lang === "fr" ? "Pour vous" : lang === "ar" ? "لأجلك" : "For you"}
+            </SectionLabel>
+            <div className="mt-2 space-y-2">
+              {callouts.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => c.to && navigate({ to: c.to })}
+                  className="block w-full rounded-2xl border border-eve-rose/20 bg-white p-3 text-left"
+                >
+                  <p className="font-sans text-sm font-medium text-eve-teal-dark">{c.title}</p>
+                  <p className="mt-0.5 font-sans text-[11px] text-eve-muted">{c.body}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Quick actions — 6 consolidated cards, ordered by stage */}
         <div className="mt-5 px-3 rtl:text-right">
