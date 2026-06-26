@@ -418,96 +418,114 @@ function CommunityPage() {
 
       {/* Posts */}
       <div className="mt-5 space-y-3">
-        {filtered.map((p) => {
-          const cat = CATEGORIES.find((c) => c.key === p.category)!;
-          const liked = hearts[p.id] ?? 0;
-          return (
-            <article
-              key={p.id}
-              className="relative overflow-hidden rounded-2xl bg-eve-cream p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        {filtered.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-eve-muted/30 bg-eve-cream/40 px-6 py-10 text-center">
+            <p className="font-serif text-lg text-eve-forest">
+              Be the first to start a conversation in your community.
+            </p>
+            <p className="mt-1 text-sm text-eve-muted">
+              Share a question or experience. Posts are anonymous by default.
+            </p>
+            <button
+              onClick={() => setOpen(true)}
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-eve-teal px-4 py-2 text-sm font-medium text-white"
             >
-              <span className="absolute inset-y-0 left-0 w-[3px] bg-eve-teal" />
+              <Plus className="h-4 w-4" /> New Post
+            </button>
+          </div>
+        ) : (
+          filtered.map((p) => {
+            const cat = CATEGORIES.find((c) => c.key === p.category)!;
+            const liked = hearts[p.id] ?? 0;
+            return (
+              <article
+                key={p.id}
+                className="relative overflow-hidden rounded-2xl bg-eve-cream p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <span className="absolute inset-y-0 left-0 w-[3px] bg-eve-teal" />
 
-              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold text-white",
+                      p.avatarColor,
+                    )}
+                  >
+                    {p.avatarLetter}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13px] font-medium text-eve-teal-dark">{p.anonName}</p>
+                    <p className="text-[11px] text-eve-muted">{p.timeAgo}</p>
+                  </div>
+                  {p.trending && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[10px] font-semibold text-eve-terra">
+                      <Flame className="h-3 w-3" /> Trending
+                    </span>
+                  )}
+                </div>
+
                 <span
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold text-white",
-                    p.avatarColor,
+                    "mt-3 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
+                    toneBadge[cat.tone],
                   )}
                 >
-                  {p.avatarLetter}
+                  {cat.label}
                 </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-medium text-eve-teal-dark">{p.anonName}</p>
-                  <p className="text-[11px] text-eve-muted">{p.timeAgo}</p>
-                </div>
-                {p.trending && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[10px] font-semibold text-eve-terra">
-                    <Flame className="h-3 w-3" /> Trending
+
+                <h2 className="mt-2 font-serif text-[17px] font-semibold leading-snug text-eve-teal-dark">
+                  {p.title}
+                </h2>
+                <p className="mt-1 line-clamp-2 text-[13px] text-eve-muted">{p.body}</p>
+                <Link
+                  to="/eve/community"
+                  className="mt-1 inline-block text-[12px] font-medium text-eve-teal"
+                >
+                  Read more
+                </Link>
+
+                <div className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[12px] text-eve-muted">
+                  <button
+                    onClick={() =>
+                      setHearts((h) => ({ ...h, [p.id]: (h[p.id] ?? 0) === 0 ? 1 : 0 }))
+                    }
+                    className={cn(
+                      "inline-flex items-center gap-1 transition active:scale-110",
+                      liked > 0 && "text-eve-rose",
+                    )}
+                  >
+                    <Heart className={cn("h-4 w-4", liked > 0 && "fill-current")} />
+                    {p.hearts + liked}
+                  </button>
+                  <span className="inline-flex items-center gap-1">
+                    <MessageCircle className="h-4 w-4" />
+                    {p.replies}
                   </span>
-                )}
-              </div>
-
-              <span
-                className={cn(
-                  "mt-3 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
-                  toneBadge[cat.tone],
-                )}
-              >
-                {cat.label}
-              </span>
-
-              <h2 className="mt-2 font-serif text-[17px] font-semibold leading-snug text-eve-teal-dark">
-                {p.title}
-              </h2>
-              <p className="mt-1 line-clamp-2 text-[13px] text-eve-muted">{p.body}</p>
-              <Link
-                to="/eve/community"
-                className="mt-1 inline-block text-[12px] font-medium text-eve-teal"
-              >
-                Read more
-              </Link>
-
-              <div className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[12px] text-eve-muted">
-                <button
-                  onClick={() =>
-                    setHearts((h) => ({ ...h, [p.id]: (h[p.id] ?? 0) === 0 ? 1 : 0 }))
-                  }
-                  className={cn(
-                    "inline-flex items-center gap-1 transition active:scale-110",
-                    liked > 0 && "text-eve-rose",
-                  )}
-                >
-                  <Heart className={cn("h-4 w-4", liked > 0 && "fill-current")} />
-                  {p.hearts + liked}
-                </button>
-                <span className="inline-flex items-center gap-1">
-                  <MessageCircle className="h-4 w-4" />
-                  {p.replies}
-                </span>
-                <button
-                  onClick={() => setSaved((s) => ({ ...s, [p.id]: !s[p.id] }))}
-                  className={cn(
-                    "ml-auto inline-flex items-center gap-1",
-                    saved[p.id] && "text-eve-teal",
-                  )}
-                >
-                  <Bookmark className={cn("h-4 w-4", saved[p.id] && "fill-current")} />
-                </button>
-              </div>
-
-              {p.topAnswer && (
-                <div className="mt-3 border-t border-eve-sand pt-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-eve-teal">
-                    Top answer
-                  </p>
-                  <p className="mt-1 line-clamp-2 text-[12px] text-eve-muted">{p.topAnswer}</p>
+                  <button
+                    onClick={() => setSaved((s) => ({ ...s, [p.id]: !s[p.id] }))}
+                    className={cn(
+                      "ml-auto inline-flex items-center gap-1",
+                      saved[p.id] && "text-eve-teal",
+                    )}
+                  >
+                    <Bookmark className={cn("h-4 w-4", saved[p.id] && "fill-current")} />
+                  </button>
                 </div>
-              )}
-            </article>
-          );
-        })}
+
+                {p.topAnswer && (
+                  <div className="mt-3 border-t border-eve-sand pt-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-eve-teal">
+                      Top answer
+                    </p>
+                    <p className="mt-1 line-clamp-2 text-[12px] text-eve-muted">{p.topAnswer}</p>
+                  </div>
+                )}
+              </article>
+            );
+          })
+        )}
       </div>
+
 
       <button className="mt-5 w-full rounded-full border border-eve-teal py-2.5 text-sm font-medium text-eve-teal transition hover:bg-eve-teal-light">
         Load more
