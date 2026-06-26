@@ -53,6 +53,7 @@ export function SidebarShell({ children, wordmark, items }: Props) {
 
 const ADMIN_NAV: NavItem[] = [
   { to: "/admin/providers", label: "Providers", icon: Stethoscope },
+  { to: "/admin/provider-leads", label: "Provider Leads", icon: UserPlus },
   { to: "/admin/vendors", label: "Vendors", icon: Store },
   { to: "/admin/guidance", label: "Guidance", icon: BookOpen },
   { to: "/admin/alerts", label: "Alerts", icon: AlertTriangle },
