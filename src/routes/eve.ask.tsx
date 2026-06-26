@@ -576,6 +576,8 @@ function EveAvatar() {
 }
 
 function DisclaimerModal({ onClose }: { onClose: () => void }) {
+  const { prefs } = useCarePreferences();
+  const emergency = emergencyContact(prefs.country);
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 px-3 pb-4"
@@ -601,7 +603,7 @@ function DisclaimerModal({ onClose }: { onClose: () => void }) {
           Eve is your maternal care guide. She can help you prepare for appointments, understand your care options, organize questions, navigate insurance, and find trusted providers and emotional support.
         </p>
         <p className="mt-2 font-sans text-sm text-eve-muted">
-          Eve does not diagnose conditions or prescribe medication. For any medical decision, please consult a qualified provider. In an emergency, call your doctor or {EMERGENCY_NUMBER}.
+          Eve does not diagnose conditions or prescribe medication. For any medical decision, please consult a qualified provider. In an emergency, call your doctor or {emergency.label} ({emergency.number}).
         </p>
         <button
           onClick={onClose}
