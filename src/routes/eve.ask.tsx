@@ -25,6 +25,7 @@ import {
   emergencyContact,
   suggestedPromptsFromPrefs,
 } from "@/lib/personalization";
+import { LanguageFallbackNotice } from "@/components/LanguageFallbackNotice";
 
 export const Route = createFileRoute("/eve/ask")({
   component: AskEvePage,
@@ -264,6 +265,7 @@ function AskEveInner() {
           ref={scrollRef}
           className="flex-1 overflow-y-auto px-3 pb-40 pt-4"
         >
+          <LanguageFallbackNotice language={prefs.language} />
           {messages.length === 0 ? (
             <WelcomeState
               onPick={send}
@@ -408,7 +410,7 @@ function MessageBubble({
 }: {
   msg: Msg;
   preferredProvider: PreferredProvider | null;
-  emergencyNumber: string;
+  emergencyNumber: string | null;
   emergencyLabel: string;
   onFindProvider: () => void;
 }) {
@@ -496,7 +498,7 @@ function UrgencyCard({
   emergencyLabel,
 }: {
   preferredProvider: PreferredProvider | null;
-  emergencyNumber: string;
+  emergencyNumber: string | null;
   emergencyLabel: string;
 }) {
   const hasProviderPhone =
@@ -506,7 +508,9 @@ function UrgencyCard({
     : emergencyNumber;
   const buttonLabel = hasProviderPhone
     ? `Call ${preferredProvider!.full_name ?? "your doctor"}`
-    : `Call ${emergencyLabel} (${emergencyNumber})`;
+    : emergencyNumber
+      ? `Call ${emergencyLabel} (${emergencyNumber})`
+      : null;
 
   return (
     <div className="rounded-2xl border border-red-300 bg-red-50 p-3">
@@ -519,15 +523,23 @@ function UrgencyCard({
           >
             This sounds urgent. Please get medical help right away.
           </p>
-          {/* dialNumber is guaranteed non-empty: provider phone OR EMERGENCY_NUMBER */}
-          <a
-            href={`tel:${dialNumber}`}
-            className="mt-2 inline-flex items-center rounded-full bg-eve-rose px-3 py-1.5 font-sans font-medium text-white"
-            style={{ fontSize: "11px" }}
-          >
-            {buttonLabel}
-          </a>
-          {!hasProviderPhone && (
+          {dialNumber && buttonLabel ? (
+            <a
+              href={`tel:${dialNumber}`}
+              className="mt-2 inline-flex items-center rounded-full bg-eve-rose px-3 py-1.5 font-sans font-medium text-white"
+              style={{ fontSize: "11px" }}
+            >
+              {buttonLabel}
+            </a>
+          ) : (
+            <p
+              className="mt-2 font-sans font-medium text-red-700"
+              style={{ fontSize: "11px" }}
+            >
+              Contact your local emergency service or go to the nearest emergency department.
+            </p>
+          )}
+          {!hasProviderPhone && dialNumber && (
             <p
               className="mt-2 font-sans text-red-700/80"
               style={{ fontSize: "10.5px", lineHeight: 1.4 }}
@@ -603,7 +615,7 @@ function DisclaimerModal({ onClose }: { onClose: () => void }) {
           Eve is your maternal care guide. She can help you prepare for appointments, understand your care options, organize questions, navigate insurance, and find trusted providers and emotional support.
         </p>
         <p className="mt-2 font-sans text-sm text-eve-muted">
-          Eve does not diagnose conditions or prescribe medication. For any medical decision, please consult a qualified provider. In an emergency, call your doctor or {emergency.label} ({emergency.number}).
+          Eve does not diagnose conditions or prescribe medication. For any medical decision, please consult a qualified provider. In an emergency, {emergency.available ? `call your doctor or ${emergency.label} (${emergency.number}).` : "contact your local emergency service or go to the nearest emergency department."}
         </p>
         <button
           onClick={onClose}
