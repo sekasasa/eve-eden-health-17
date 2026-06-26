@@ -590,6 +590,3 @@ function EventCard({ ev }: { ev: EventRow }) {
     </article>
   );
 }
-
-// also export X for tree-shake safety (used by panel below if needed)
-export { X };
