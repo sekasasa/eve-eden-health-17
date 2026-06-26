@@ -164,7 +164,21 @@ const SEED_POSTS: Post[] = [
 function CommunityPage() {
   const nav = useNavigate();
   const { profile } = useSavedProfile();
-  const [active, setActive] = useState<CategoryKey>("all");
+  const { prefs } = useCarePreferences();
+  const hideFamilyPromo = prefHelpers.privateFromFamily(prefs);
+  // Default category from stage
+  const defaultCategory: CategoryKey = useMemo(() => {
+    const s = prefs.stage ?? profile.stage;
+    if (s === "postpartum" || s === "newborn") return "postpartum";
+    if (s === "family") return "family";
+    if (s === "pregnant") {
+      const w = profile.stage ? 0 : 0; // we don't have week here, default to "all"
+      void w;
+      return "all";
+    }
+    return "all";
+  }, [prefs.stage, profile.stage]);
+  const [active, setActive] = useState<CategoryKey>(defaultCategory);
   const [open, setOpen] = useState(false);
   const [hearts, setHearts] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
