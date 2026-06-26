@@ -189,9 +189,18 @@ function AskEveInner() {
       data: {
         message: trimmed,
         pregnancy_week: profile?.pregnancy_week ?? null,
-        language: profile?.language ?? null,
+        language: profile?.language ?? prefs.language ?? null,
         dietary_pref: profile?.dietary_notes ?? null,
-        country: profile?.country ?? null,
+        country: profile?.country ?? prefs.country ?? null,
+        prefs: {
+          stage: prefs.stage,
+          region: prefs.region,
+          city: prefs.city,
+          dialect: prefs.dialect,
+          cultural: prefs.cultural_prefs,
+          dietary: prefs.dietary_prefs,
+          birth: prefs.birth_prefs,
+        },
         history,
       },
     });
