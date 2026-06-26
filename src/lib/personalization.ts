@@ -46,52 +46,92 @@ export const EMPTY_PREFS: CarePrefs = {
   personalize_opt: null,
 };
 
-// Country -> emergency dispatch number. Falls back to a generic message.
+// Country -> emergency dispatch number. Falls back to a safe generic message
+// (no tel link) when the country isn't mapped yet.
 const EMERGENCY_BY_COUNTRY: Record<string, { number: string; label: string }> = {
-  MA: { number: "150", label: "SAMU (Morocco)" },
-  FR: { number: "15", label: "SAMU (France)" },
+  // North America
   US: { number: "911", label: "911 (USA)" },
   CA: { number: "911", label: "911 (Canada)" },
   MX: { number: "911", label: "911 (Mexico)" },
-  GT: { number: "123", label: "Emergencias (Guatemala)" },
-  HN: { number: "911", label: "911 (Honduras)" },
-  SV: { number: "911", label: "911 (El Salvador)" },
-  NI: { number: "128", label: "Cruz Roja (Nicaragua)" },
-  CR: { number: "911", label: "911 (Costa Rica)" },
-  PA: { number: "911", label: "911 (Panama)" },
-  BR: { number: "192", label: "SAMU (Brazil)" },
-  AR: { number: "107", label: "SAME (Argentina)" },
-  CL: { number: "131", label: "SAMU (Chile)" },
-  CO: { number: "123", label: "Línea (Colombia)" },
-  PE: { number: "106", label: "SAMU (Peru)" },
-  EC: { number: "911", label: "911 (Ecuador)" },
-  BO: { number: "118", label: "Emergencias (Bolivia)" },
-  UY: { number: "105", label: "Emergencias (Uruguay)" },
-  PY: { number: "141", label: "Emergencias (Paraguay)" },
+  // Africa
+  MA: { number: "150", label: "SAMU (Morocco)" },
+  UG: { number: "999", label: "999 (Uganda)" },
+  MU: { number: "150", label: "SAMU (Mauritius)" },
   NG: { number: "112", label: "112 (Nigeria)" },
   KE: { number: "999", label: "999 (Kenya)" },
-  UG: { number: "999", label: "999 (Uganda)" },
-  RW: { number: "912", label: "912 (Rwanda)" },
+  ZA: { number: "112", label: "112 (South Africa)" },
+  GH: { number: "112", label: "112 (Ghana)" },
+  EG: { number: "123", label: "Ambulance (Egypt)" },
   ET: { number: "907", label: "Ambulance (Ethiopia)" },
-  ZA: { number: "10177", label: "Ambulance (South Africa)" },
+  TZ: { number: "112", label: "112 (Tanzania)" },
+  RW: { number: "112", label: "112 (Rwanda)" },
   SN: { number: "1515", label: "SAMU (Senegal)" },
   CI: { number: "185", label: "SAMU (Côte d'Ivoire)" },
-  CD: { number: "112", label: "Urgences (DRC)" },
-  CM: { number: "119", label: "Urgences (Cameroon)" },
+  CM: { number: "112", label: "112 (Cameroon)" },
+  CD: { number: "112", label: "112 (DRC)" },
+  AO: { number: "112", label: "112 (Angola)" },
   DZ: { number: "14", label: "Protection civile (Algeria)" },
   TN: { number: "190", label: "SAMU (Tunisia)" },
-  EG: { number: "123", label: "Ambulance (Egypt)" },
-  GB: { number: "999", label: "999 (UK)" },
-  IE: { number: "112", label: "112 (Ireland)" },
-  ES: { number: "112", label: "112 (Spain)" },
-  PT: { number: "112", label: "112 (Portugal)" },
-  IT: { number: "118", label: "Soccorso (Italy)" },
-  DE: { number: "112", label: "112 (Germany)" },
+  // South America
+  BR: { number: "192", label: "SAMU (Brazil)" },
+  CO: { number: "123", label: "Línea (Colombia)" },
+  AR: { number: "107", label: "SAME (Argentina)" },
+  PE: { number: "106", label: "SAMU (Peru)" },
+  CL: { number: "131", label: "SAMU (Chile)" },
+  EC: { number: "911", label: "911 (Ecuador)" },
+  BO: { number: "118", label: "Emergencias (Bolivia)" },
+  PY: { number: "141", label: "Emergencias (Paraguay)" },
+  UY: { number: "911", label: "911 (Uruguay)" },
+  VE: { number: "911", label: "911 (Venezuela)" },
+  GY: { number: "913", label: "Ambulance (Guyana)" },
+  SR: { number: "115", label: "Ambulance (Suriname)" },
+  // Central America
+  GT: { number: "128", label: "Cruz Roja (Guatemala)" },
+  BZ: { number: "911", label: "911 (Belize)" },
+  HN: { number: "911", label: "911 (Honduras)" },
+  SV: { number: "911", label: "911 (El Salvador)" },
+  NI: { number: "118", label: "Cruz Roja (Nicaragua)" },
+  CR: { number: "911", label: "911 (Costa Rica)" },
+  PA: { number: "911", label: "911 (Panama)" },
 };
 
-export function emergencyContact(countryCode?: string | null): { number: string; label: string } {
-  if (!countryCode) return { number: "112", label: "International emergency" };
-  return EMERGENCY_BY_COUNTRY[countryCode.toUpperCase()] ?? { number: "112", label: "International emergency" };
+export type EmergencyContact = {
+  available: boolean;
+  number: string | null;
+  label: string;
+  /** Always safe to render to the user. */
+  message: string;
+};
+
+const GENERIC_MESSAGE =
+  "Contact your local emergency service or go to the nearest emergency department.";
+
+export function emergencyContact(countryCode?: string | null): EmergencyContact {
+  const entry = countryCode
+    ? EMERGENCY_BY_COUNTRY[countryCode.toUpperCase()]
+    : undefined;
+  if (!entry) {
+    return {
+      available: false,
+      number: null,
+      label: "Local emergency services",
+      message: GENERIC_MESSAGE,
+    };
+  }
+  return {
+    available: true,
+    number: entry.number,
+    label: entry.label,
+    message: `${entry.label}: ${entry.number}`,
+  };
+}
+
+/** Languages with full in-app translation coverage today. */
+export const FULLY_TRANSLATED_LANGS = new Set(["en", "fr", "ar"]);
+
+export function isLanguageFullyTranslated(lang?: string | null): boolean {
+  if (!lang) return true;
+  return FULLY_TRANSLATED_LANGS.has(lang.toLowerCase());
 }
 
 // Region inferred from a stored region key OR a country code.
