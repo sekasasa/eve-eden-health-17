@@ -524,6 +524,28 @@ function EveHome() {
           )}
         </div>
 
+        {/* Personalized callouts (only from explicit prefs) */}
+        {callouts.length > 0 && (
+          <div className="mt-4 px-3">
+            <SectionLabel>
+              {lang === "fr" ? "Pour vous" : lang === "ar" ? "لأجلك" : "For you"}
+            </SectionLabel>
+            <div className="mt-2 space-y-2">
+              {callouts.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => c.to && navigate({ to: c.to })}
+                  className="block w-full rounded-2xl border border-eve-rose/20 bg-white p-3 text-left"
+                >
+                  <p className="font-sans text-sm font-medium text-eve-teal-dark">{c.title}</p>
+                  <p className="mt-0.5 font-sans text-[11px] text-eve-muted">{c.body}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Quick actions — 6 consolidated cards, ordered by stage */}
         <div className="mt-5 px-3 rtl:text-right">
           <SectionLabel>{t("home.quickActions")}</SectionLabel>
