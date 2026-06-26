@@ -116,6 +116,8 @@ function AskEveInner() {
   const router = useRouter();
   const navigate = useNavigate();
   const askFn = useServerFn(askEve);
+  const { prefs } = useCarePreferences();
+  const emergency = emergencyContact(prefs.country);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
