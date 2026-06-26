@@ -5,6 +5,8 @@ import { EveShell } from "@/components/shells/EveShell";
 import { ContentCard } from "@/components/ui/ContentCard";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
+import { useCarePreferences } from "@/hooks/useCarePreferences";
+import { prefHelpers } from "@/lib/personalization";
 import { eveToast } from "@/lib/eve-toast";
 import { rankForProfile, type ContentRow } from "@/lib/content-filter";
 import { supabase } from "@/integrations/supabase/client";
