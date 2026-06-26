@@ -470,10 +470,58 @@ function EveProviders() {
         )}
       </div>
 
+      <ExternalDirectories specialty={specialty} />
+
       <div className="mt-6">
         <NavigatorHelp />
       </div>
     </EveShell>
+  );
+}
+
+function ExternalDirectories({ specialty }: { specialty: string }) {
+  const [rows, setRows] = useState<
+    { id: string; resource_name: string; source_url: string | null; notes: string | null; category: string | null }[]
+  >([]);
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("directory_resources")
+        .select("id,resource_name,source_url,notes,category,display_section")
+        .or("display_section.eq.external_resources_providers,category.eq.doula_directory")
+        .limit(20);
+      setRows((data ?? []) as typeof rows);
+    })();
+  }, []);
+  if (rows.length === 0) return null;
+  return (
+    <section className="mt-6">
+      <h2 className="font-serif text-lg text-eve-teal-dark">Trusted external directories</h2>
+      <p className="mt-1 text-[11px] text-eve-muted">
+        Link-outs to public directories. These are not Eve &amp; Eden verified providers.
+        {specialty === "Doula"
+          ? " We are still building our verified doula network — explore DONA below or ask a navigator."
+          : ""}
+      </p>
+      <ul className="mt-3 space-y-2">
+        {rows.map((d) => (
+          <li key={d.id} className="rounded-2xl border border-eve-sand bg-eve-cream/40 p-3">
+            <p className="text-sm font-medium text-eve-teal-dark">{d.resource_name}</p>
+            {d.notes && <p className="mt-0.5 text-[11px] text-eve-muted">{d.notes}</p>}
+            {d.source_url && (
+              <a
+                href={d.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 inline-block text-[12px] text-eve-teal underline"
+              >
+                Open directory ↗
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
