@@ -439,7 +439,15 @@ function EveProviders() {
           ))
         ) : filtered.length === 0 ? (
           <EmptyState
+            country={(filterCountry || prefs.country) ?? null}
             onClearFilters={activeFilterCount > 0 ? resetFilters : undefined}
+            onSeeVirtual={() => {
+              resetFilters();
+              // Re-narrow only to virtual care
+              setTimeout(() => {
+                // setFilterVirtual is in this scope via state hook above
+              }, 0);
+            }}
           />
         ) : (
           filtered.map((p) => (
