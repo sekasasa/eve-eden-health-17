@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Stethoscope, Store, BookOpen, Users, AlertTriangle } from "lucide-react";
+import { Stethoscope, Store, BookOpen, Users, AlertTriangle, UserPlus } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { cn } from "@/lib/utils";
 
