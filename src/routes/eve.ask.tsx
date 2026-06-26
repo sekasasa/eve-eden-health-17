@@ -25,6 +25,7 @@ import {
   emergencyContact,
   suggestedPromptsFromPrefs,
 } from "@/lib/personalization";
+import { LanguageFallbackNotice } from "@/components/LanguageFallbackNotice";
 
 export const Route = createFileRoute("/eve/ask")({
   component: AskEvePage,
