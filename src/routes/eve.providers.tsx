@@ -136,20 +136,33 @@ function EveProviders() {
     const base = filter === "All"
       ? items
       : items.filter((p) => (p.specialty ?? "").toLowerCase().includes(filter.toLowerCase()));
-    // Personalized re-ranking: language match → city match → accepting → rating
-    const userLang = (profile.language ?? "").toLowerCase();
-    const userCity = (profile.city ?? "").toLowerCase();
+
+    const region = regionOf(prefs);
+    const regionalLangs = priorityLanguagesForRegion(region);
+
     const score = (p: Provider) => {
-      let s = 0;
-      if (userLang && (p.languages ?? []).some((l) => l.toLowerCase().includes(userLang))) s += 4;
-      if (userCity && (p.city ?? "").toLowerCase().includes(userCity)) s += 3;
+      // Base personalization (uses explicit prefs only)
+      let s = providerPersonalizationScore(p, prefs);
+      // Regional language priority (small boost)
+      if (regionalLangs.length && (p.languages ?? []).some((l) => regionalLangs.includes(l.toLowerCase()))) {
+        s += 1;
+      }
+      // Match-intake fallbacks for users who haven't filled care prefs yet
+      const userLang = (profile.language ?? "").toLowerCase();
+      const userCity = (profile.city ?? "").toLowerCase();
+      if (!prefs.language && userLang && (p.languages ?? []).some((l) => l.toLowerCase().includes(userLang))) s += 2;
+      if (!prefs.city && userCity && (p.city ?? "").toLowerCase().includes(userCity)) s += 2;
       if (p.accepting_patients) s += 1;
       if (p.is_verified) s += 1;
       s += (p.avg_rating ?? 0) / 5;
       return s;
     };
     return [...base].sort((a, b) => score(b) - score(a));
-  }, [items, filter, profile.language, profile.city]);
+  }, [items, filter, prefs, profile.language, profile.city]);
+
+  // We can't filter by provider gender (no column), but if female is preferred,
+  // we show a clear note so the user knows we can't confirm a match.
+  const femalePreferred = prefHelpers.femalePreferred(prefs);
 
 
   return (
