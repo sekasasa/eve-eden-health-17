@@ -89,6 +89,7 @@ type Filters = {
 
 function EventsPage() {
   const [events, setEvents] = useState<EventRow[] | null>(null);
+  const [directories, setDirectories] = useState<DirectoryRow[]>([]);
   const { prefs } = useCarePreferences();
   const [showFilters, setShowFilters] = useState(false);
 
