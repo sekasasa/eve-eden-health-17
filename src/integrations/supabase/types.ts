@@ -187,6 +187,120 @@ export type Database = {
           },
         ]
       }
+      community_seeds: {
+        Row: {
+          body_preview: string | null
+          category: string | null
+          country_scope: string | null
+          created_at: string
+          display_in_app: boolean
+          id: string
+          language: string | null
+          life_stage: string | null
+          notes: string | null
+          record_type: string
+          region_scope: string | null
+          safety_flag: boolean
+          status: string
+          tags: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_preview?: string | null
+          category?: string | null
+          country_scope?: string | null
+          created_at?: string
+          display_in_app?: boolean
+          id?: string
+          language?: string | null
+          life_stage?: string | null
+          notes?: string | null
+          record_type?: string
+          region_scope?: string | null
+          safety_flag?: boolean
+          status: string
+          tags?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_preview?: string | null
+          category?: string | null
+          country_scope?: string | null
+          created_at?: string
+          display_in_app?: boolean
+          id?: string
+          language?: string | null
+          life_stage?: string | null
+          notes?: string | null
+          record_type?: string
+          region_scope?: string | null
+          safety_flag?: boolean
+          status?: string
+          tags?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      directory_resources: {
+        Row: {
+          category: string | null
+          city_scope: string | null
+          country: string | null
+          created_at: string
+          display_in_app: boolean
+          display_section: string | null
+          id: string
+          language_support: string | null
+          notes: string | null
+          record_type: string
+          region: string | null
+          resource_name: string
+          resource_type: string | null
+          source_status: string | null
+          source_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          city_scope?: string | null
+          country?: string | null
+          created_at?: string
+          display_in_app?: boolean
+          display_section?: string | null
+          id?: string
+          language_support?: string | null
+          notes?: string | null
+          record_type?: string
+          region?: string | null
+          resource_name: string
+          resource_type?: string | null
+          source_status?: string | null
+          source_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          city_scope?: string | null
+          country?: string | null
+          created_at?: string
+          display_in_app?: boolean
+          display_section?: string | null
+          id?: string
+          language_support?: string | null
+          notes?: string | null
+          record_type?: string
+          region?: string | null
+          resource_name?: string
+          resource_type?: string | null
+          source_status?: string | null
+          source_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       document_shares: {
         Row: {
           created_at: string
@@ -741,6 +855,69 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_targets: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          cultural_fit_tags: string | null
+          display_in_app: boolean
+          id: string
+          language_focus: string | null
+          notes: string | null
+          priority: number | null
+          recommended_source: string | null
+          record_type: string
+          region: string | null
+          source_url: string | null
+          specialty: string | null
+          status: string | null
+          target_count: number | null
+          updated_at: string
+          verification_tasks: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          cultural_fit_tags?: string | null
+          display_in_app?: boolean
+          id?: string
+          language_focus?: string | null
+          notes?: string | null
+          priority?: number | null
+          recommended_source?: string | null
+          record_type?: string
+          region?: string | null
+          source_url?: string | null
+          specialty?: string | null
+          status?: string | null
+          target_count?: number | null
+          updated_at?: string
+          verification_tasks?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          cultural_fit_tags?: string | null
+          display_in_app?: boolean
+          id?: string
+          language_focus?: string | null
+          notes?: string | null
+          priority?: number | null
+          recommended_source?: string | null
+          record_type?: string
+          region?: string | null
+          source_url?: string | null
+          specialty?: string | null
+          status?: string | null
+          target_count?: number | null
+          updated_at?: string
+          verification_tasks?: string | null
+        }
+        Relationships: []
+      }
       providers: {
         Row: {
           accepting_patients: boolean | null
@@ -922,6 +1099,114 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      seed_events: {
+        Row: {
+          agenda: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          currency: string | null
+          date_status: string | null
+          date_time_local: string | null
+          display_in_app: boolean
+          event_category_tags: string | null
+          host_name: string | null
+          host_type: string | null
+          id: string
+          is_featured: boolean
+          languages: string | null
+          life_stage_tags: string | null
+          location_type: string | null
+          long_description: string | null
+          notes: string | null
+          price_amount: number | null
+          price_type: string | null
+          record_type: string
+          region: string | null
+          registration_type: string | null
+          registration_url: string | null
+          short_description: string | null
+          source_url: string | null
+          speaker_slots: string | null
+          status: string
+          timezone: string | null
+          title: string
+          updated_at: string
+          venue_name: string | null
+          verification_status: string | null
+        }
+        Insert: {
+          agenda?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string | null
+          date_status?: string | null
+          date_time_local?: string | null
+          display_in_app?: boolean
+          event_category_tags?: string | null
+          host_name?: string | null
+          host_type?: string | null
+          id?: string
+          is_featured?: boolean
+          languages?: string | null
+          life_stage_tags?: string | null
+          location_type?: string | null
+          long_description?: string | null
+          notes?: string | null
+          price_amount?: number | null
+          price_type?: string | null
+          record_type: string
+          region?: string | null
+          registration_type?: string | null
+          registration_url?: string | null
+          short_description?: string | null
+          source_url?: string | null
+          speaker_slots?: string | null
+          status: string
+          timezone?: string | null
+          title: string
+          updated_at?: string
+          venue_name?: string | null
+          verification_status?: string | null
+        }
+        Update: {
+          agenda?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string | null
+          date_status?: string | null
+          date_time_local?: string | null
+          display_in_app?: boolean
+          event_category_tags?: string | null
+          host_name?: string | null
+          host_type?: string | null
+          id?: string
+          is_featured?: boolean
+          languages?: string | null
+          life_stage_tags?: string | null
+          location_type?: string | null
+          long_description?: string | null
+          notes?: string | null
+          price_amount?: number | null
+          price_type?: string | null
+          record_type?: string
+          region?: string | null
+          registration_type?: string | null
+          registration_url?: string | null
+          short_description?: string | null
+          source_url?: string | null
+          speaker_slots?: string | null
+          status?: string
+          timezone?: string | null
+          title?: string
+          updated_at?: string
+          venue_name?: string | null
+          verification_status?: string | null
+        }
+        Relationships: []
       }
       trusted_partners: {
         Row: {

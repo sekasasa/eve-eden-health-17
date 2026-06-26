@@ -38,6 +38,21 @@ type EventRow = {
   price_label: string | null;
   vendor_id: string;
   vendors?: { business_name: string | null } | null;
+  is_featured?: boolean;
+  source?: "vendor" | "seed";
+};
+
+type DirectoryRow = {
+  id: string;
+  resource_name: string;
+  category: string | null;
+  region: string | null;
+  country: string | null;
+  city_scope: string | null;
+  language_support: string | null;
+  display_section: string | null;
+  source_url: string | null;
+  notes: string | null;
 };
 
 const REGIONS: { key: Region; label: string }[] = [
@@ -74,6 +89,7 @@ type Filters = {
 
 function EventsPage() {
   const [events, setEvents] = useState<EventRow[] | null>(null);
+  const [directories, setDirectories] = useState<DirectoryRow[]>([]);
   const { prefs } = useCarePreferences();
   const [showFilters, setShowFilters] = useState(false);
 
@@ -104,19 +120,74 @@ function EventsPage() {
   useEffect(() => {
     (async () => {
       const nowIso = new Date().toISOString();
-      const { data } = await supabase
-        .from("vendor_content")
-        .select(
-          "id,title,excerpt,location,language,category,life_stage,event_at,cta_type,cta_url,media_url,price_label,vendor_id,vendors(business_name)",
-        )
-        .eq("content_type", "event")
-        .eq("status", "published")
-        .or(`event_at.gte.${nowIso},event_at.is.null`)
-        .order("event_at", { ascending: true, nullsFirst: false })
-        .limit(100);
-      setEvents((data as unknown as EventRow[]) ?? []);
+      const [vendorRes, seedRes, dirRes] = await Promise.all([
+        supabase
+          .from("vendor_content")
+          .select(
+            "id,title,excerpt,location,language,category,life_stage,event_at,cta_type,cta_url,media_url,price_label,vendor_id,vendors(business_name)",
+          )
+          .eq("content_type", "event")
+          .eq("status", "published")
+          .or(`event_at.gte.${nowIso},event_at.is.null`)
+          .order("event_at", { ascending: true, nullsFirst: false })
+          .limit(100),
+        // RLS filters to display_in_app=true AND status IN (eve_hosted,partner_hosted,verified,registration_confirmed)
+        supabase
+          .from("seed_events")
+          .select(
+            "id,title,short_description,city,country,location_type,date_time_local,languages,event_category_tags,life_stage_tags,price_type,price_amount,currency,registration_type,registration_url,host_name,is_featured",
+          )
+          .limit(100),
+        supabase
+          .from("directory_resources")
+          .select("id,resource_name,category,region,country,city_scope,language_support,display_section,source_url,notes")
+          .limit(50),
+      ]);
+
+      const vendorRows = (vendorRes.data as unknown as EventRow[]) ?? [];
+      const seedRows: EventRow[] = ((seedRes.data as unknown as Array<Record<string, unknown>>) ?? []).map((s) => {
+        const dt = String(s.date_time_local ?? "");
+        const parsed = /^\d{4}-\d{2}-\d{2}/.test(dt) ? new Date(dt.replace(" ", "T")) : null;
+        const eventAt = parsed && !Number.isNaN(parsed.getTime()) ? parsed.toISOString() : null;
+        const loc =
+          s.location_type === "online"
+            ? "Online"
+            : [s.city, s.country].filter(Boolean).join(", ") || null;
+        const price =
+          s.price_type === "free"
+            ? "Free"
+            : s.price_amount
+              ? `${s.price_amount} ${s.currency ?? ""}`.trim()
+              : "Price on registration";
+        const langs = String(s.languages ?? "").split(/;|,/).map((x) => x.trim()).filter(Boolean);
+        return {
+          id: `seed-${s.id}`,
+          title: String(s.title ?? ""),
+          excerpt: (s.short_description as string) ?? null,
+          location: loc,
+          language: langs[0] ?? null,
+          category: ((s.event_category_tags as string) ?? "").split(";")[0]?.trim() || null,
+          life_stage: ((s.life_stage_tags as string) ?? "").split(";")[0]?.trim() || null,
+          event_at: eventAt,
+          cta_type: s.registration_url ? "register" : null,
+          cta_url: (s.registration_url as string) ?? null,
+          media_url: null,
+          price_label: price,
+          vendor_id: "",
+          vendors: { business_name: (s.host_name as string) ?? "Eve & Eden" },
+          is_featured: Boolean(s.is_featured),
+          source: "seed",
+        };
+      });
+
+      // Featured launch event first, then merged list
+      const merged = [...seedRows, ...vendorRows];
+      merged.sort((a, b) => Number(b.is_featured ?? false) - Number(a.is_featured ?? false));
+      setEvents(merged);
+      setDirectories((dirRes.data as unknown as DirectoryRow[]) ?? []);
     })();
   }, []);
+
 
   const activeCount =
     (filters.region !== "any" ? 1 : 0) +
@@ -167,6 +238,17 @@ function EventsPage() {
 
     const score = (e: EventRow) => {
       let s = 0;
+      // Featured launch event always pinned for matching Morocco/Casablanca/Rabat audiences
+      if (e.is_featured) {
+        const loc = (e.location ?? "").toLowerCase();
+        const matchesMa =
+          !country ||
+          country === "morocco" ||
+          loc.includes("morocco") ||
+          loc.includes("casablanca") ||
+          loc.includes("rabat");
+        if (matchesMa) s += 100;
+      }
       if (stage && e.life_stage === stage) s += 5;
       if (lang && (e.language ?? "").toLowerCase() === lang) s += 4;
       else if (regionalLangs.length && e.language && regionalLangs.includes(e.language.toLowerCase())) s += 2;
@@ -318,12 +400,45 @@ function EventsPage() {
         </div>
       )}
 
+      {directories.length > 0 && (
+        <section className="mt-8">
+          <h2 className="font-serif text-lg text-eve-teal-dark">External resources</h2>
+          <p className="mt-1 text-[12px] text-eve-muted">
+            Trusted public directories and event listings. These are link-outs, not Eve & Eden verified providers or events.
+          </p>
+          <ul className="mt-3 space-y-2">
+            {directories.map((d) => (
+              <li
+                key={d.id}
+                className="rounded-2xl border border-eve-sand bg-eve-cream/40 p-3"
+              >
+                <p className="text-sm font-medium text-eve-teal-dark">{d.resource_name}</p>
+                <p className="mt-0.5 text-[11px] text-eve-muted">
+                  {[d.category, d.country, d.city_scope].filter(Boolean).join(" · ")}
+                </p>
+                {d.source_url ? (
+                  <a
+                    href={d.source_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-flex items-center gap-1 text-[12px] text-eve-teal underline"
+                  >
+                    Visit directory <ArrowRight className="h-3 w-3" />
+                  </a>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <Link
         to="/eden/login"
         className="mt-8 block rounded-2xl bg-eve-teal-light p-4 text-center text-sm text-eve-teal-dark"
       >
         Hosting a maternal health event? <span className="font-semibold">Add it on Eve & Eden →</span>
       </Link>
+
     </EveShell>
   );
 }
