@@ -537,3 +537,183 @@ function CommunityPage() {
     </EveShell>
   );
 }
+
+function NewPostSheet({
+  onClose,
+  prefs,
+}: {
+  onClose: () => void;
+  prefs: ReturnType<typeof useCarePreferences>["prefs"];
+}) {
+  const [anonymous, setAnonymous] = useState(true);
+  const [category, setCategory] = useState<CategoryKey>("pregnancy");
+  const [country, setCountry] = useState(prefs.country ?? "");
+  const [city, setCity] = useState(prefs.city ?? "");
+  const [language, setLanguage] = useState(prefs.language ?? "");
+  const [dialect, setDialect] = useState(prefs.dialect ?? "");
+  const [stage, setStage] = useState(prefs.stage ?? "");
+  const [tags, setTags] = useState<string[]>([]);
+
+  function toggleTag(t: string) {
+    setTags((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
+  }
+
+  function submit() {
+    eveToast.success(
+      anonymous ? "Post shared anonymously" : "Post shared",
+    );
+    onClose();
+  }
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 sm:items-center">
+      <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl bg-white p-5 shadow-xl sm:rounded-3xl">
+        <div className="flex items-start justify-between">
+          <h3 className="font-serif text-xl font-semibold text-eve-teal-dark">
+            Share with the community
+          </h3>
+          <button onClick={onClose} aria-label="Close">
+            <X className="h-5 w-5 text-eve-muted" />
+          </button>
+        </div>
+
+        <label className="mt-4 flex items-center justify-between rounded-xl bg-eve-teal-light px-3 py-2 text-[12px] text-eve-teal">
+          <span>Post anonymously</span>
+          <input
+            type="checkbox"
+            checked={anonymous}
+            onChange={(e) => setAnonymous(e.target.checked)}
+            className="h-4 w-4"
+          />
+        </label>
+
+        <Field label="Category">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value as CategoryKey)}
+            className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+          >
+            {CATEGORIES.filter((c) => c.key !== "all").map((c) => (
+              <option key={c.key} value={c.key}>{c.label}</option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label="Life stage (optional)">
+          <select
+            value={stage}
+            onChange={(e) => setStage(e.target.value)}
+            className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+          >
+            <option value="">Not specified</option>
+            {LIFE_STAGES.map((s) => (
+              <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+            ))}
+          </select>
+        </Field>
+
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Field label="Country">
+            <input
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              placeholder="e.g. Morocco"
+              className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+            />
+          </Field>
+          <Field label="City or region">
+            <input
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="e.g. Casablanca"
+              className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+            />
+          </Field>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Field label="Language">
+            <input
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              placeholder="e.g. English"
+              className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+            />
+          </Field>
+          <Field label="Dialect (optional)">
+            <input
+              value={dialect}
+              onChange={(e) => setDialect(e.target.value)}
+              placeholder="e.g. Darija"
+              className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+            />
+          </Field>
+        </div>
+
+        <Field label="Title">
+          <input
+            placeholder="What's on your mind?"
+            className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+          />
+        </Field>
+
+        <Field label="Your post">
+          <textarea
+            rows={4}
+            placeholder="Share your experience, ask a question, or offer support..."
+            className="w-full rounded-xl border border-eve-sand bg-eve-cream px-3 py-2 text-sm"
+          />
+        </Field>
+
+        <div className="mt-3">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-eve-muted">Tags (optional)</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {POST_TAGS.map((t) => (
+              <button
+                key={t}
+                onClick={() => toggleTag(t)}
+                className={cn(
+                  "rounded-full px-3 py-1 text-[11px] font-medium border",
+                  tags.includes(t)
+                    ? "bg-eve-teal text-white border-eve-teal"
+                    : "bg-white text-eve-muted border-eve-sand",
+                )}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <p className="mt-3 text-[11px] text-eve-muted">
+          You choose what to share. Country and language help us show your post to mothers nearby — they are never used to identify you.
+        </p>
+
+        <button
+          onClick={submit}
+          className="mt-4 w-full rounded-full bg-eve-teal py-3 text-sm font-medium text-white"
+        >
+          {anonymous ? "Post anonymously" : "Post"}
+        </button>
+        <button
+          onClick={onClose}
+          className="mt-2 w-full text-center text-xs text-eve-muted"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="mt-3">
+      <label className="block text-[11px] font-medium uppercase tracking-wide text-eve-muted">
+        {label}
+      </label>
+      <div className="mt-1">{children}</div>
+    </div>
+  );
+}
+
