@@ -643,7 +643,73 @@ function Chip({
   );
 }
 
-function EmptyState({ onClearFilters }: { onClearFilters?: () => void }) {
+function EmptyState({
+  country,
+  onClearFilters,
+  onSearchVirtual,
+}: {
+  country?: string | null;
+  onClearFilters?: () => void;
+  onSearchVirtual?: () => void;
+}) {
+  const [notified, setNotified] = useState(false);
+  useEffect(() => {
+    if (!country) return;
+    const key = `eve.notify_provider_country.${country.toUpperCase()}`;
+    setNotified(typeof window !== "undefined" && !!window.localStorage.getItem(key));
+  }, [country]);
+
+  const handleNotify = () => {
+    if (!country) return;
+    const key = `eve.notify_provider_country.${country.toUpperCase()}`;
+    window.localStorage.setItem(key, new Date().toISOString());
+    setNotified(true);
+  };
+
+  // Country-aware empty state when a country is selected.
+  if (country) {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-2xl bg-white p-8 text-center">
+        <Stethoscope className="h-6 w-6 text-eve-teal" />
+        <p className="font-sans text-sm text-eve-teal-dark">
+          We are still building our provider network in your country. Ask a
+          navigator and we'll help you find support.
+        </p>
+        <div className="mt-1 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center">
+          <Link
+            to="/eve/ask"
+            className="rounded-full bg-eve-teal px-4 py-2 font-sans text-xs text-white"
+          >
+            Ask a navigator
+          </Link>
+          {onSearchVirtual && (
+            <button
+              onClick={onSearchVirtual}
+              className="rounded-full border border-eve-teal/40 px-4 py-2 font-sans text-xs text-eve-teal"
+            >
+              Search virtual care
+            </button>
+          )}
+          <button
+            onClick={handleNotify}
+            disabled={notified}
+            className="rounded-full border border-eve-teal/40 px-4 py-2 font-sans text-xs text-eve-teal disabled:opacity-60"
+          >
+            {notified ? "We'll notify you" : "Notify me when providers are available"}
+          </button>
+          {onClearFilters && (
+            <button
+              onClick={onClearFilters}
+              className="rounded-full border border-eve-muted/30 px-4 py-2 font-sans text-xs text-eve-muted"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl bg-white p-8 text-center">
       <Stethoscope className="h-6 w-6 text-eve-teal" />
