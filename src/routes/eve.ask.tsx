@@ -496,7 +496,7 @@ function UrgencyCard({
   emergencyLabel,
 }: {
   preferredProvider: PreferredProvider | null;
-  emergencyNumber: string;
+  emergencyNumber: string | null;
   emergencyLabel: string;
 }) {
   const hasProviderPhone =
@@ -506,7 +506,9 @@ function UrgencyCard({
     : emergencyNumber;
   const buttonLabel = hasProviderPhone
     ? `Call ${preferredProvider!.full_name ?? "your doctor"}`
-    : `Call ${emergencyLabel} (${emergencyNumber})`;
+    : emergencyNumber
+      ? `Call ${emergencyLabel} (${emergencyNumber})`
+      : null;
 
   return (
     <div className="rounded-2xl border border-red-300 bg-red-50 p-3">
@@ -519,15 +521,23 @@ function UrgencyCard({
           >
             This sounds urgent. Please get medical help right away.
           </p>
-          {/* dialNumber is guaranteed non-empty: provider phone OR EMERGENCY_NUMBER */}
-          <a
-            href={`tel:${dialNumber}`}
-            className="mt-2 inline-flex items-center rounded-full bg-eve-rose px-3 py-1.5 font-sans font-medium text-white"
-            style={{ fontSize: "11px" }}
-          >
-            {buttonLabel}
-          </a>
-          {!hasProviderPhone && (
+          {dialNumber && buttonLabel ? (
+            <a
+              href={`tel:${dialNumber}`}
+              className="mt-2 inline-flex items-center rounded-full bg-eve-rose px-3 py-1.5 font-sans font-medium text-white"
+              style={{ fontSize: "11px" }}
+            >
+              {buttonLabel}
+            </a>
+          ) : (
+            <p
+              className="mt-2 font-sans font-medium text-red-700"
+              style={{ fontSize: "11px" }}
+            >
+              Contact your local emergency service or go to the nearest emergency department.
+            </p>
+          )}
+          {!hasProviderPhone && dialNumber && (
             <p
               className="mt-2 font-sans text-red-700/80"
               style={{ fontSize: "10.5px", lineHeight: 1.4 }}
