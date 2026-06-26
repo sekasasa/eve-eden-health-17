@@ -75,6 +75,7 @@ const STAGE_FILTER: Partial<Record<LifeStage, (typeof FILTERS)[number]>> = {
 function EveProviders() {
   const nav = useNavigate();
   const { profile, hydrated } = useSavedProfile();
+  const { prefs } = useCarePreferences();
   const [country, setCountry] = useState<string | null>(null);
   const [items, setItems] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
