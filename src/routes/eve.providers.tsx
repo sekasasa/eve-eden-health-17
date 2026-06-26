@@ -115,7 +115,7 @@ function EveProviders() {
       let q = supabase
         .from("providers")
         .select(
-          "id,full_name,specialty,clinic_name,city,languages,avg_rating,review_count,consultation_fee_mad,is_verified,accepting_patients",
+          "id,full_name,specialty,clinic_name,city,languages,services,credentials,avg_rating,review_count,consultation_fee_mad,is_verified,accepting_patients",
         )
         .eq("is_verified", true)
         .eq("country", country)
