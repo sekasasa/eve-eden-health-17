@@ -400,12 +400,45 @@ function EventsPage() {
         </div>
       )}
 
+      {directories.length > 0 && (
+        <section className="mt-8">
+          <h2 className="font-serif text-lg text-eve-teal-dark">External resources</h2>
+          <p className="mt-1 text-[12px] text-eve-muted">
+            Trusted public directories and event listings. These are link-outs, not Eve & Eden verified providers or events.
+          </p>
+          <ul className="mt-3 space-y-2">
+            {directories.map((d) => (
+              <li
+                key={d.id}
+                className="rounded-2xl border border-eve-sand bg-eve-cream/40 p-3"
+              >
+                <p className="text-sm font-medium text-eve-teal-dark">{d.resource_name}</p>
+                <p className="mt-0.5 text-[11px] text-eve-muted">
+                  {[d.category, d.country, d.city_scope].filter(Boolean).join(" · ")}
+                </p>
+                {d.source_url ? (
+                  <a
+                    href={d.source_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-flex items-center gap-1 text-[12px] text-eve-teal underline"
+                  >
+                    Visit directory <ArrowRight className="h-3 w-3" />
+                  </a>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <Link
         to="/eden/login"
         className="mt-8 block rounded-2xl bg-eve-teal-light p-4 text-center text-sm text-eve-teal-dark"
       >
         Hosting a maternal health event? <span className="font-semibold">Add it on Eve & Eden →</span>
       </Link>
+
     </EveShell>
   );
 }
