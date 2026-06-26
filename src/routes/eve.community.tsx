@@ -18,26 +18,57 @@ export const Route = createFileRoute("/eve/community")({
 
 type CategoryKey =
   | "all"
-  | "first"
-  | "second"
-  | "third"
+  | "ttc"
+  | "ivf"
+  | "pregnancy"
   | "postpartum"
+  | "newborn"
   | "symptoms"
-  | "family"
   | "provider"
-  | "chat";
+  | "nutrition"
+  | "labs"
+  | "insurance"
+  | "fasting"
+  | "culture"
+  | "birth"
+  | "emotional";
 
 const CATEGORIES: { key: CategoryKey; label: string; tone: "teal" | "rose" | "gold" | "muted" }[] = [
   { key: "all", label: "🌟 All", tone: "teal" },
-  { key: "first", label: "🤰 First Trimester", tone: "rose" },
-  { key: "second", label: "👶 Second Trimester", tone: "teal" },
-  { key: "third", label: "🌸 Third Trimester", tone: "rose" },
+  { key: "ttc", label: "🌱 Trying to Conceive", tone: "rose" },
+  { key: "ivf", label: "🧬 IVF / Fertility", tone: "teal" },
+  { key: "pregnancy", label: "🤰 Pregnancy", tone: "rose" },
   { key: "postpartum", label: "🍼 Postpartum", tone: "teal" },
+  { key: "newborn", label: "👶 Newborn Care", tone: "gold" },
   { key: "symptoms", label: "💊 Symptoms & Health", tone: "rose" },
-  { key: "family", label: "👨‍👩‍👧 Family & Partners", tone: "gold" },
   { key: "provider", label: "🏥 Finding a Provider", tone: "teal" },
-  { key: "chat", label: "💬 Just Chatting", tone: "muted" },
+  { key: "nutrition", label: "🥗 Nutrition", tone: "gold" },
+  { key: "labs", label: "🧪 Labs & Prescriptions", tone: "teal" },
+  { key: "insurance", label: "💳 Insurance & Payment", tone: "muted" },
+  { key: "fasting", label: "🌙 Fasting & Faith", tone: "rose" },
+  { key: "culture", label: "👨‍👩‍👧 Culture & Family", tone: "gold" },
+  { key: "birth", label: "🌸 Birth Preferences", tone: "teal" },
+  { key: "emotional", label: "💛 Emotional Support", tone: "rose" },
 ];
+
+const POST_TAGS = [
+  "Ramadan",
+  "Lent/Fasting",
+  "Halal",
+  "Kosher",
+  "Vegan",
+  "Vegetarian",
+  "Female provider",
+  "Modesty",
+  "Family support",
+  "C-section questions",
+  "VBAC",
+  "Midwife",
+  "Doula",
+  "Postpartum traditions",
+];
+
+const LIFE_STAGES = ["trying", "fertility", "pregnant", "postpartum", "newborn", "family"];
 
 const toneBg: Record<string, string> = {
   teal: "bg-eve-teal text-white",
