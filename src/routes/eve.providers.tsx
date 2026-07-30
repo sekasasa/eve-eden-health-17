@@ -311,7 +311,26 @@ function EveProviders() {
     [items, criteria],
   );
   const filtered = match.results as Provider[];
-  const matched = filtered.length;
+
+  const activeChips = useMemo(() => {
+    const chips: string[] = [];
+    if (specialty !== "All") chips.push(specialty);
+    if (criteria.city) chips.push(`${criteria.city}${strictLocation ? " (only)" : ""}`);
+    if (criteria.country) chips.push(criteria.country);
+    (criteria.languages ?? []).forEach((l) =>
+      chips.push(`${l}${strictLanguage ? " (only)" : ""}`),
+    );
+    if (criteria.dialect) chips.push(criteria.dialect);
+    if (criteria.virtual) chips.push("Virtual care");
+    if (criteria.homeVisit) chips.push("Home visit");
+    filterPrefs.forEach((id) => {
+      const opt = ALL_PREF_OPTIONS.find((o) => o.id === id);
+      if (opt) chips.push(`${opt.label}${strictPreferences ? " (only)" : ""}`);
+    });
+    return chips;
+  }, [specialty, criteria, filterPrefs, strictLocation, strictLanguage, strictPreferences]);
+
+
 
 
   const femalePreferred = prefHelpers.femalePreferred(prefs) || filterPrefs.includes("female");
