@@ -7,7 +7,9 @@ import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { supabase } from "@/integrations/supabase/client";
 import { useCarePreferences } from "@/hooks/useCarePreferences";
 import { priorityLanguagesForRegion, regionOf, prefHelpers, type Region } from "@/lib/personalization";
+import { LAUNCH_EVENT, isLaunchEventRelevant } from "@/lib/launch-event";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/eve/events")({
   component: EventsPage,
