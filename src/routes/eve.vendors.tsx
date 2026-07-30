@@ -159,32 +159,25 @@ function EveVendors() {
         break;
     }
     return sorted;
-  }, [vendors, country, cat, serviceQuery, language, credential, sortBy, userCity]);
+  }, [vendors, country, cat, serviceQuery, language, sortBy, userCity]);
 
-  const languageOptions = useMemo(() => {
-    const set = new Set<string>();
-    vendors.forEach((v) => (v.languages ?? []).forEach((l) => l && set.add(l)));
-    return Array.from(set).sort();
-  }, [vendors]);
-
-  const credentialOptions = useMemo(() => {
-    const set = new Set<string>();
-    vendors.forEach((v) => {
-      const c = (v.credentials ?? "").trim();
-      if (c) set.add(c);
-    });
-    return Array.from(set).sort();
-  }, [vendors]);
+  const languageOptions = useMemo(
+    () => marketplaceLanguageOptions(vendors.filter(isMarketplaceVendor)),
+    [vendors],
+  );
 
   const hasActiveFilters = !!(
     serviceQuery ||
     language ||
-    credential ||
-    cat !== "All" ||
+    cat !== "all" ||
     sortBy !== "recommended"
   );
 
-  const featured = useMemo(() => vendors.filter((v) => v.is_featured), [vendors]);
+  const featured = useMemo(
+    () => vendors.filter(isMarketplaceVendor).filter((v) => v.is_featured),
+    [vendors],
+  );
+
 
   return (
     <EveShell>
