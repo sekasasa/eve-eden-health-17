@@ -10,6 +10,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import type { LifeStage } from "@/lib/match-data";
 import { cn } from "@/lib/utils";
+import {
+  MARKETPLACE_CATEGORIES,
+  isMarketplaceVendor,
+  marketplaceCardCopy,
+  marketplaceLanguageOptions,
+  marketplaceSearchHaystack,
+  type MarketplaceVendor,
+} from "@/lib/marketplace";
+
 
 export const Route = createFileRoute("/eve/vendors")({
   component: EveVendors,
