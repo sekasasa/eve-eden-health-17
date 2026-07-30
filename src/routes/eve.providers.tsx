@@ -999,6 +999,12 @@ function EmptyState({
             </button>
           )}
         </div>
+        {notified && (
+          <p className="font-sans text-[11px] text-eve-muted">
+            Saved on this device only — we cannot email or message you yet.
+          </p>
+        )}
+
       </div>
     );
   }
