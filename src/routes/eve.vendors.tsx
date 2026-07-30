@@ -335,34 +335,43 @@ function EveVendors() {
             </p>
           </EveCard>
         ) : (
-          filtered.map((v) => (
-            <Link
-              key={v.id}
-              to="/eve/vendors/$id"
-              params={{ id: v.id }}
-              className="flex items-center gap-3 rounded-2xl bg-eve-cream p-3"
-            >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-eve-terra-light font-serif text-base text-eve-terra">
-                {initials(v.business_name)}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="truncate font-sans text-sm font-medium text-eve-forest">
-                  {v.business_name}
+          filtered.map((v) => {
+            const copy = marketplaceCardCopy(v);
+            return (
+              <Link
+                key={v.id}
+                to="/eve/vendors/$id"
+                params={{ id: v.id }}
+                className="flex items-center gap-3 rounded-2xl bg-eve-cream p-3"
+              >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-eve-terra-light font-serif text-base text-eve-terra">
+                  {initials(v.business_name)}
                 </div>
-                <div className="truncate font-sans text-[11px] text-eve-muted">
-                  {v.category ?? "—"} {v.city ? `· ${v.city}` : ""}
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-sans text-sm font-medium text-eve-forest">
+                    {copy.title}
+                  </div>
+                  <div className="truncate font-sans text-[11px] text-eve-muted">
+                    {copy.subtitle}
+                  </div>
+                  {copy.blurb && (
+                    <div className="mt-0.5 line-clamp-2 font-sans text-[11px] text-eve-muted">
+                      {copy.blurb}
+                    </div>
+                  )}
+                  <div className="mt-1 flex items-center gap-2">
+                    <TrustBadge />
+                    <span className="font-sans text-[10px] text-eve-muted">
+                      · {productCounts[v.id] ?? 0} products
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-1 flex items-center gap-2">
-                  <TrustBadge />
-                  <span className="font-sans text-[10px] text-eve-muted">
-                    · {productCounts[v.id] ?? 0} products
-                  </span>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 text-eve-muted" />
-            </Link>
-          ))
+                <ChevronRight className="h-4 w-4 text-eve-muted" />
+              </Link>
+            );
+          })
         )}
+
       </section>
     </EveShell>
   );
