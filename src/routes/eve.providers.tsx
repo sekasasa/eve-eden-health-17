@@ -190,6 +190,11 @@ function EveProviders() {
   const [filterLanguages, setFilterLanguages] = useState<string[]>([]);
   const [filterDialect, setFilterDialect] = useState<string>("");
   const [filterPrefs, setFilterPrefs] = useState<FilterId[]>([]);
+  // Strict (hard) filters — off by default so preferences only rank results.
+  const [strictLocation, setStrictLocation] = useState(false);
+  const [strictLanguage, setStrictLanguage] = useState(false);
+  const [strictPreferences, setStrictPreferences] = useState(false);
+
 
   // Pre-select specialty + seed from care prefs
   useEffect(() => {
