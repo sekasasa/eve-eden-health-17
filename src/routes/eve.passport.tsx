@@ -162,6 +162,16 @@ function PassportPage() {
     toast.success("Access revoked");
   }
 
+  if (!authChecked) {
+    return (
+      <EveShell>
+        <p className="mt-8 text-center font-sans text-sm text-eve-muted">
+          Loading your private record…
+        </p>
+      </EveShell>
+    );
+  }
+
   return (
     <EveShell>
       <Link
@@ -172,8 +182,10 @@ function PassportPage() {
       </Link>
       <h1 className="font-serif text-2xl text-eve-teal-dark">Care Passport</h1>
       <p className="mt-1 font-sans text-sm text-eve-muted">
-        A single, private record you control. Share what you choose, with whom you choose.
+        A single, private record only you can see. Sharing with a provider is not switched on
+        yet — nothing here leaves your account.
       </p>
+
 
       <div className="mt-5 rounded-2xl bg-white p-4">
         <p className="font-sans text-xs uppercase tracking-wide text-eve-muted">About me</p>
