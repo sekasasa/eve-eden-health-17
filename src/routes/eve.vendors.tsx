@@ -51,11 +51,11 @@ function EveVendors() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [productCounts, setProductCounts] = useState<Record<string, number>>({});
   const [country, setCountry] = useState<string>("MA");
-  const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("All");
+  const [cat, setCat] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [serviceQuery, setServiceQuery] = useState("");
   const [language, setLanguage] = useState<string>("");
-  const [credential, setCredential] = useState<string>("");
+
   const [userCity, setUserCity] = useState<string>("");
   const [sortBy, setSortBy] = useState<"recommended" | "nearest" | "newest" | "highest_rated">(
     "recommended",
