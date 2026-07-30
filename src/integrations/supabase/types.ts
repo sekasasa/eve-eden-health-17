@@ -1716,6 +1716,48 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_providers: {
+        Args: never
+        Returns: {
+          accepting_patients: boolean | null
+          avg_rating: number | null
+          bio: string | null
+          booking_url: string | null
+          city: string | null
+          clinic_address: string | null
+          clinic_name: string | null
+          consultation_fee_mad: number | null
+          country: string | null
+          created_at: string | null
+          credentials: string | null
+          email: string | null
+          facebook: string | null
+          full_name: string | null
+          id: string
+          instagram: string | null
+          is_verified: boolean | null
+          languages: string[] | null
+          lat: number | null
+          license_number: string | null
+          lng: number | null
+          neighborhood: string | null
+          phone: string | null
+          rejection_reason: string | null
+          review_count: number | null
+          review_status: string
+          services: string | null
+          specialty: string | null
+          user_id: string
+          website: string | null
+          years_in_practice: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "providers"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_vendor_owner: { Args: { _vendor_id: string }; Returns: boolean }
       show_limit: { Args: never; Returns: number }
