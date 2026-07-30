@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Heart, MessageCircle, Bookmark, Flame, Plus, X, ArrowLeft, Users, ShieldCheck, Sparkles, Calendar } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Flame, Plus, X, ArrowLeft, Users, ShieldCheck, Sparkles, Calendar, Flag } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { ContentCard } from "@/components/ui/ContentCard";
 import { SectionLabel } from "@/components/ui/SectionLabel";
