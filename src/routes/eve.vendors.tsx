@@ -229,21 +229,30 @@ function EveVendors() {
 
       {/* Tabs */}
       <div className="-mx-5 mt-6 flex gap-2 overflow-x-auto px-5 pb-1">
-        {CATEGORIES.map((c) => (
+        {CATEGORY_TABS.map((c) => (
           <button
-            key={c}
-            onClick={() => setCat(c)}
+            key={c.value}
+            onClick={() => setCat(c.value)}
             className={cn(
               "shrink-0 rounded-full border px-3 py-1.5 font-sans text-xs transition-colors",
-              cat === c
+              cat === c.value
                 ? "border-eve-teal bg-eve-teal text-white"
                 : "border-eve-muted/30 bg-white text-eve-muted",
             )}
           >
-            {c}
+            {c.label}
           </button>
         ))}
       </div>
+
+      <p className="mt-3 rounded-xl border border-eve-sand bg-eve-cream/50 px-3 py-2 font-sans text-[11px] text-eve-muted">
+        Looking for a doctor, midwife, or clinic?{" "}
+        <Link to="/eve/providers" className="font-medium text-eve-teal underline">
+          Go to Find Care
+        </Link>{" "}
+        — clinical providers are listed there, not in Shops &amp; services.
+      </p>
+
 
       {/* Filters */}
       <div className="mt-4 flex flex-col gap-2">
