@@ -120,11 +120,17 @@ function PassportPage() {
   async function addDoc() {
     if (!userId) return;
     if (!form.title.trim()) return toast.error("Title required");
+    const link = validateDocumentLink(form.file_url);
+    if (!link.ok) {
+      setLinkError(link.reason);
+      return toast.error(link.reason);
+    }
+    setLinkError(null);
     const { error } = await supabase.from("care_documents").insert({
       customer_user_id: userId,
       doc_type: form.doc_type,
       title: form.title.trim(),
-      file_url: form.file_url || null,
+      file_url: form.file_url.trim() || null,
       notes: form.notes || null,
       sensitive: form.sensitive,
     });
@@ -136,10 +142,15 @@ function PassportPage() {
   }
 
   async function removeDoc(id: string) {
-    const { error } = await supabase.from("care_documents").delete().eq("id", id);
+    const { error } = await supabase
+      .from("care_documents")
+      .delete()
+      .eq("id", id)
+      .eq("customer_user_id", userId ?? "");
     if (error) return toast.error(error.message);
     setDocs((d) => d.filter((x) => x.id !== id));
   }
+
 
   async function revokeShare(id: string) {
     const { error } = await supabase
