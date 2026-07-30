@@ -369,20 +369,77 @@ function EveProviders() {
   const matched = filtered.length;
 
   const activeChips = useMemo(() => {
-    const chips: string[] = [];
-    if (specialty !== "All") chips.push(specialty);
-    if (criteria.city) chips.push(`${criteria.city}${strictLocation ? " (only)" : ""}`);
-    if (criteria.country) chips.push(criteria.country);
-    (criteria.languages ?? []).forEach((l) => chips.push(`${l}${strictLanguage ? " (only)" : ""}`));
-    if (criteria.dialect) chips.push(criteria.dialect);
-    if (criteria.virtual) chips.push("Virtual care");
-    if (criteria.homeVisit) chips.push("Home visit");
+    const chips: { key: string; label: string; onRemove?: () => void }[] = [];
+    if (specialty !== "All")
+      chips.push({ key: "specialty", label: specialty, onRemove: () => setSpecialty("All") });
+    if (criteria.city)
+      chips.push({
+        key: "city",
+        label: `${criteria.city}${strictLocation ? " (only)" : ""}`,
+        onRemove: filterCity
+          ? () => setFilterCity("")
+          : strictLocation
+            ? () => setStrictLocation(false)
+            : undefined,
+      });
+    if (criteria.country)
+      chips.push({
+        key: "country",
+        label: criteria.country,
+        onRemove: filterCountry ? () => setFilterCountry("") : undefined,
+      });
+    (criteria.languages ?? []).forEach((l) =>
+      chips.push({
+        key: `lang-${l}`,
+        label: `${l}${strictLanguage ? " (only)" : ""}`,
+        onRemove: filterLanguages.includes(l)
+          ? () => setFilterLanguages((xs) => xs.filter((x) => x !== l))
+          : strictLanguage
+            ? () => setStrictLanguage(false)
+            : undefined,
+      }),
+    );
+    if (criteria.dialect)
+      chips.push({
+        key: "dialect",
+        label: criteria.dialect,
+        onRemove: filterDialect ? () => setFilterDialect("") : undefined,
+      });
+    if (criteria.virtual)
+      chips.push({
+        key: "virtual",
+        label: "Virtual care",
+        onRemove: () => setFilterVirtual(false),
+      });
+    if (criteria.homeVisit)
+      chips.push({
+        key: "home",
+        label: "Home visit",
+        onRemove: () => setFilterHomeVisit(false),
+      });
     filterPrefs.forEach((id) => {
       const opt = ALL_PREF_OPTIONS.find((o) => o.id === id);
-      if (opt) chips.push(`${opt.label}${strictPreferences ? " (only)" : ""}`);
+      if (opt)
+        chips.push({
+          key: `pref-${id}`,
+          label: `${opt.label}${strictPreferences ? " (only)" : ""}`,
+          onRemove: () => setFilterPrefs((xs) => xs.filter((x) => x !== id)),
+        });
     });
     return chips;
-  }, [specialty, criteria, filterPrefs, strictLocation, strictLanguage, strictPreferences]);
+  }, [
+    specialty,
+    criteria,
+    filterPrefs,
+    filterCity,
+    filterCountry,
+    filterLanguages,
+    filterDialect,
+    strictLocation,
+    strictLanguage,
+    strictPreferences,
+  ]);
+
 
   const femalePreferred = prefHelpers.femalePreferred(prefs) || filterPrefs.includes("female");
   const verifiedFemaleConfirmable = filtered.some((p) =>
