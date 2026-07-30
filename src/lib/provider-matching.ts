@@ -148,15 +148,7 @@ export const SPECIALTY_GROUPS: Record<string, string[]> = {
   Lab: ["lab", "laborato", "analyse", "imaging", "radiolog", "echograph"],
   Pharmacy: ["pharmac"],
   Insurance: ["insurance", "assurance", "mutuelle"],
-  Wellness: [
-    "wellness",
-    "nutrition",
-    "physio",
-    "physiotherapy",
-    "pelvic",
-    "yoga",
-    "lactation",
-  ],
+  Wellness: ["wellness", "nutrition", "physio", "physiotherapy", "pelvic", "yoga", "lactation"],
 };
 
 export function matchesSpecialty(p: MatchProviderRecord, label: string): boolean {
@@ -348,10 +340,7 @@ export function scoreProvider(p: MatchProviderRecord, c: MatchCriteria): number 
  * Ranked matching with a transparent fallback ladder.
  * Preferences never remove providers unless marked strict.
  */
-export function matchProviders(
-  input: MatchProviderRecord[],
-  criteria: MatchCriteria,
-): MatchResult {
+export function matchProviders(input: MatchProviderRecord[], criteria: MatchCriteria): MatchResult {
   const displayable = input.filter(isDisplayableProvider);
   const excludedCount = input.length - displayable.length;
 
@@ -370,12 +359,24 @@ export function matchProviders(
 
   const city = normalizeCity(criteria.city);
   if (!city) {
-    return { ...base, results: sort(pool), tier: "exact_city", broadened: false, broadenedReason: null };
+    return {
+      ...base,
+      results: sort(pool),
+      tier: "exact_city",
+      broadened: false,
+      broadenedReason: null,
+    };
   }
 
   const exact = pool.filter((p) => normalizeCity(p.city) === city);
   if (exact.length > 0) {
-    return { ...base, results: sort(exact), tier: "exact_city", broadened: false, broadenedReason: null };
+    return {
+      ...base,
+      results: sort(exact),
+      tier: "exact_city",
+      broadened: false,
+      broadenedReason: null,
+    };
   }
 
   const nearby = pool.filter((p) => isNearbyCity(criteria.city, p.city));

@@ -14,13 +14,11 @@ import {
   MARKETPLACE_CATEGORIES,
   isMarketplaceVendor,
   categoryLabel,
-
   marketplaceCardCopy,
   marketplaceLanguageOptions,
   marketplaceSearchHaystack,
   type MarketplaceVendor,
 } from "@/lib/marketplace";
-
 
 export const Route = createFileRoute("/eve/vendors")({
   component: EveVendors,
@@ -32,7 +30,6 @@ const CATEGORY_TABS = [
 ] as const;
 
 type Vendor = MarketplaceVendor;
-
 
 function initials(name: string | null) {
   if (!name) return "??";
@@ -126,7 +123,6 @@ function EveVendors() {
           : true,
       );
 
-
     const sorted = [...base];
     switch (sortBy) {
       case "recommended":
@@ -188,7 +184,6 @@ function EveVendors() {
     () => vendors.filter(isMarketplaceVendor).filter((v) => v.is_featured),
     [vendors],
   );
-
 
   return (
     <EveShell>
@@ -263,7 +258,6 @@ function EveVendors() {
         </Link>{" "}
         — clinical providers are listed there, not in Shops &amp; services.
       </p>
-
 
       {/* Filters */}
       <div className="mt-4 flex flex-col gap-2">
@@ -373,7 +367,6 @@ function EveVendors() {
             );
           })
         )}
-
       </section>
     </EveShell>
   );

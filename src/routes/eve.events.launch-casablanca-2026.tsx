@@ -133,7 +133,9 @@ function LaunchEventPage() {
               key={s.label}
               className="flex items-center justify-between rounded-xl border border-eve-sand bg-white px-3 py-2"
             >
-              <span className="font-sans text-[13px] font-medium text-eve-teal-dark">{s.label}</span>
+              <span className="font-sans text-[13px] font-medium text-eve-teal-dark">
+                {s.label}
+              </span>
               <TBA>{s.note}</TBA>
             </div>
           ))}

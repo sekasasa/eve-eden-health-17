@@ -69,7 +69,6 @@ describe("marketplace field contamination", () => {
     expect(opts).toEqual(["French"]);
   });
 
-
   it("labels unknown categories generically rather than leaking raw values", () => {
     expect(categoryLabel("care_services")).toBe("Shop");
     expect(categoryLabel("baby_gear")).toBe("Baby gear");
