@@ -183,10 +183,15 @@ function EventsPage() {
       });
 
       // Featured launch event first, then merged list
-      const merged = [...seedRows, ...vendorRows];
+      // Featured launch event is rendered as a dedicated card above the list;
+      // drop any duplicate seeded row for it.
+      const isLaunchDupe = (e: EventRow) =>
+        /launch/i.test(e.title) && /casablanca|morocco/i.test(`${e.title} ${e.location ?? ""}`);
+      const merged = [...seedRows, ...vendorRows].filter((e) => !isLaunchDupe(e));
       merged.sort((a, b) => Number(b.is_featured ?? false) - Number(a.is_featured ?? false));
       setEvents(merged);
       setDirectories((dirRes.data as unknown as DirectoryRow[]) ?? []);
+
     })();
   }, []);
 
