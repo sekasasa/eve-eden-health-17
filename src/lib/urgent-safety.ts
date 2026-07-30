@@ -18,6 +18,7 @@ export type RiskCategory =
   | "trouble_breathing"
   | "seizure"
   | "self_harm"
+  | "immediate_danger"
   | "severe_pain"
   | "preeclampsia"
   | "fever_infection";
@@ -35,6 +36,7 @@ export type RiskAssessment = {
   /** Highest-priority category, drives the headline shown to the user. */
   primary?: RiskCategory;
   /** True for self-harm / suicidal language: crisis routing, not obstetric. */
+  /** True for self-harm or immediate-danger language: crisis routing, not obstetric. */
   crisis: boolean;
 };
 
@@ -61,6 +63,33 @@ const PHRASES: Record<RiskCategory, string[]> = {
     "اقتل نفسي",
     "أؤذي نفسي",
     "نموت",
+  ],
+  immediate_danger: [
+    "someone is hurting me",
+    "he is hurting me",
+    "she is hurting me",
+    "being hit",
+    "he hit me",
+    "beat me",
+    "beating me",
+    "i am in danger",
+    "i'm in danger",
+    "not safe at home",
+    "afraid for my life",
+    "threatening me",
+    "domestic violence",
+    "on me frappe",
+    "il me frappe",
+    "je suis en danger",
+    "je ne suis pas en securite",
+    "violence conjugale",
+    "il me menace",
+    "كيضربني",
+    "يضربني",
+    "أنا في خطر",
+    "مش آمنة",
+    "عنف زوجي",
+    "يهددني",
   ],
   reduced_fetal_movement: [
     "baby not moving",
@@ -180,6 +209,7 @@ const PHRASES: Record<RiskCategory, string[]> = {
 /** Priority order — the first matching category drives the headline. */
 const PRIORITY: RiskCategory[] = [
   "self_harm",
+  "immediate_danger",
   "seizure",
   "trouble_breathing",
   "chest_pain",
@@ -223,7 +253,8 @@ export function assessRisk(input: string | null | undefined): RiskAssessment {
     categories,
     matches,
     primary: categories[0],
-    crisis: categories.includes("self_harm"),
+    crisis:
+      categories.includes("self_harm") || categories.includes("immediate_danger"),
   };
 }
 
@@ -240,6 +271,7 @@ export type UrgentGuidance = {
 
 const HEADLINES: Record<RiskCategory, string> = {
   self_harm: "You deserve support right now",
+  immediate_danger: "Your safety comes first",
   seizure: "Get emergency help now",
   trouble_breathing: "Get emergency help now",
   chest_pain: "Get emergency help now",
@@ -253,6 +285,8 @@ const HEADLINES: Record<RiskCategory, string> = {
 const BODIES: Record<RiskCategory, string> = {
   self_harm:
     "If you are thinking about harming yourself, please reach out to emergency services or a crisis line now, and tell someone you trust. You do not have to handle this alone.",
+  immediate_danger:
+    "If you are not safe, contact emergency services or a trusted person now. If it is safer to leave this screen, you can close the app — nothing you typed is shared with anyone.",
   seizure:
     "A seizure or loss of consciousness needs emergency care immediately. Do not wait and do not drive yourself.",
   trouble_breathing:
