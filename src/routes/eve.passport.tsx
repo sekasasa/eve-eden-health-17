@@ -1,15 +1,40 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, Lock, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { SafetyDisclaimer } from "@/components/ui/SafetyDisclaimer";
 import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { toast } from "sonner";
+import { isFlagOn } from "@/lib/flags";
+import {
+  MAX_DOC_BYTES,
+  SHARING_PREREQUISITES,
+  validateDocumentLink,
+} from "@/lib/passport-safety";
 
 export const Route = createFileRoute("/eve/passport")({
+  head: () => ({
+    meta: [
+      { title: "Care Passport — Eve & Eden Health" },
+      {
+        name: "description",
+        content:
+          "Keep your labs, scans, prescriptions and insurance documents in one private record you control.",
+      },
+      { property: "og:title", content: "Care Passport — Eve & Eden Health" },
+      {
+        property: "og:description",
+        content:
+          "A private maternal health record you control, with sharing you can revoke.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: PassportPage,
 });
+
 
 type Doc = {
   id: string;
