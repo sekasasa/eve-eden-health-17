@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as LoginRouteImport } from './routes/login'
@@ -80,6 +81,11 @@ import { Route as EdenVendorContentNewRouteImport } from './routes/eden.vendor.c
 import { Route as ChwMothersIdVisitRouteImport } from './routes/chw.mothers.$id.visit'
 import { Route as EdenVendorContentIdEditRouteImport } from './routes/eden.vendor.content.$id.edit'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -439,6 +445,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
   '/admin/provider-leads': typeof AdminProviderLeadsRoute
@@ -511,6 +518,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
   '/admin/provider-leads': typeof AdminProviderLeadsRoute
@@ -584,6 +592,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
   '/admin/provider-leads': typeof AdminProviderLeadsRoute
@@ -658,6 +667,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/partner'
     | '/signup'
+    | '/terms'
     | '/admin/alerts'
     | '/admin/guidance'
     | '/admin/provider-leads'
@@ -730,6 +740,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/partner'
     | '/signup'
+    | '/terms'
     | '/admin/alerts'
     | '/admin/guidance'
     | '/admin/provider-leads'
@@ -802,6 +813,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/partner'
     | '/signup'
+    | '/terms'
     | '/admin/alerts'
     | '/admin/guidance'
     | '/admin/provider-leads'
@@ -875,6 +887,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PartnerRoute: typeof PartnerRoute
   SignupRoute: typeof SignupRoute
+  TermsRoute: typeof TermsRoute
   AdminAlertsRoute: typeof AdminAlertsRoute
   AdminGuidanceRoute: typeof AdminGuidanceRoute
   AdminProviderLeadsRoute: typeof AdminProviderLeadsRoute
@@ -928,6 +941,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -1548,6 +1568,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PartnerRoute: PartnerRoute,
   SignupRoute: SignupRoute,
+  TermsRoute: TermsRoute,
   AdminAlertsRoute: AdminAlertsRoute,
   AdminGuidanceRoute: AdminGuidanceRoute,
   AdminProviderLeadsRoute: AdminProviderLeadsRoute,
