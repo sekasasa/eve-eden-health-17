@@ -440,7 +440,6 @@ function EveProviders() {
     strictPreferences,
   ]);
 
-
   const femalePreferred = prefHelpers.femalePreferred(prefs) || filterPrefs.includes("female");
   const verifiedFemaleConfirmable = filtered.some((p) =>
     /female|women's health|women only/.test(haystackFor(p)),
@@ -623,7 +622,6 @@ function EveProviders() {
               )}
             </span>
           ))}
-
         </div>
       )}
 

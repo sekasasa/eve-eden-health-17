@@ -28,7 +28,6 @@ export type MatchProviderRecord = {
   status?: string | null;
   /** Moderation field in this database ("verified" / "approved" are public). */
   review_status?: string | null;
-
 };
 
 /* ------------------------------------------------------------------ */
@@ -201,7 +200,6 @@ export function isDisplayableProvider(p: MatchProviderRecord): boolean {
   if (PLACEHOLDER_NAME.test(name)) return false;
   return true;
 }
-
 
 /* ------------------------------------------------------------------ */
 /* Geography fallback                                                  */
