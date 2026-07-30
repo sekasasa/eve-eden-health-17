@@ -140,7 +140,9 @@ function EdenPatients() {
     <EdenShell>
       <div className="flex items-center justify-between">
         <h1 className="font-sans text-2xl font-medium text-gray-900">My patients</h1>
-        <PrimaryButton className="px-4 py-2 text-sm">+ Add patient</PrimaryButton>
+        <PrimaryButton disabled title="Adding patients from here is not available yet" className="px-4 py-2 text-sm opacity-60">
+          + Add patient (coming soon)
+        </PrimaryButton>
       </div>
 
       <div className="mt-6 flex flex-col gap-3">

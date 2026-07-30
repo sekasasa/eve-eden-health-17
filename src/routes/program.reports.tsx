@@ -124,8 +124,8 @@ function ProgramReports() {
           <select value={rangeId} onChange={(e) => setRangeId(e.target.value)} className="rounded-lg border border-gray-200 px-3 py-2 font-sans text-sm">
             {RANGES.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
           </select>
-          <button onClick={() => toast.info("PDF export coming soon")} className="rounded-lg bg-eve-teal px-4 py-2 font-sans text-sm font-medium text-white">
-            Export PDF
+          <button disabled title="PDF export is not available yet" className="rounded-lg bg-eve-teal px-4 py-2 font-sans text-sm font-medium text-white opacity-60">
+            Export PDF (coming soon)
           </button>
         </div>
       </div>

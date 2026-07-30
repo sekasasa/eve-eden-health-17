@@ -69,7 +69,7 @@ function AdminProviders() {
       .update({ review_status: "verified", is_verified: true, rejection_reason: null })
       .eq("id", p.id);
     if (error) return toast.error(error.message);
-    toast.success("Verified — welcome email queued");
+    toast.success("Verified. Email notifications are not connected yet — contact the provider directly.");
     setSelected(null);
     load();
   };
@@ -81,7 +81,7 @@ function AdminProviders() {
       .update({ review_status: "rejected", is_verified: false, rejection_reason: reason })
       .eq("id", selected.id);
     if (error) return toast.error(error.message);
-    toast.success("Rejected — notification email queued");
+    toast.success("Rejected. Email notifications are not connected yet — contact the provider directly.");
     setActionType(null);
     setReason("");
     setSelected(null);
@@ -91,7 +91,7 @@ function AdminProviders() {
   const requestInfo = async () => {
     if (!selected || !reason.trim()) return toast.error("Message required");
     // In a real build this would call a server function that sends the email.
-    toast.success("Info request email queued to provider");
+    toast.success("Marked as needing more info. Email sending is not connected yet.");
     setActionType(null);
     setReason("");
   };

@@ -74,7 +74,7 @@ function AdminVendors() {
       review_status: "verified", is_verified: true, rejection_reason: null,
     }).eq("id", v.id);
     if (error) return toast.error(error.message);
-    toast.success("Verified — welcome email queued");
+    toast.success("Verified. Email notifications are not connected yet — contact the vendor directly.");
     setSelected(null);
     load();
   };
@@ -85,7 +85,7 @@ function AdminVendors() {
       review_status: "rejected", is_verified: false, rejection_reason: reason,
     }).eq("id", selected.id);
     if (error) return toast.error(error.message);
-    toast.success("Rejected — notification email queued");
+    toast.success("Rejected. Email notifications are not connected yet — contact the vendor directly.");
     setReasonOpen(false); setReason(""); setSelected(null); load();
   };
 
