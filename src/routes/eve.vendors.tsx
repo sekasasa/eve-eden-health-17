@@ -104,23 +104,17 @@ function EveVendors() {
 
   const filtered = useMemo(() => {
     const sq = serviceQuery.trim().toLowerCase();
-    const cq = credential.trim().toLowerCase();
     const base = vendors
+      .filter(isMarketplaceVendor)
       .filter((v) => (v.country ?? "MA") === country)
-      .filter((v) => (cat === "All" ? true : v.category === CATEGORY_VALUE[cat]))
-      .filter((v) =>
-        sq
-          ? (v.services ?? "").toLowerCase().includes(sq) ||
-            (v.description ?? "").toLowerCase().includes(sq) ||
-            (v.business_name ?? "").toLowerCase().includes(sq)
-          : true,
-      )
+      .filter((v) => (cat === "all" ? true : v.category === cat))
+      .filter((v) => (sq ? marketplaceSearchHaystack(v).includes(sq) : true))
       .filter((v) =>
         language
           ? (v.languages ?? []).some((l) => l?.toLowerCase() === language.toLowerCase())
           : true,
-      )
-      .filter((v) => (cq ? (v.credentials ?? "").toLowerCase().includes(cq) : true));
+      );
+
 
     const sorted = [...base];
     switch (sortBy) {
