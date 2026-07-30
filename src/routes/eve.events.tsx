@@ -306,6 +306,41 @@ function EventsPage() {
         </p>
       </div>
 
+      {/* Featured launch event — always visible for Morocco/Casablanca/Rabat
+          audiences, never removed by list filters. */}
+      {isLaunchEventRelevant({
+        country: filters.country || prefs.country,
+        city: filters.city || prefs.city,
+      }) && (
+        <Link
+          to="/eve/events/launch-casablanca-2026"
+          className="mt-4 block overflow-hidden rounded-2xl border border-eve-teal/25 bg-white"
+        >
+          <div className="flex h-24 items-center justify-center bg-gradient-to-br from-eve-teal-light to-eve-rose-light">
+            <Calendar className="h-7 w-7 text-eve-teal" />
+          </div>
+          <div className="p-4">
+            <span className="inline-block rounded-full bg-eve-teal px-2 py-0.5 font-sans text-[9px] font-semibold uppercase tracking-wide text-white">
+              Featured launch event
+            </span>
+            <h2 className="mt-2 font-serif text-lg leading-tight text-eve-teal-dark">
+              {LAUNCH_EVENT.title}
+            </h2>
+            <p className="mt-1 font-sans text-[12px] text-eve-muted">
+              {LAUNCH_EVENT.dateLabel} · {LAUNCH_EVENT.timeLabel}
+            </p>
+            <p className="mt-0.5 font-sans text-[12px] text-eve-muted">
+              {LAUNCH_EVENT.venueLabel} · {LAUNCH_EVENT.priceLabel}
+            </p>
+            <p className="mt-2 font-sans text-[12px] text-eve-muted">{LAUNCH_EVENT.tagline}</p>
+            <span className="mt-3 inline-flex items-center gap-1 font-sans text-[12px] font-medium text-eve-teal">
+              See details <ArrowRight className="h-3 w-3" />
+            </span>
+          </div>
+        </Link>
+      )}
+
+
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <button
           onClick={() => setShowFilters((s) => !s)}

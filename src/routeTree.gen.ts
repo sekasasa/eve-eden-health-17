@@ -65,6 +65,7 @@ import { Route as EveMatchLabsRouteImport } from './routes/eve.match.labs'
 import { Route as EveMatchInsuranceRouteImport } from './routes/eve.match.insurance'
 import { Route as EveMatchHistoryRouteImport } from './routes/eve.match.history'
 import { Route as EveMatchFamilyRouteImport } from './routes/eve.match.family'
+import { Route as EveEventsLaunchCasablanca2026RouteImport } from './routes/eve.events.launch-casablanca-2026'
 import { Route as EveEventsIdRouteImport } from './routes/eve.events.$id'
 import { Route as EveContentIdRouteImport } from './routes/eve.content.$id'
 import { Route as EdenVendorProductsRouteImport } from './routes/eden.vendor.products'
@@ -360,6 +361,12 @@ const EveMatchFamilyRoute = EveMatchFamilyRouteImport.update({
   path: '/family',
   getParentRoute: () => EveMatchRoute,
 } as any)
+const EveEventsLaunchCasablanca2026Route =
+  EveEventsLaunchCasablanca2026RouteImport.update({
+    id: '/launch-casablanca-2026',
+    path: '/launch-casablanca-2026',
+    getParentRoute: () => EveEventsRoute,
+  } as any)
 const EveEventsIdRoute = EveEventsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -483,6 +490,7 @@ export interface FileRoutesByFullPath {
   '/eden/vendor/products': typeof EdenVendorProductsRoute
   '/eve/content/$id': typeof EveContentIdRoute
   '/eve/events/$id': typeof EveEventsIdRoute
+  '/eve/events/launch-casablanca-2026': typeof EveEventsLaunchCasablanca2026Route
   '/eve/match/family': typeof EveMatchFamilyRoute
   '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
@@ -554,6 +562,7 @@ export interface FileRoutesByTo {
   '/eden/vendor/products': typeof EdenVendorProductsRoute
   '/eve/content/$id': typeof EveContentIdRoute
   '/eve/events/$id': typeof EveEventsIdRoute
+  '/eve/events/launch-casablanca-2026': typeof EveEventsLaunchCasablanca2026Route
   '/eve/match/family': typeof EveMatchFamilyRoute
   '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
@@ -626,6 +635,7 @@ export interface FileRoutesById {
   '/eden/vendor/products': typeof EdenVendorProductsRoute
   '/eve/content/$id': typeof EveContentIdRoute
   '/eve/events/$id': typeof EveEventsIdRoute
+  '/eve/events/launch-casablanca-2026': typeof EveEventsLaunchCasablanca2026Route
   '/eve/match/family': typeof EveMatchFamilyRoute
   '/eve/match/history': typeof EveMatchHistoryRoute
   '/eve/match/insurance': typeof EveMatchInsuranceRoute
@@ -699,6 +709,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/products'
     | '/eve/content/$id'
     | '/eve/events/$id'
+    | '/eve/events/launch-casablanca-2026'
     | '/eve/match/family'
     | '/eve/match/history'
     | '/eve/match/insurance'
@@ -770,6 +781,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/products'
     | '/eve/content/$id'
     | '/eve/events/$id'
+    | '/eve/events/launch-casablanca-2026'
     | '/eve/match/family'
     | '/eve/match/history'
     | '/eve/match/insurance'
@@ -841,6 +853,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/products'
     | '/eve/content/$id'
     | '/eve/events/$id'
+    | '/eve/events/launch-casablanca-2026'
     | '/eve/match/family'
     | '/eve/match/history'
     | '/eve/match/insurance'
@@ -1307,6 +1320,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveMatchFamilyRouteImport
       parentRoute: typeof EveMatchRoute
     }
+    '/eve/events/launch-casablanca-2026': {
+      id: '/eve/events/launch-casablanca-2026'
+      path: '/launch-casablanca-2026'
+      fullPath: '/eve/events/launch-casablanca-2026'
+      preLoaderRoute: typeof EveEventsLaunchCasablanca2026RouteImport
+      parentRoute: typeof EveEventsRoute
+    }
     '/eve/events/$id': {
       id: '/eve/events/$id'
       path: '/$id'
@@ -1427,10 +1447,12 @@ const EdenPatientsRouteWithChildren = EdenPatientsRoute._addFileChildren(
 
 interface EveEventsRouteChildren {
   EveEventsIdRoute: typeof EveEventsIdRoute
+  EveEventsLaunchCasablanca2026Route: typeof EveEventsLaunchCasablanca2026Route
 }
 
 const EveEventsRouteChildren: EveEventsRouteChildren = {
   EveEventsIdRoute: EveEventsIdRoute,
+  EveEventsLaunchCasablanca2026Route: EveEventsLaunchCasablanca2026Route,
 }
 
 const EveEventsRouteWithChildren = EveEventsRoute._addFileChildren(
