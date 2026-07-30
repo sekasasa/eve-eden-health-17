@@ -607,12 +607,23 @@ function EveProviders() {
         <div className="mt-3 flex flex-wrap gap-1.5">
           {activeChips.map((c) => (
             <span
-              key={c}
-              className="rounded-full bg-eve-cream px-2.5 py-1 font-sans text-[10px] text-eve-teal-dark"
+              key={c.key}
+              className="inline-flex items-center gap-1 rounded-full bg-eve-cream px-2.5 py-1 font-sans text-[10px] text-eve-teal-dark"
             >
-              {c}
+              {c.label}
+              {c.onRemove && (
+                <button
+                  type="button"
+                  aria-label={`Remove filter ${c.label}`}
+                  onClick={c.onRemove}
+                  className="text-eve-muted hover:text-eve-teal-dark"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
             </span>
           ))}
+
         </div>
       )}
 
