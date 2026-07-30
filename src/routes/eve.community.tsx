@@ -417,9 +417,15 @@ function CommunityPage() {
           <Plus className="h-4 w-4" /> {postingEnabled ? "New Post" : "Posting opens soon"}
         </button>
         {!postingEnabled && (
-          <p role="status" className="mt-2 text-[11px] text-eve-muted">
-            {flagOffCopy("communityPosting")}
-          </p>
+          <div role="status" className="mt-2 space-y-1">
+            <p className="text-[11px] text-eve-muted">{flagOffCopy("communityPosting")}</p>
+            {!moderationEnabled && (
+              <p className="text-[11px] text-eve-muted">
+                Community is read-only until moderation is staffed. Posts below are sample
+                content written by our team, not replies from other members.
+              </p>
+            )}
+          </div>
         )}
         {profile.stage && (
           <p className="mt-2 text-[11px] text-eve-muted">
