@@ -22,7 +22,7 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { useCarePreferences } from "@/hooks/useCarePreferences";
-import { prefHelpers, priorityLanguagesForRegion, regionOf } from "@/lib/personalization";
+import { prefHelpers } from "@/lib/personalization";
 import {
   matchProviders,
   type MatchCriteria,
