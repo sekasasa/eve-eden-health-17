@@ -298,9 +298,20 @@ function AskEveInner() {
         {/* Thin persistent safety banner */}
         <div className="border-b border-eve-muted/10 bg-eve-cream/60 px-3 py-2 text-center">
           <p className="font-sans text-eve-teal-dark" style={{ fontSize: "10.5px", lineHeight: 1.4 }}>
-            Eve can help you prepare, understand your options, and find support. Eve does not diagnose or replace medical care.
+            Eve can help you prepare, understand your options, and find support. Eve does not diagnose or replace medical care. Answers are not reviewed by a clinician.
           </p>
         </div>
+
+        {!aiEnabled && (
+          <div
+            role="status"
+            className="border-b border-amber-200 bg-amber-50 px-3 py-2 text-center"
+          >
+            <p className="font-sans text-amber-800" style={{ fontSize: "10.5px", lineHeight: 1.4 }}>
+              {flagOffCopy("askEveAi")}
+            </p>
+          </div>
+        )}
 
         {/* Thread */}
         <div
@@ -332,6 +343,31 @@ function AskEveInner() {
 
         {/* Input bar (above BottomNav) */}
         <div className="fixed bottom-20 left-1/2 z-40 w-full max-w-sm -translate-x-1/2 border-t border-eve-muted/20 bg-eve-cream px-3 py-2">
+          {sendError && (
+            <div
+              role="alert"
+              className="mb-2 flex items-center justify-between gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2"
+            >
+              <p className="font-sans text-amber-800" style={{ fontSize: "11px" }}>
+                {sendError === "offline"
+                  ? "You're offline. Your question is saved here — send it when you're back online."
+                  : sendError === "rate_limit"
+                    ? "Eve is busy right now. Please wait a moment and try again."
+                    : "That didn't send. Please try again."}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSendError(null);
+                  if (lastPrompt) void send(lastPrompt);
+                }}
+                className="min-h-11 shrink-0 rounded-full bg-eve-teal px-3 font-sans text-white"
+                style={{ fontSize: "11px" }}
+              >
+                Retry
+              </button>
+            </div>
+          )}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -348,7 +384,11 @@ function AskEveInner() {
             >
               <Mic className="h-4 w-4" />
             </button>
+            <label htmlFor="ask-eve-input" className="sr-only">
+              Write your question for Eve
+            </label>
             <input
+              id="ask-eve-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask Eve anything..."
@@ -492,7 +532,22 @@ function MessageBubble({
       <div className="flex items-start gap-2">
         <EveAvatar />
         <div className="max-w-[78%] space-y-2">
-          <div className="rounded-2xl rounded-tl-sm border border-eve-muted/20 bg-eve-cream p-3">
+          <div
+            className={cn(
+              "rounded-2xl rounded-tl-sm border p-3",
+              msg.system
+                ? "border-amber-300 bg-amber-50"
+                : "border-eve-muted/20 bg-eve-cream",
+            )}
+          >
+            {msg.system && (
+              <p
+                className="mb-1 font-sans font-medium uppercase tracking-wide text-amber-700"
+                style={{ fontSize: "9px" }}
+              >
+                Eve & Eden notice — not a clinical answer
+              </p>
+            )}
             <p
               className="font-sans text-eve-teal-dark"
               style={{ fontSize: "13px", lineHeight: "1.45" }}
