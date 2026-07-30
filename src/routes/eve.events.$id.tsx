@@ -20,6 +20,8 @@ import { EveShell } from "@/components/shells/EveShell";
 import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { supabase } from "@/integrations/supabase/client";
 import { eveToast } from "@/lib/eve-toast";
+import { flagOffCopy, isFeatureEnabled } from "@/lib/flags";
+import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
 
 export const Route = createFileRoute("/eve/events/$id")({
   component: EventDetail,
@@ -84,7 +86,7 @@ function EventDetail() {
   const nav = useNavigate();
   const [ev, setEv] = useState<EventRow | null | undefined>(undefined);
   const [saved, setSaved] = useState(false);
-  const [registered, setRegistered] = useState(false);
+  const registrationEnabled = isFeatureEnabled("eventRegistration");
 
   useEffect(() => {
     (async () => {
@@ -164,13 +166,8 @@ function EventDetail() {
     }
   }
 
-  function reserve() {
-    if (isExternal) return;
-    setRegistered(true);
-    eveToast.info(
-      "Registration is opening soon. Ask a navigator if you would like to be notified.",
-    );
-  }
+  // Internal registration has no persisted backend yet, so we never render a
+  // confirmation. The CTA stays disabled until FLAG eventRegistration is on.
 
   const speakers = Array.isArray(ev.speakers) ? ev.speakers : [];
 
@@ -375,33 +372,36 @@ function EventDetail() {
             href={ev.cta_url!}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-1 rounded-full bg-eve-teal px-5 py-3 text-sm font-medium text-white"
+            onClick={() =>
+              track(ANALYTICS_EVENTS.eventRegisterIntent, { external: true })
+            }
+            className="inline-flex min-h-11 items-center justify-center gap-1 rounded-full bg-eve-teal px-5 py-3 text-sm font-medium text-white"
           >
-            Reserve my spot <ArrowRight className="h-4 w-4" />
+            Register on the host's site <ArrowRight className="h-4 w-4" />
           </a>
         ) : (
           <button
-            onClick={reserve}
-            className="inline-flex items-center justify-center gap-1 rounded-full bg-eve-teal px-5 py-3 text-sm font-medium text-white"
+            type="button"
+            disabled={!registrationEnabled}
+            aria-disabled={!registrationEnabled}
+            onClick={() =>
+              track(ANALYTICS_EVENTS.eventRegisterIntent, { external: false })
+            }
+            className="inline-flex min-h-11 items-center justify-center gap-1 rounded-full bg-eve-teal px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Reserve my spot <ArrowRight className="h-4 w-4" />
+            {registrationEnabled ? (
+              <>
+                Reserve my spot <ArrowRight className="h-4 w-4" />
+              </>
+            ) : (
+              "Registration opens soon"
+            )}
           </button>
         )}
-        {!isExternal && !registered && (
-          <p className="text-center text-[11px] text-eve-muted">
-            Registration is opening soon. Ask a navigator to be notified.
+        {!isExternal && !registrationEnabled && (
+          <p role="status" className="text-center text-[11px] text-eve-muted">
+            {flagOffCopy("eventRegistration")}
           </p>
-        )}
-        {registered && !isExternal && (
-          <div className="rounded-2xl border border-eve-teal/20 bg-eve-teal-light/40 p-3 text-center">
-            <p className="text-[12px] font-medium text-eve-teal-dark">
-              Thanks — we'll be in touch when registration opens.
-            </p>
-            <p className="mt-1 text-[11px] text-eve-muted">
-              When the Eve & Eden Launch Gathering is live, you'll get event details,
-              speaker updates, and the final venue closer to the event date.
-            </p>
-          </div>
         )}
 
         <div className="grid grid-cols-3 gap-2">
