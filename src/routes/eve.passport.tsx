@@ -56,12 +56,16 @@ type Share = {
 const DOC_TYPES = ["lab", "scan", "rx", "discharge", "insurance", "claim", "care_note"];
 
 function PassportPage() {
+  const navigate = useNavigate();
   const { profile } = useSavedProfile();
+  const sharingEnabled = isFeatureEnabled("carePassportSharing");
   const [userId, setUserId] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [docs, setDocs] = useState<Doc[]>([]);
   const [shares, setShares] = useState<Share[]>([]);
   const [vendors, setVendors] = useState<Record<string, string>>({});
   const [adding, setAdding] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
   const [form, setForm] = useState({
     doc_type: "lab",
     title: "",
@@ -72,12 +76,21 @@ function PassportPage() {
 
   useEffect(() => {
     void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function load() {
+    // Authorization is enforced by row-level security on every query below;
+    // this check keeps an unauthenticated visitor from seeing an empty shell
+    // that looks like their (missing) record.
     const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) return;
+    setAuthChecked(true);
+    if (!auth.user) {
+      navigate({ to: "/login" });
+      return;
+    }
     setUserId(auth.user.id);
+
     const [d, s] = await Promise.all([
       supabase
         .from("care_documents")
