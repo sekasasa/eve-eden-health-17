@@ -285,7 +285,6 @@ function EveVendors() {
           </select>
         </div>
 
-        </div>
         <div className="flex items-center gap-2 rounded-full border border-eve-muted/30 bg-white px-3 py-2">
           <ArrowUpDown className="h-3.5 w-3.5 text-eve-muted" />
           <select
