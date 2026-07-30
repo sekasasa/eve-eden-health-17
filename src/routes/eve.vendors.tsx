@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils";
 import {
   MARKETPLACE_CATEGORIES,
   isMarketplaceVendor,
+  categoryLabel,
+
   marketplaceCardCopy,
   marketplaceLanguageOptions,
   marketplaceSearchHaystack,
