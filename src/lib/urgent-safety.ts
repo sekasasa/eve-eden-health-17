@@ -35,8 +35,8 @@ export type RiskAssessment = {
   matches: RiskMatch[];
   /** Highest-priority category, drives the headline shown to the user. */
   primary?: RiskCategory;
-  /** True for self-harm / suicidal language: crisis routing, not obstetric. */
   /** True for self-harm or immediate-danger language: crisis routing, not obstetric. */
+
   crisis: boolean;
 };
 
