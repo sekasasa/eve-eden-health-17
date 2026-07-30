@@ -312,10 +312,28 @@ function PassportPage() {
         <h2 className="font-sans text-sm font-semibold text-eve-teal-dark">
           Who can see my passport
         </h2>
-        <p className="mt-1 font-sans text-xs text-eve-muted inline-flex items-center gap-1">
-          <ShieldCheck className="h-3 w-3" /> You control what each partner sees, and you can
-          revoke access anytime.
-        </p>
+        {!sharingEnabled && (
+          <div className="mt-2 rounded-2xl border border-eve-muted/20 bg-white p-4">
+            <p className="inline-flex items-center gap-1 font-sans text-sm font-semibold text-eve-teal-dark">
+              <Lock className="h-3.5 w-3.5" /> Sharing is turned off for now
+            </p>
+            <p className="mt-1 font-sans text-xs text-eve-muted">
+              We will not let you send health documents to a provider until these are in place
+              and independently checked:
+            </p>
+            <ul className="mt-2 list-disc space-y-1 pl-4 font-sans text-xs text-eve-muted">
+              {SHARING_PREREQUISITES.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {sharingEnabled && (
+          <p className="mt-1 inline-flex items-center gap-1 font-sans text-xs text-eve-muted">
+            <ShieldCheck className="h-3 w-3" /> You control what each partner sees, and you can
+            revoke access anytime.
+          </p>
+        )}
         <ul className="mt-3 space-y-2">
           {shares.length === 0 ? (
             <li className="rounded-2xl bg-white p-4 text-sm text-eve-muted">
@@ -349,6 +367,7 @@ function PassportPage() {
           )}
         </ul>
       </section>
+
 
       <div className="mt-6">
         <SafetyDisclaimer />
