@@ -311,6 +311,9 @@ function EveProviders() {
     [items, criteria],
   );
   const filtered = match.results as Provider[];
+  const matched = filtered.length;
+
+
 
   const activeChips = useMemo(() => {
     const chips: string[] = [];
