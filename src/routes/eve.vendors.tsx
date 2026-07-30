@@ -103,7 +103,12 @@ function EveVendors() {
         if (m?.city) setUserCity(m.city);
       }
 
-      const { data } = await supabase.from("vendors").select("*").eq("is_verified", true);
+      const { data } = await supabase
+        .from("vendors")
+        .select(
+          "id,business_name,category,city,country,description,logo_url,is_verified,is_featured,created_at,website,secondary_website,booking_url,neighborhood,instagram,facebook,linkedin,google_maps_url,services,languages,years_in_practice,credentials,bio,avg_rating",
+        )
+        .eq("is_verified", true);
 
       const vs = (data ?? []) as Vendor[];
       setVendors(vs);

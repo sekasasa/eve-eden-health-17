@@ -50,11 +50,10 @@ function AdminProviders() {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("providers")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setRows((data ?? []) as Provider[]);
+    // Sensitive provider contact columns are admin-only and served through a
+    // guarded RPC instead of a direct table read.
+    const { data } = await supabase.rpc("admin_list_providers");
+    setRows((data ?? []) as unknown as Provider[]);
     setLoading(false);
   };
 
