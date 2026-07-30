@@ -53,7 +53,9 @@ function AdminVendors() {
     setLoading(true);
     const { data } = await supabase
       .from("vendors")
-      .select("*")
+      .select(
+        "id,business_name,category,city,description,logo_url,is_verified,is_featured,commission_rate,review_status,rejection_reason,created_at",
+      )
       .order("created_at", { ascending: false });
     setRows((data ?? []) as Vendor[]);
     setLoading(false);

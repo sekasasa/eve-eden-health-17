@@ -75,7 +75,13 @@ function EveVendorDetail() {
       }
 
       const [{ data: v }, { data: p }, { data: c }] = await Promise.all([
-        supabase.from("vendors").select("*").eq("id", id).maybeSingle(),
+        supabase
+          .from("vendors")
+          .select(
+            "id,business_name,category,city,country,description,logo_url,is_verified,is_featured,created_at,website,secondary_website,booking_url,neighborhood,instagram,facebook,linkedin,google_maps_url,services,languages,years_in_practice,credentials,bio,avg_rating",
+          )
+          .eq("id", id)
+          .maybeSingle(),
         supabase
           .from("products")
           .select("*")
