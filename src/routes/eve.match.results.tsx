@@ -382,15 +382,16 @@ function MatchResults() {
             title="Use existing insurance"
             covered="Doctor visits, labs, basic maternity may be covered"
             notCovered="Some specialists, home visits, premium products"
-            cost="0–150 MAD co-pay typical"
-            cta="Check Coverage"
-            onClick={() => eveToast.info("We'll verify with your insurer")}
+            cost="Co-pay varies — confirm with your insurer"
+            cta="Coverage check coming soon"
+            disabled
+            onClick={() => {}}
           />
           <PaymentOption
             title="Compare insurance vendors"
             covered="See plans matched to your life stage and goals"
             notCovered="Waiting periods may apply"
-            cost="From 350 MAD/mo"
+            cost="Estimate only — plans priced by the insurer"
             cta="Compare Plans"
             onClick={() => nav({ to: "/eve/match/insurance" })}
           />
@@ -398,9 +399,10 @@ function MatchResults() {
             title="Self-pay options"
             covered="Faster booking, your choice of provider"
             notCovered="No reimbursement paperwork"
-            cost="From 200 MAD/visit"
-            cta="Choose Self-Pay"
-            onClick={() => eveToast.success("Self-pay preference saved")}
+            cost="Estimate only — prices set by each provider"
+            cta="Self-pay setup coming soon"
+            disabled
+            onClick={() => {}}
           />
         </div>
         <p className="mt-2 text-[11px] text-eve-muted">
