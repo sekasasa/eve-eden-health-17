@@ -447,6 +447,7 @@ function PaymentOption({
   cost,
   cta,
   onClick,
+  disabled,
 }: {
   title: string;
   covered: string;
@@ -454,6 +455,7 @@ function PaymentOption({
   cost: string;
   cta: string;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="rounded-2xl border border-eve-muted/20 bg-white p-3">
@@ -463,7 +465,8 @@ function PaymentOption({
       <p className="mt-1 text-[11px] font-medium text-eve-terra">{cost}</p>
       <button
         onClick={onClick}
-        className="mt-2 rounded-full bg-eve-teal-light px-3 py-1.5 text-xs font-medium text-eve-teal"
+        disabled={disabled}
+        className="mt-2 rounded-full bg-eve-teal-light px-3 py-1.5 text-xs font-medium text-eve-teal disabled:opacity-60"
       >
         {cta}
       </button>
