@@ -22,7 +22,13 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { useCarePreferences } from "@/hooks/useCarePreferences";
-import { prefHelpers, providerPersonalizationScore, priorityLanguagesForRegion, regionOf } from "@/lib/personalization";
+import { prefHelpers } from "@/lib/personalization";
+import {
+  matchProviders,
+  type MatchCriteria,
+  type MatchProviderRecord,
+} from "@/lib/provider-matching";
+
 import type { LifeStage } from "@/lib/match-data";
 import { cn } from "@/lib/utils";
 
@@ -71,12 +77,36 @@ const REGIONS = [
 ] as const;
 
 const LANGUAGE_OPTIONS = [
-  "English", "Spanish", "French", "Portuguese", "Arabic",
-  "Darija / Moroccan Arabic", "Tamazight / Amazigh", "Swahili", "Luganda",
-  "Kinyarwanda", "Amharic", "Hausa", "Yoruba", "Igbo", "Wolof", "Zulu",
-  "Xhosa", "Afrikaans", "Somali", "Lingala", "Haitian Creole",
-  "Jamaican Patois", "Quechua", "Guaraní", "Aymara", "K'iche'", "Kaqchikel",
-  "Garifuna", "Mayan languages", "Other",
+  "English",
+  "Spanish",
+  "French",
+  "Portuguese",
+  "Arabic",
+  "Darija / Moroccan Arabic",
+  "Tamazight / Amazigh",
+  "Swahili",
+  "Luganda",
+  "Kinyarwanda",
+  "Amharic",
+  "Hausa",
+  "Yoruba",
+  "Igbo",
+  "Wolof",
+  "Zulu",
+  "Xhosa",
+  "Afrikaans",
+  "Somali",
+  "Lingala",
+  "Haitian Creole",
+  "Jamaican Patois",
+  "Quechua",
+  "Guaraní",
+  "Aymara",
+  "K'iche'",
+  "Kaqchikel",
+  "Garifuna",
+  "Mayan languages",
+  "Other",
 ];
 
 const PROVIDER_PREFS = [
@@ -95,26 +125,50 @@ const DIET_PREFS = [
   { id: "vegan", label: "Vegan pregnancy nutrition", keywords: ["vegan"] },
   { id: "vegetarian", label: "Vegetarian pregnancy nutrition", keywords: ["vegetarian"] },
   { id: "fasting_nutr", label: "Fasting-aware nutrition", keywords: ["fasting"] },
-  { id: "postpartum_foods", label: "Postpartum cultural foods", keywords: ["postpartum food", "cultural food"] },
-  { id: "traditional", label: "Traditional foods or herbal practices", keywords: ["traditional", "herbal"] },
+  {
+    id: "postpartum_foods",
+    label: "Postpartum cultural foods",
+    keywords: ["postpartum food", "cultural food"],
+  },
+  {
+    id: "traditional",
+    label: "Traditional foods or herbal practices",
+    keywords: ["traditional", "herbal"],
+  },
 ] as const;
 
 const FASTING_PREFS = [
   { id: "ramadan", label: "Ramadan pregnancy counseling", keywords: ["ramadan"] },
-  { id: "lent", label: "Lent / Christian fasting support", keywords: ["lent", "christian fasting"] },
+  {
+    id: "lent",
+    label: "Lent / Christian fasting support",
+    keywords: ["lent", "christian fasting"],
+  },
   { id: "orthodox", label: "Orthodox fasting support", keywords: ["orthodox fasting", "orthodox"] },
   { id: "hindu_fast", label: "Hindu fasting support", keywords: ["hindu fasting"] },
   { id: "general_fast", label: "General fasting questions", keywords: ["fasting"] },
 ] as const;
 
 const BIRTH_PREFS = [
-  { id: "low_int", label: "Low-intervention birth (when medically appropriate)", keywords: ["low-intervention", "low intervention", "natural"] },
+  {
+    id: "low_int",
+    label: "Low-intervention birth (when medically appropriate)",
+    keywords: ["low-intervention", "low intervention", "natural"],
+  },
   { id: "vbac", label: "VBAC counseling", keywords: ["vbac"] },
-  { id: "csection", label: "C-section informed consent", keywords: ["c-section", "cesarean", "csection"] },
+  {
+    id: "csection",
+    label: "C-section informed consent",
+    keywords: ["c-section", "cesarean", "csection"],
+  },
   { id: "birth_plan", label: "Birth plan support", keywords: ["birth plan"] },
   { id: "midwife", label: "Midwife-supported care", keywords: ["midwife", "sage-femme"] },
   { id: "doula", label: "Doula-supported care", keywords: ["doula"] },
-  { id: "pain_mgmt", label: "Pain management options", keywords: ["pain management", "epidural", "analgesia"] },
+  {
+    id: "pain_mgmt",
+    label: "Pain management options",
+    keywords: ["pain management", "epidural", "analgesia"],
+  },
 ] as const;
 
 type FilterId =
@@ -123,11 +177,21 @@ type FilterId =
   | (typeof FASTING_PREFS)[number]["id"]
   | (typeof BIRTH_PREFS)[number]["id"];
 
-const ALL_PREF_OPTIONS = [...PROVIDER_PREFS, ...DIET_PREFS, ...FASTING_PREFS, ...BIRTH_PREFS] as const;
+const ALL_PREF_OPTIONS = [
+  ...PROVIDER_PREFS,
+  ...DIET_PREFS,
+  ...FASTING_PREFS,
+  ...BIRTH_PREFS,
+] as const;
 
 function initials(name?: string | null) {
   if (!name) return "Dr";
-  return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
 }
 
 function toLowerList(v: string | string[] | null | undefined): string[] {
@@ -141,7 +205,9 @@ function haystackFor(p: Provider): string {
   const creds = toLowerList(p.credentials).join(" ");
   const langs = (p.languages ?? []).map((l) => l.toLowerCase()).join(" ");
   return [
-    services, creds, langs,
+    services,
+    creds,
+    langs,
     (p.specialty ?? "").toLowerCase(),
     (p.bio ?? "").toLowerCase(),
     (p.clinic_name ?? "").toLowerCase(),
@@ -184,6 +250,10 @@ function EveProviders() {
   const [filterLanguages, setFilterLanguages] = useState<string[]>([]);
   const [filterDialect, setFilterDialect] = useState<string>("");
   const [filterPrefs, setFilterPrefs] = useState<FilterId[]>([]);
+  // Strict (hard) filters — off by default so preferences only rank results.
+  const [strictLocation, setStrictLocation] = useState(false);
+  const [strictLanguage, setStrictLanguage] = useState(false);
+  const [strictPreferences, setStrictPreferences] = useState(false);
 
   // Pre-select specialty + seed from care prefs
   useEffect(() => {
@@ -234,80 +304,88 @@ function EveProviders() {
     })();
   }, [query]);
 
-  const region = filterRegion ?? regionOf(prefs);
-  const regionalLangs = useMemo(
-    () => priorityLanguagesForRegion(region as ReturnType<typeof regionOf>),
-    [region],
-  );
-
-  // Apply hard filters first (country/city/virtual/home/etc) then rank.
-  const { filtered, matched } = useMemo(() => {
-    const base = specialty === "All"
-      ? items
-      : items.filter((p) => (p.specialty ?? "").toLowerCase().includes(specialty.toLowerCase()));
-
-    const passed = base.filter((p) => {
-      const hay = haystackFor(p);
-      if (filterCountry.trim()) {
-        const c = filterCountry.trim().toLowerCase();
-        if (!(p.country ?? "").toLowerCase().includes(c)) return false;
-      }
-      if (filterCity.trim()) {
-        const c = filterCity.trim().toLowerCase();
-        if (!(p.city ?? "").toLowerCase().includes(c)) return false;
-      }
-      if (filterVirtual && !/virtual|telehealth|teleconsult|online|en ligne/.test(hay)) return false;
-      if (filterHomeVisit && !/home visit|à domicile|domicile|home-visit|in-home/.test(hay)) return false;
-      if (filterLanguages.length > 0) {
-        const langs = (p.languages ?? []).map((l) => l.toLowerCase());
-        const ok = filterLanguages.some((sel) =>
-          langs.some((l) => l.includes(sel.toLowerCase().split(" / ")[0])),
-        );
-        if (!ok) return false;
-      }
-      if (filterDialect.trim()) {
-        const d = filterDialect.trim().toLowerCase();
-        const langs = (p.languages ?? []).map((l) => l.toLowerCase());
-        if (!langs.some((l) => l.includes(d))) return false;
-      }
-      for (const id of filterPrefs) {
-        const opt = ALL_PREF_OPTIONS.find((o) => o.id === id);
-        if (!opt) continue;
-        const ok = opt.keywords.some((k) => hay.includes(k));
-        if (!ok) return false;
-      }
-      return true;
-    });
-
-    const score = (p: Provider) => {
-      let s = providerPersonalizationScore(
-        {
-          languages: p.languages,
-          city: p.city,
-          services: toLowerList(p.services),
-          credentials: toLowerList(p.credentials),
-        },
-        prefs,
-      );
-      if (regionalLangs.length && (p.languages ?? []).some((l) => regionalLangs.includes(l.toLowerCase()))) s += 1;
-      const userLang = (profile.language ?? "").toLowerCase();
-      const userCity = (profile.city ?? "").toLowerCase();
-      if (!prefs.language && userLang && (p.languages ?? []).some((l) => l.toLowerCase().includes(userLang))) s += 2;
-      if (!prefs.city && userCity && (p.city ?? "").toLowerCase().includes(userCity)) s += 2;
-      if (p.accepting_patients) s += 1;
-      if (p.is_verified) s += 1;
-      s += (p.avg_rating ?? 0) / 5;
-      return s;
-    };
-
+  // Preferences are RANKING signals. They only hard-filter when the mother
+  // explicitly enables a strict filter. Fallback ladder is transparent.
+  const criteria = useMemo<MatchCriteria>(() => {
+    const city = filterCity || prefs.city || profile.city || null;
+    const country = filterCountry || prefs.country || null;
+    const languages = filterLanguages.length
+      ? filterLanguages
+      : prefs.language
+        ? [prefs.language]
+        : profile.language
+          ? [profile.language]
+          : [];
+    const dialect = filterDialect || prefs.dialect || null;
     return {
-      filtered: [...passed].sort((a, b) => score(b) - score(a)),
-      matched: passed.length,
+      specialty,
+      country,
+      city,
+      languages,
+      dialect,
+      virtual: filterVirtual,
+      homeVisit: filterHomeVisit,
+      preferenceKeywords: filterPrefs
+        .map((id) => ALL_PREF_OPTIONS.find((o) => o.id === id)?.keywords ?? [])
+        .filter((g) => g.length > 0)
+        .map((g) => [...g]),
+      strict: {
+        country: strictLocation && !!country,
+        city: strictLocation && !!city,
+        language: strictLanguage && languages.length > 0,
+        dialect: strictLanguage && !!dialect,
+        virtual: filterVirtual,
+        homeVisit: filterHomeVisit,
+        preferences: strictPreferences,
+      },
     };
-  }, [items, specialty, prefs, profile.language, profile.city, regionalLangs, filterCountry, filterCity, filterVirtual, filterHomeVisit, filterLanguages, filterDialect, filterPrefs]);
+  }, [
+    specialty,
+    filterCountry,
+    filterCity,
+    filterLanguages,
+    filterDialect,
+    filterVirtual,
+    filterHomeVisit,
+    filterPrefs,
+    strictLocation,
+    strictLanguage,
+    strictPreferences,
+    prefs.city,
+    prefs.country,
+    prefs.language,
+    prefs.dialect,
+    profile.city,
+    profile.language,
+  ]);
+
+  const match = useMemo(
+    () => matchProviders(items as MatchProviderRecord[], criteria),
+    [items, criteria],
+  );
+  const filtered = match.results as Provider[];
+  const matched = filtered.length;
+
+  const activeChips = useMemo(() => {
+    const chips: string[] = [];
+    if (specialty !== "All") chips.push(specialty);
+    if (criteria.city) chips.push(`${criteria.city}${strictLocation ? " (only)" : ""}`);
+    if (criteria.country) chips.push(criteria.country);
+    (criteria.languages ?? []).forEach((l) => chips.push(`${l}${strictLanguage ? " (only)" : ""}`));
+    if (criteria.dialect) chips.push(criteria.dialect);
+    if (criteria.virtual) chips.push("Virtual care");
+    if (criteria.homeVisit) chips.push("Home visit");
+    filterPrefs.forEach((id) => {
+      const opt = ALL_PREF_OPTIONS.find((o) => o.id === id);
+      if (opt) chips.push(`${opt.label}${strictPreferences ? " (only)" : ""}`);
+    });
+    return chips;
+  }, [specialty, criteria, filterPrefs, strictLocation, strictLanguage, strictPreferences]);
 
   const femalePreferred = prefHelpers.femalePreferred(prefs) || filterPrefs.includes("female");
-  const verifiedFemaleConfirmable = filtered.some((p) => /female|women's health|women only/.test(haystackFor(p)));
+  const verifiedFemaleConfirmable = filtered.some((p) =>
+    /female|women's health|women only/.test(haystackFor(p)),
+  );
 
   const activeFilterCount =
     (filterRegion ? 1 : 0) +
@@ -328,13 +406,16 @@ function EveProviders() {
     setFilterLanguages([]);
     setFilterDialect("");
     setFilterPrefs([]);
+    setStrictLocation(false);
+    setStrictLanguage(false);
+    setStrictPreferences(false);
   }
 
   function toggleLang(l: string) {
-    setFilterLanguages((cur) => cur.includes(l) ? cur.filter((x) => x !== l) : [...cur, l]);
+    setFilterLanguages((cur) => (cur.includes(l) ? cur.filter((x) => x !== l) : [...cur, l]));
   }
   function togglePref(id: FilterId) {
-    setFilterPrefs((cur) => cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]);
+    setFilterPrefs((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
   }
 
   return (
@@ -349,7 +430,8 @@ function EveProviders() {
         Find the right provider
       </h1>
       <p className="mt-1 font-sans text-xs text-eve-muted">
-        Search by region, language, dialect, and what matters to you. We rank using only your stated preferences.
+        Search by region, language, dialect, and what matters to you. We rank using only your stated
+        preferences.
       </p>
 
       {(profile.stage || profile.city || profile.language || prefs.region) && (
@@ -364,8 +446,12 @@ function EveProviders() {
 
       {femalePreferred && !verifiedFemaleConfirmable && (
         <div className="mt-2 rounded-xl border border-eve-rose/30 bg-eve-rose-light px-3 py-2 text-[11px] text-eve-rose">
-          You asked for a female provider. We can't yet confirm a verified female-provider match in our directory.{" "}
-          <Link to="/eve/ask" className="font-medium underline">Ask a navigator for help</Link>.
+          You asked for a female provider. We can't yet confirm a verified female-provider match in
+          our directory.{" "}
+          <Link to="/eve/ask" className="font-medium underline">
+            Ask a navigator for help
+          </Link>
+          .
         </div>
       )}
 
@@ -415,14 +501,22 @@ function EveProviders() {
 
       {showFilters && (
         <FilterPanel
-          filterRegion={filterRegion} setFilterRegion={setFilterRegion}
-          filterCountry={filterCountry} setFilterCountry={setFilterCountry}
-          filterCity={filterCity} setFilterCity={setFilterCity}
-          filterVirtual={filterVirtual} setFilterVirtual={setFilterVirtual}
-          filterHomeVisit={filterHomeVisit} setFilterHomeVisit={setFilterHomeVisit}
-          filterLanguages={filterLanguages} toggleLang={toggleLang}
-          filterDialect={filterDialect} setFilterDialect={setFilterDialect}
-          filterPrefs={filterPrefs} togglePref={togglePref}
+          filterRegion={filterRegion}
+          setFilterRegion={setFilterRegion}
+          filterCountry={filterCountry}
+          setFilterCountry={setFilterCountry}
+          filterCity={filterCity}
+          setFilterCity={setFilterCity}
+          filterVirtual={filterVirtual}
+          setFilterVirtual={setFilterVirtual}
+          filterHomeVisit={filterHomeVisit}
+          setFilterHomeVisit={setFilterHomeVisit}
+          filterLanguages={filterLanguages}
+          toggleLang={toggleLang}
+          filterDialect={filterDialect}
+          setFilterDialect={setFilterDialect}
+          filterPrefs={filterPrefs}
+          togglePref={togglePref}
           activeCount={activeFilterCount}
           onReset={resetFilters}
           onClose={() => setShowFilters(false)}
@@ -433,9 +527,47 @@ function EveProviders() {
         <LanguageFallbackNotice language={prefs.language} />
       </div>
 
-      <p className="mt-3 font-sans text-[11px] text-eve-muted">
-        {loading ? "Searching…" : `${matched} provider${matched === 1 ? "" : "s"} match your preferences`}
+      {/* Strict vs preference toggles */}
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Chip active={strictLocation} onClick={() => setStrictLocation(!strictLocation)}>
+          Only my location
+        </Chip>
+        <Chip active={strictLanguage} onClick={() => setStrictLanguage(!strictLanguage)}>
+          Only my language
+        </Chip>
+        <Chip active={strictPreferences} onClick={() => setStrictPreferences(!strictPreferences)}>
+          Only my care preferences
+        </Chip>
+      </div>
+      <p className="mt-1 font-sans text-[10px] text-eve-muted">
+        Off by default: your preferences rank results instead of hiding providers.
       </p>
+
+      {/* Active filters */}
+      {activeChips.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {activeChips.map((c) => (
+            <span
+              key={c}
+              className="rounded-full bg-eve-cream px-2.5 py-1 font-sans text-[10px] text-eve-teal-dark"
+            >
+              {c}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <p className="mt-3 font-sans text-[11px] text-eve-muted">
+        {loading
+          ? "Searching…"
+          : `${matched} provider${matched === 1 ? "" : "s"} match your preferences`}
+      </p>
+
+      {!loading && match.broadened && match.broadenedReason && (
+        <div className="mt-2 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 font-sans text-[11px] text-eve-teal-dark">
+          {match.broadenedReason} Turn on a strict filter above to keep results narrow.
+        </div>
+      )}
 
       <div className="mt-2 flex flex-col gap-3">
         {loading ? (
@@ -459,7 +591,9 @@ function EveProviders() {
               userLang={profile.language ?? null}
               userCity={profile.city ?? null}
               prefsCountry={(filterCountry || prefs.country) ?? null}
-              prefsLanguages={filterLanguages.length ? filterLanguages : (prefs.language ? [prefs.language] : [])}
+              prefsLanguages={
+                filterLanguages.length ? filterLanguages : prefs.language ? [prefs.language] : []
+              }
               prefsDialect={filterDialect || prefs.dialect || ""}
               activePrefs={filterPrefs}
               femalePref={femalePreferred}
@@ -481,7 +615,13 @@ function EveProviders() {
 
 function ExternalDirectories({ specialty }: { specialty: string }) {
   const [rows, setRows] = useState<
-    { id: string; resource_name: string; source_url: string | null; notes: string | null; category: string | null }[]
+    {
+      id: string;
+      resource_name: string;
+      source_url: string | null;
+      notes: string | null;
+      category: string | null;
+    }[]
   >([]);
   useEffect(() => {
     (async () => {
@@ -526,24 +666,46 @@ function ExternalDirectories({ specialty }: { specialty: string }) {
 }
 
 function FilterPanel(props: {
-  filterRegion: string | null; setFilterRegion: (v: string | null) => void;
-  filterCountry: string; setFilterCountry: (v: string) => void;
-  filterCity: string; setFilterCity: (v: string) => void;
-  filterVirtual: boolean; setFilterVirtual: (v: boolean) => void;
-  filterHomeVisit: boolean; setFilterHomeVisit: (v: boolean) => void;
-  filterLanguages: string[]; toggleLang: (l: string) => void;
-  filterDialect: string; setFilterDialect: (v: string) => void;
-  filterPrefs: FilterId[]; togglePref: (id: FilterId) => void;
+  filterRegion: string | null;
+  setFilterRegion: (v: string | null) => void;
+  filterCountry: string;
+  setFilterCountry: (v: string) => void;
+  filterCity: string;
+  setFilterCity: (v: string) => void;
+  filterVirtual: boolean;
+  setFilterVirtual: (v: boolean) => void;
+  filterHomeVisit: boolean;
+  setFilterHomeVisit: (v: boolean) => void;
+  filterLanguages: string[];
+  toggleLang: (l: string) => void;
+  filterDialect: string;
+  setFilterDialect: (v: string) => void;
+  filterPrefs: FilterId[];
+  togglePref: (id: FilterId) => void;
   activeCount: number;
   onReset: () => void;
   onClose: () => void;
 }) {
   const {
-    filterRegion, setFilterRegion, filterCountry, setFilterCountry,
-    filterCity, setFilterCity, filterVirtual, setFilterVirtual,
-    filterHomeVisit, setFilterHomeVisit, filterLanguages, toggleLang,
-    filterDialect, setFilterDialect, filterPrefs, togglePref,
-    activeCount, onReset, onClose,
+    filterRegion,
+    setFilterRegion,
+    filterCountry,
+    setFilterCountry,
+    filterCity,
+    setFilterCity,
+    filterVirtual,
+    setFilterVirtual,
+    filterHomeVisit,
+    setFilterHomeVisit,
+    filterLanguages,
+    toggleLang,
+    filterDialect,
+    setFilterDialect,
+    filterPrefs,
+    togglePref,
+    activeCount,
+    onReset,
+    onClose,
   } = props;
 
   return (
@@ -661,7 +823,8 @@ function FilterPanel(props: {
       </Group>
 
       <p className="mt-3 text-[10px] text-eve-muted">
-        These preferences are optional and used only to personalize results. You can change or clear them anytime.
+        These preferences are optional and used only to personalize results. You can change or clear
+        them anytime.
       </p>
     </section>
   );
@@ -679,8 +842,14 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
 }
 
 function Chip({
-  active, onClick, children,
-}: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       onClick={onClick}
@@ -725,8 +894,8 @@ function EmptyState({
       <div className="flex flex-col items-center gap-3 rounded-2xl bg-white p-8 text-center">
         <Stethoscope className="h-6 w-6 text-eve-teal" />
         <p className="font-sans text-sm text-eve-teal-dark">
-          We are still building our provider network in your country. Ask a
-          navigator and we'll help you find support.
+          We are still building our provider network in your country. Ask a navigator and we'll help
+          you find support.
         </p>
         <div className="mt-1 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center">
           <Link
@@ -810,23 +979,35 @@ function buildMatchReasons(
   const hay = haystackFor(p);
   const langs = (p.languages ?? []).map((l) => l.toLowerCase());
 
-  const langSelections = opts.prefsLanguages.length ? opts.prefsLanguages : (opts.userLang ? [opts.userLang] : []);
-  if (langSelections.some((sel) => langs.some((l) => l.includes(sel.toLowerCase().split(" / ")[0])))) {
+  const langSelections = opts.prefsLanguages.length
+    ? opts.prefsLanguages
+    : opts.userLang
+      ? [opts.userLang]
+      : [];
+  if (
+    langSelections.some((sel) => langs.some((l) => l.includes(sel.toLowerCase().split(" / ")[0])))
+  ) {
     reasons.push("Speaks your preferred language");
   }
   if (opts.prefsDialect && langs.some((l) => l.includes(opts.prefsDialect.toLowerCase()))) {
     reasons.push("Supports your preferred dialect");
   }
-  if (opts.prefsCountry && (p.country ?? "").toLowerCase().includes(opts.prefsCountry.toLowerCase())) {
+  if (
+    opts.prefsCountry &&
+    (p.country ?? "").toLowerCase().includes(opts.prefsCountry.toLowerCase())
+  ) {
     reasons.push("Located in your country");
   }
   if (opts.userCity && (p.city ?? "").toLowerCase().includes(opts.userCity.toLowerCase())) {
     reasons.push("Near you");
   }
-  if (opts.virtualWanted && /virtual|telehealth|online/.test(hay)) reasons.push("Offers virtual care");
-  if (opts.homeVisitWanted && /home visit|domicile|in-home/.test(hay)) reasons.push("Offers home visits");
+  if (opts.virtualWanted && /virtual|telehealth|online/.test(hay))
+    reasons.push("Offers virtual care");
+  if (opts.homeVisitWanted && /home visit|domicile|in-home/.test(hay))
+    reasons.push("Offers home visits");
 
-  if (opts.femalePref && /female|women's health|women only/.test(hay)) reasons.push("Female provider");
+  if (opts.femalePref && /female|women's health|women only/.test(hay))
+    reasons.push("Female provider");
 
   const labels: Partial<Record<FilterId, string>> = {
     modesty: "Supports modesty-sensitive care",
@@ -890,11 +1071,19 @@ function ProviderCard({
 }) {
   const langs = p.languages ?? [];
   const reasons = buildMatchReasons(p, {
-    userLang, userCity, prefsCountry, prefsLanguages, prefsDialect,
-    activePrefs, femalePref, virtualWanted, homeVisitWanted,
+    userLang,
+    userCity,
+    prefsCountry,
+    prefsLanguages,
+    prefsDialect,
+    activePrefs,
+    femalePref,
+    virtualWanted,
+    homeVisitWanted,
   });
   const cityMatch = !!userCity && (p.city ?? "").toLowerCase().includes(userCity.toLowerCase());
-  const langMatch = !!userLang && langs.some((l) => l.toLowerCase().includes(userLang.toLowerCase()));
+  const langMatch =
+    !!userLang && langs.some((l) => l.toLowerCase().includes(userLang.toLowerCase()));
 
   return (
     <article className="rounded-2xl bg-white p-4 shadow-sm">
@@ -921,12 +1110,17 @@ function ProviderCard({
 
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-[11px] text-eve-muted">
             {p.city && (
-              <span className={cn("inline-flex items-center gap-1", cityMatch && "text-eve-teal-dark")}>
-                <MapPin className="h-3 w-3" /> {p.city}{p.country ? `, ${p.country}` : ""}
+              <span
+                className={cn("inline-flex items-center gap-1", cityMatch && "text-eve-teal-dark")}
+              >
+                <MapPin className="h-3 w-3" /> {p.city}
+                {p.country ? `, ${p.country}` : ""}
               </span>
             )}
             {langs.length > 0 && (
-              <span className={cn("inline-flex items-center gap-1", langMatch && "text-eve-teal-dark")}>
+              <span
+                className={cn("inline-flex items-center gap-1", langMatch && "text-eve-teal-dark")}
+              >
                 <Languages className="h-3 w-3" /> {langs.slice(0, 3).join(", ")}
               </span>
             )}
@@ -936,9 +1130,7 @@ function ProviderCard({
             <span className="inline-flex items-center gap-0.5 font-sans text-[11px] text-eve-terra">
               <Star className="h-3 w-3 fill-eve-terra" />
               {p.avg_rating?.toFixed(1) ?? "—"}
-              <span className="text-eve-muted">
-                {p.review_count ? ` (${p.review_count})` : ""}
-              </span>
+              <span className="text-eve-muted">{p.review_count ? ` (${p.review_count})` : ""}</span>
             </span>
             {p.consultation_fee_mad != null && (
               <span className="rounded-full bg-eve-teal-light px-2 py-0.5 font-sans text-[10px] text-eve-teal-dark">

@@ -1,12 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Calendar, MapPin, Globe, ArrowRight, Sparkles, SlidersHorizontal, Users, Tag } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Globe,
+  ArrowRight,
+  Sparkles,
+  SlidersHorizontal,
+  Users,
+  Tag,
+} from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { supabase } from "@/integrations/supabase/client";
 import { useCarePreferences } from "@/hooks/useCarePreferences";
-import { priorityLanguagesForRegion, regionOf, prefHelpers, type Region } from "@/lib/personalization";
+import {
+  priorityLanguagesForRegion,
+  regionOf,
+  prefHelpers,
+  type Region,
+} from "@/lib/personalization";
+import { LAUNCH_EVENT, isLaunchEventRelevant } from "@/lib/launch-event";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/events")({
@@ -65,15 +80,39 @@ const REGIONS: { key: Region; label: string }[] = [
 const LIFE_STAGES = ["trying", "fertility", "pregnant", "postpartum", "newborn", "family"];
 
 const TOPIC_TAGS: { key: string; label: string; keywords: string[] }[] = [
-  { key: "faith", label: "Faith-sensitive care", keywords: ["faith", "halal", "kosher", "ramadan", "lent", "modesty"] },
-  { key: "nutrition", label: "Nutrition", keywords: ["nutrition", "food", "diet", "iron", "anemia"] },
+  {
+    key: "faith",
+    label: "Faith-sensitive care",
+    keywords: ["faith", "halal", "kosher", "ramadan", "lent", "modesty"],
+  },
+  {
+    key: "nutrition",
+    label: "Nutrition",
+    keywords: ["nutrition", "food", "diet", "iron", "anemia"],
+  },
   { key: "fasting", label: "Fasting", keywords: ["fasting", "ramadan", "lent"] },
-  { key: "vegan", label: "Vegan / vegetarian pregnancy", keywords: ["vegan", "vegetarian", "plant"] },
-  { key: "birth", label: "Birth planning", keywords: ["birth plan", "birth-plan", "labor", "delivery"] },
+  {
+    key: "vegan",
+    label: "Vegan / vegetarian pregnancy",
+    keywords: ["vegan", "vegetarian", "plant"],
+  },
+  {
+    key: "birth",
+    label: "Birth planning",
+    keywords: ["birth plan", "birth-plan", "labor", "delivery"],
+  },
   { key: "vbac", label: "VBAC / C-section education", keywords: ["vbac", "c-section", "cesarean"] },
-  { key: "postpartum-trad", label: "Postpartum traditions", keywords: ["postpartum tradition", "40 days", "cuarentena", "nifas", "confinement"] },
+  {
+    key: "postpartum-trad",
+    label: "Postpartum traditions",
+    keywords: ["postpartum tradition", "40 days", "cuarentena", "nifas", "confinement"],
+  },
   { key: "family", label: "Family support", keywords: ["family", "partner", "siblings"] },
-  { key: "emotional", label: "Emotional support", keywords: ["emotional", "mental", "anxiety", "grief", "depression", "support group"] },
+  {
+    key: "emotional",
+    label: "Emotional support",
+    keywords: ["emotional", "mental", "anxiety", "grief", "depression", "support group"],
+  },
 ];
 
 type Filters = {
@@ -140,12 +179,16 @@ function EventsPage() {
           .limit(100),
         supabase
           .from("directory_resources")
-          .select("id,resource_name,category,region,country,city_scope,language_support,display_section,source_url,notes")
+          .select(
+            "id,resource_name,category,region,country,city_scope,language_support,display_section,source_url,notes",
+          )
           .limit(50),
       ]);
 
       const vendorRows = (vendorRes.data as unknown as EventRow[]) ?? [];
-      const seedRows: EventRow[] = ((seedRes.data as unknown as Array<Record<string, unknown>>) ?? []).map((s) => {
+      const seedRows: EventRow[] = (
+        (seedRes.data as unknown as Array<Record<string, unknown>>) ?? []
+      ).map((s) => {
         const dt = String(s.date_time_local ?? "");
         const parsed = /^\d{4}-\d{2}-\d{2}/.test(dt) ? new Date(dt.replace(" ", "T")) : null;
         const eventAt = parsed && !Number.isNaN(parsed.getTime()) ? parsed.toISOString() : null;
@@ -159,7 +202,10 @@ function EventsPage() {
             : s.price_amount
               ? `${s.price_amount} ${s.currency ?? ""}`.trim()
               : "Price on registration";
-        const langs = String(s.languages ?? "").split(/;|,/).map((x) => x.trim()).filter(Boolean);
+        const langs = String(s.languages ?? "")
+          .split(/;|,/)
+          .map((x) => x.trim())
+          .filter(Boolean);
         return {
           id: `seed-${s.id}`,
           title: String(s.title ?? ""),
@@ -181,13 +227,16 @@ function EventsPage() {
       });
 
       // Featured launch event first, then merged list
-      const merged = [...seedRows, ...vendorRows];
+      // Featured launch event is rendered as a dedicated card above the list;
+      // drop any duplicate seeded row for it.
+      const isLaunchDupe = (e: EventRow) =>
+        /launch/i.test(e.title) && /casablanca|morocco/i.test(`${e.title} ${e.location ?? ""}`);
+      const merged = [...seedRows, ...vendorRows].filter((e) => !isLaunchDupe(e));
       merged.sort((a, b) => Number(b.is_featured ?? false) - Number(a.is_featured ?? false));
       setEvents(merged);
       setDirectories((dirRes.data as unknown as DirectoryRow[]) ?? []);
     })();
   }, []);
-
 
   const activeCount =
     (filters.region !== "any" ? 1 : 0) +
@@ -251,7 +300,12 @@ function EventsPage() {
       }
       if (stage && e.life_stage === stage) s += 5;
       if (lang && (e.language ?? "").toLowerCase() === lang) s += 4;
-      else if (regionalLangs.length && e.language && regionalLangs.includes(e.language.toLowerCase())) s += 2;
+      else if (
+        regionalLangs.length &&
+        e.language &&
+        regionalLangs.includes(e.language.toLowerCase())
+      )
+        s += 2;
       const loc = (e.location ?? "").toLowerCase();
       if (city && loc.includes(city)) s += 3;
       else if (country && loc.includes(country)) s += 2;
@@ -267,13 +321,18 @@ function EventsPage() {
 
     // Check whether any events exist in the country filter (ignoring online)
     const anyInCountry =
-      !country ||
-      events.some((e) => (e.location ?? "").toLowerCase().includes(country));
+      !country || events.some((e) => (e.location ?? "").toLowerCase().includes(country));
 
     return { results: sorted, anyInCountry };
   }, [events, filters, prefs]);
 
-  const personalized = !!(prefs.region || prefs.country || prefs.city || prefs.language || prefs.stage);
+  const personalized = !!(
+    prefs.region ||
+    prefs.country ||
+    prefs.city ||
+    prefs.language ||
+    prefs.stage
+  );
   const noResults = events !== null && results.length === 0;
   const showCountryEmpty = noResults && filters.country && !anyInCountry;
 
@@ -302,9 +361,44 @@ function EventsPage() {
       <div className="pt-2">
         <h1 className="font-serif text-3xl text-eve-teal-dark">Events & Workshops</h1>
         <p className="mt-1 font-sans text-sm text-eve-muted">
-          Classes, talks, and community gatherings across North America, Africa, South America, and Central America.
+          Classes, talks, and community gatherings across North America, Africa, South America, and
+          Central America.
         </p>
       </div>
+
+      {/* Featured launch event — always visible for Morocco/Casablanca/Rabat
+          audiences, never removed by list filters. */}
+      {isLaunchEventRelevant({
+        country: filters.country || prefs.country,
+        city: filters.city || prefs.city,
+      }) && (
+        <Link
+          to="/eve/events/launch-casablanca-2026"
+          className="mt-4 block overflow-hidden rounded-2xl border border-eve-teal/25 bg-white"
+        >
+          <div className="flex h-24 items-center justify-center bg-gradient-to-br from-eve-teal-light to-eve-rose-light">
+            <Calendar className="h-7 w-7 text-eve-teal" />
+          </div>
+          <div className="p-4">
+            <span className="inline-block rounded-full bg-eve-teal px-2 py-0.5 font-sans text-[9px] font-semibold uppercase tracking-wide text-white">
+              Featured launch event
+            </span>
+            <h2 className="mt-2 font-serif text-lg leading-tight text-eve-teal-dark">
+              {LAUNCH_EVENT.title}
+            </h2>
+            <p className="mt-1 font-sans text-[12px] text-eve-muted">
+              {LAUNCH_EVENT.dateLabel} · {LAUNCH_EVENT.timeLabel}
+            </p>
+            <p className="mt-0.5 font-sans text-[12px] text-eve-muted">
+              {LAUNCH_EVENT.venueLabel} · {LAUNCH_EVENT.priceLabel}
+            </p>
+            <p className="mt-2 font-sans text-[12px] text-eve-muted">{LAUNCH_EVENT.tagline}</p>
+            <span className="mt-3 inline-flex items-center gap-1 font-sans text-[12px] font-medium text-eve-teal">
+              See details <ArrowRight className="h-3 w-3" />
+            </span>
+          </div>
+        </Link>
+      )}
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <button
@@ -352,7 +446,9 @@ function EventsPage() {
               action={
                 <div className="flex flex-wrap justify-center gap-2">
                   <button
-                    onClick={() => setFilters((f) => ({ ...f, country: "", city: "", online: "online" }))}
+                    onClick={() =>
+                      setFilters((f) => ({ ...f, country: "", city: "", online: "online" }))
+                    }
                     className="rounded-full bg-eve-teal px-4 py-2 text-xs font-medium text-white"
                   >
                     See online events
@@ -404,14 +500,12 @@ function EventsPage() {
         <section className="mt-8">
           <h2 className="font-serif text-lg text-eve-teal-dark">External resources</h2>
           <p className="mt-1 text-[12px] text-eve-muted">
-            Trusted public directories and event listings. These are link-outs, not Eve & Eden verified providers or events.
+            Trusted public directories and event listings. These are link-outs, not Eve & Eden
+            verified providers or events.
           </p>
           <ul className="mt-3 space-y-2">
             {directories.map((d) => (
-              <li
-                key={d.id}
-                className="rounded-2xl border border-eve-sand bg-eve-cream/40 p-3"
-              >
+              <li key={d.id} className="rounded-2xl border border-eve-sand bg-eve-cream/40 p-3">
                 <p className="text-sm font-medium text-eve-teal-dark">{d.resource_name}</p>
                 <p className="mt-0.5 text-[11px] text-eve-muted">
                   {[d.category, d.country, d.city_scope].filter(Boolean).join(" · ")}
@@ -436,9 +530,9 @@ function EventsPage() {
         to="/eden/login"
         className="mt-8 block rounded-2xl bg-eve-teal-light p-4 text-center text-sm text-eve-teal-dark"
       >
-        Hosting a maternal health event? <span className="font-semibold">Add it on Eve & Eden →</span>
+        Hosting a maternal health event?{" "}
+        <span className="font-semibold">Add it on Eve & Eden →</span>
       </Link>
-
     </EveShell>
   );
 }
@@ -457,7 +551,10 @@ function FilterPanel({
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">Region</p>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          <Chip active={filters.region === "any"} onClick={() => setFilters((f) => ({ ...f, region: "any" }))}>
+          <Chip
+            active={filters.region === "any"}
+            onClick={() => setFilters((f) => ({ ...f, region: "any" }))}
+          >
             Any
           </Chip>
           {REGIONS.map((r) => (
@@ -491,7 +588,11 @@ function FilterPanel({
         <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">Format</p>
         <div className="mt-2 flex gap-1.5">
           {(["any", "online", "in_person"] as const).map((k) => (
-            <Chip key={k} active={filters.online === k} onClick={() => setFilters((f) => ({ ...f, online: k }))}>
+            <Chip
+              key={k}
+              active={filters.online === k}
+              onClick={() => setFilters((f) => ({ ...f, online: k }))}
+            >
               {k === "any" ? "Any" : k === "online" ? "Online" : "In-person"}
             </Chip>
           ))}
@@ -500,7 +601,9 @@ function FilterPanel({
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">Language</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">
+            Language
+          </p>
           <select
             value={filters.language}
             onChange={(e) => setFilters((f) => ({ ...f, language: e.target.value }))}
@@ -519,7 +622,9 @@ function FilterPanel({
           </select>
         </div>
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">Life stage</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">
+            Life stage
+          </p>
           <select
             value={filters.stage}
             onChange={(e) => setFilters((f) => ({ ...f, stage: e.target.value }))}
@@ -539,7 +644,11 @@ function FilterPanel({
         <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">Price</p>
         <div className="mt-2 flex gap-1.5">
           {(["any", "free", "paid"] as const).map((k) => (
-            <Chip key={k} active={filters.price === k} onClick={() => setFilters((f) => ({ ...f, price: k }))}>
+            <Chip
+              key={k}
+              active={filters.price === k}
+              onClick={() => setFilters((f) => ({ ...f, price: k }))}
+            >
               {k === "any" ? "Any" : k === "free" ? "Free" : "Paid"}
             </Chip>
           ))}
@@ -550,7 +659,11 @@ function FilterPanel({
         <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">Topics</p>
         <div className="mt-2 flex flex-wrap gap-1.5">
           {TOPIC_TAGS.map((t) => (
-            <Chip key={t.key} active={filters.topics.includes(t.key)} onClick={() => toggleTopic(t.key)}>
+            <Chip
+              key={t.key}
+              active={filters.topics.includes(t.key)}
+              onClick={() => toggleTopic(t.key)}
+            >
               {t.label}
             </Chip>
           ))}
@@ -560,7 +673,15 @@ function FilterPanel({
   );
 }
 
-function Chip({ active, onClick, children }: { active?: boolean; onClick: () => void; children: React.ReactNode }) {
+function Chip({
+  active,
+  onClick,
+  children,
+}: {
+  active?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       onClick={onClick}
@@ -617,11 +738,17 @@ function EventCard({ ev }: { ev: EventRow }) {
   const organizer = ev.vendors?.business_name ?? "Verified partner";
   const dateLabel = formatDate(ev.event_at);
   const loc = (ev.location ?? "").toLowerCase();
-  const online = !ev.location || loc.includes("online") || loc.includes("virtual") || loc.includes("zoom");
+  const online =
+    !ev.location || loc.includes("online") || loc.includes("virtual") || loc.includes("zoom");
   const isExternal = ev.cta_type === "register" && ev.cta_url;
   const cta = isExternal
     ? { href: ev.cta_url!, label: "View event", external: true as const }
-    : { to: "/eve/events/$id" as const, params: { id: ev.id }, label: "View event", external: false as const };
+    : {
+        to: "/eve/events/$id" as const,
+        params: { id: ev.id },
+        label: "View event",
+        external: false as const,
+      };
 
   const matchedTopics = TOPIC_TAGS.filter((t) => {
     const hay = `${ev.title} ${ev.excerpt ?? ""} ${ev.category ?? ""}`.toLowerCase();
@@ -676,7 +803,10 @@ function EventCard({ ev }: { ev: EventRow }) {
           </span>
         ) : null}
         {matchedTopics.map((t) => (
-          <span key={t.key} className="inline-flex items-center gap-1 rounded-full bg-eve-cream px-2 py-0.5 text-[10px] font-medium text-eve-muted">
+          <span
+            key={t.key}
+            className="inline-flex items-center gap-1 rounded-full bg-eve-cream px-2 py-0.5 text-[10px] font-medium text-eve-muted"
+          >
             <Tag className="h-2.5 w-2.5" /> {t.label}
           </span>
         ))}

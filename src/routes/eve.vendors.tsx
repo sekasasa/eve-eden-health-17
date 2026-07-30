@@ -10,46 +10,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import type { LifeStage } from "@/lib/match-data";
 import { cn } from "@/lib/utils";
+import {
+  MARKETPLACE_CATEGORIES,
+  isMarketplaceVendor,
+  categoryLabel,
+  marketplaceCardCopy,
+  marketplaceLanguageOptions,
+  marketplaceSearchHaystack,
+  type MarketplaceVendor,
+} from "@/lib/marketplace";
 
 export const Route = createFileRoute("/eve/vendors")({
   component: EveVendors,
 });
 
-const CATEGORIES = [
-  "All",
-  "Care Services",
-  "Maternity wear",
-  "Baby gear",
-  "Nutrition",
-  "Pharmacy",
-  "Classes",
+const CATEGORY_TABS = [
+  { value: "all", label: "All" },
+  ...MARKETPLACE_CATEGORIES.map((c) => ({ value: c.value as string, label: c.label })),
 ] as const;
 
-const CATEGORY_VALUE: Record<string, string> = {
-  "Care Services": "care_services",
-  "Maternity wear": "maternity_wear",
-  "Baby gear": "baby_gear",
-  Nutrition: "nutrition",
-  Pharmacy: "pharmacy",
-  Classes: "classes",
-};
-
-type Vendor = {
-  id: string;
-  business_name: string | null;
-  category: string | null;
-  city: string | null;
-  country: string | null;
-  logo_url: string | null;
-  is_verified: boolean | null;
-  is_featured: boolean | null;
-  description: string | null;
-  services: string | null;
-  languages: string[] | null;
-  credentials: string | null;
-  avg_rating: number | null;
-  created_at: string | null;
-};
+type Vendor = MarketplaceVendor;
 
 function initials(name: string | null) {
   if (!name) return "??";
@@ -79,11 +59,11 @@ function EveVendors() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [productCounts, setProductCounts] = useState<Record<string, number>>({});
   const [country, setCountry] = useState<string>("MA");
-  const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("All");
+  const [cat, setCat] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [serviceQuery, setServiceQuery] = useState("");
   const [language, setLanguage] = useState<string>("");
-  const [credential, setCredential] = useState<string>("");
+
   const [userCity, setUserCity] = useState<string>("");
   const [sortBy, setSortBy] = useState<"recommended" | "nearest" | "newest" | "highest_rated">(
     "recommended",
@@ -132,23 +112,16 @@ function EveVendors() {
 
   const filtered = useMemo(() => {
     const sq = serviceQuery.trim().toLowerCase();
-    const cq = credential.trim().toLowerCase();
     const base = vendors
+      .filter(isMarketplaceVendor)
       .filter((v) => (v.country ?? "MA") === country)
-      .filter((v) => (cat === "All" ? true : v.category === CATEGORY_VALUE[cat]))
-      .filter((v) =>
-        sq
-          ? (v.services ?? "").toLowerCase().includes(sq) ||
-            (v.description ?? "").toLowerCase().includes(sq) ||
-            (v.business_name ?? "").toLowerCase().includes(sq)
-          : true,
-      )
+      .filter((v) => (cat === "all" ? true : v.category === cat))
+      .filter((v) => (sq ? marketplaceSearchHaystack(v).includes(sq) : true))
       .filter((v) =>
         language
           ? (v.languages ?? []).some((l) => l?.toLowerCase() === language.toLowerCase())
           : true,
-      )
-      .filter((v) => (cq ? (v.credentials ?? "").toLowerCase().includes(cq) : true));
+      );
 
     const sorted = [...base];
     switch (sortBy) {
@@ -193,32 +166,24 @@ function EveVendors() {
         break;
     }
     return sorted;
-  }, [vendors, country, cat, serviceQuery, language, credential, sortBy, userCity]);
+  }, [vendors, country, cat, serviceQuery, language, sortBy, userCity]);
 
-  const languageOptions = useMemo(() => {
-    const set = new Set<string>();
-    vendors.forEach((v) => (v.languages ?? []).forEach((l) => l && set.add(l)));
-    return Array.from(set).sort();
-  }, [vendors]);
-
-  const credentialOptions = useMemo(() => {
-    const set = new Set<string>();
-    vendors.forEach((v) => {
-      const c = (v.credentials ?? "").trim();
-      if (c) set.add(c);
-    });
-    return Array.from(set).sort();
-  }, [vendors]);
+  const languageOptions = useMemo(
+    () => marketplaceLanguageOptions(vendors.filter(isMarketplaceVendor)),
+    [vendors],
+  );
 
   const hasActiveFilters = !!(
     serviceQuery ||
     language ||
-    credential ||
-    cat !== "All" ||
+    cat !== "all" ||
     sortBy !== "recommended"
   );
 
-  const featured = useMemo(() => vendors.filter((v) => v.is_featured), [vendors]);
+  const featured = useMemo(
+    () => vendors.filter(isMarketplaceVendor).filter((v) => v.is_featured),
+    [vendors],
+  );
 
   return (
     <EveShell>
@@ -259,7 +224,7 @@ function EveVendors() {
                   {v.business_name}
                 </div>
                 <span className="rounded-full bg-eve-sand px-2 py-0.5 font-sans text-[9px] text-eve-muted">
-                  {v.category ?? "—"}
+                  {categoryLabel(v.category)}
                 </span>
                 <TrustBadge />
               </Link>
@@ -270,21 +235,29 @@ function EveVendors() {
 
       {/* Tabs */}
       <div className="-mx-5 mt-6 flex gap-2 overflow-x-auto px-5 pb-1">
-        {CATEGORIES.map((c) => (
+        {CATEGORY_TABS.map((c) => (
           <button
-            key={c}
-            onClick={() => setCat(c)}
+            key={c.value}
+            onClick={() => setCat(c.value)}
             className={cn(
               "shrink-0 rounded-full border px-3 py-1.5 font-sans text-xs transition-colors",
-              cat === c
+              cat === c.value
                 ? "border-eve-teal bg-eve-teal text-white"
                 : "border-eve-muted/30 bg-white text-eve-muted",
             )}
           >
-            {c}
+            {c.label}
           </button>
         ))}
       </div>
+
+      <p className="mt-3 rounded-xl border border-eve-sand bg-eve-cream/50 px-3 py-2 font-sans text-[11px] text-eve-muted">
+        Looking for a doctor, midwife, or clinic?{" "}
+        <Link to="/eve/providers" className="font-medium text-eve-teal underline">
+          Go to Find Care
+        </Link>{" "}
+        — clinical providers are listed there, not in Shops &amp; services.
+      </p>
 
       {/* Filters */}
       <div className="mt-4 flex flex-col gap-2">
@@ -315,19 +288,8 @@ function EveVendors() {
               </option>
             ))}
           </select>
-          <select
-            value={credential}
-            onChange={(e) => setCredential(e.target.value)}
-            className="flex-1 rounded-full border border-eve-muted/30 bg-white px-3 py-2 font-sans text-xs text-eve-forest outline-none"
-          >
-            <option value="">All credentials</option>
-            {credentialOptions.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
         </div>
+
         <div className="flex items-center gap-2 rounded-full border border-eve-muted/30 bg-white px-3 py-2">
           <ArrowUpDown className="h-3.5 w-3.5 text-eve-muted" />
           <select
@@ -346,8 +308,8 @@ function EveVendors() {
             onClick={() => {
               setServiceQuery("");
               setLanguage("");
-              setCredential("");
-              setCat("All");
+              setCat("all");
+
               setSortBy("recommended");
             }}
             className="self-end font-sans text-[11px] text-eve-teal"
@@ -369,33 +331,41 @@ function EveVendors() {
             </p>
           </EveCard>
         ) : (
-          filtered.map((v) => (
-            <Link
-              key={v.id}
-              to="/eve/vendors/$id"
-              params={{ id: v.id }}
-              className="flex items-center gap-3 rounded-2xl bg-eve-cream p-3"
-            >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-eve-terra-light font-serif text-base text-eve-terra">
-                {initials(v.business_name)}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="truncate font-sans text-sm font-medium text-eve-forest">
-                  {v.business_name}
+          filtered.map((v) => {
+            const copy = marketplaceCardCopy(v);
+            return (
+              <Link
+                key={v.id}
+                to="/eve/vendors/$id"
+                params={{ id: v.id }}
+                className="flex items-center gap-3 rounded-2xl bg-eve-cream p-3"
+              >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-eve-terra-light font-serif text-base text-eve-terra">
+                  {initials(v.business_name)}
                 </div>
-                <div className="truncate font-sans text-[11px] text-eve-muted">
-                  {v.category ?? "—"} {v.city ? `· ${v.city}` : ""}
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-sans text-sm font-medium text-eve-forest">
+                    {copy.title}
+                  </div>
+                  <div className="truncate font-sans text-[11px] text-eve-muted">
+                    {copy.subtitle}
+                  </div>
+                  {copy.blurb && (
+                    <div className="mt-0.5 line-clamp-2 font-sans text-[11px] text-eve-muted">
+                      {copy.blurb}
+                    </div>
+                  )}
+                  <div className="mt-1 flex items-center gap-2">
+                    <TrustBadge />
+                    <span className="font-sans text-[10px] text-eve-muted">
+                      · {productCounts[v.id] ?? 0} products
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-1 flex items-center gap-2">
-                  <TrustBadge />
-                  <span className="font-sans text-[10px] text-eve-muted">
-                    · {productCounts[v.id] ?? 0} products
-                  </span>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 text-eve-muted" />
-            </Link>
-          ))
+                <ChevronRight className="h-4 w-4 text-eve-muted" />
+              </Link>
+            );
+          })
         )}
       </section>
     </EveShell>
