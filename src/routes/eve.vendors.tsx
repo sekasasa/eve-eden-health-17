@@ -227,7 +227,7 @@ function EveVendors() {
                   {v.business_name}
                 </div>
                 <span className="rounded-full bg-eve-sand px-2 py-0.5 font-sans text-[9px] text-eve-muted">
-                  {v.category ?? "—"}
+                  {categoryLabel(v.category)}
                 </span>
                 <TrustBadge />
               </Link>
