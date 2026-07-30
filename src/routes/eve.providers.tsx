@@ -441,9 +441,46 @@ function EveProviders() {
         <LanguageFallbackNotice language={prefs.language} />
       </div>
 
+      {/* Strict vs preference toggles */}
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Chip active={strictLocation} onClick={() => setStrictLocation(!strictLocation)}>
+          Only my location
+        </Chip>
+        <Chip active={strictLanguage} onClick={() => setStrictLanguage(!strictLanguage)}>
+          Only my language
+        </Chip>
+        <Chip active={strictPreferences} onClick={() => setStrictPreferences(!strictPreferences)}>
+          Only my care preferences
+        </Chip>
+      </div>
+      <p className="mt-1 font-sans text-[10px] text-eve-muted">
+        Off by default: your preferences rank results instead of hiding providers.
+      </p>
+
+      {/* Active filters */}
+      {activeChips.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {activeChips.map((c) => (
+            <span
+              key={c}
+              className="rounded-full bg-eve-cream px-2.5 py-1 font-sans text-[10px] text-eve-teal-dark"
+            >
+              {c}
+            </span>
+          ))}
+        </div>
+      )}
+
       <p className="mt-3 font-sans text-[11px] text-eve-muted">
         {loading ? "Searching…" : `${matched} provider${matched === 1 ? "" : "s"} match your preferences`}
       </p>
+
+      {!loading && match.broadened && match.broadenedReason && (
+        <div className="mt-2 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 font-sans text-[11px] text-eve-teal-dark">
+          {match.broadenedReason} Turn on a strict filter above to keep results narrow.
+        </div>
+      )}
+
 
       <div className="mt-2 flex flex-col gap-3">
         {loading ? (
