@@ -26,6 +26,9 @@ export type MatchProviderRecord = {
   is_verified: boolean | null;
   accepting_patients: boolean | null;
   status?: string | null;
+  /** Moderation field in this database ("verified" / "approved" are public). */
+  review_status?: string | null;
+
 };
 
 /* ------------------------------------------------------------------ */
