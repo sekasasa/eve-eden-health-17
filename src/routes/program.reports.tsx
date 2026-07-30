@@ -6,7 +6,6 @@ import {
 } from "recharts";
 import { ProgramShell } from "@/components/shells/ProgramShell";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/program/reports")({
   component: ProgramReports,
