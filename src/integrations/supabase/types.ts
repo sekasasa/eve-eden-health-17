@@ -828,7 +828,13 @@ export type Database = {
           is_active: boolean
           language: string | null
           language_chosen_at: string | null
+          medical_disclaimer_accepted_at: string | null
+          medical_disclaimer_version: string | null
           phone: string | null
+          privacy_accepted_at: string | null
+          privacy_version: string | null
+          terms_accepted_at: string | null
+          terms_version: string | null
           user_type: string
         }
         Insert: {
@@ -839,7 +845,13 @@ export type Database = {
           is_active?: boolean
           language?: string | null
           language_chosen_at?: string | null
+          medical_disclaimer_accepted_at?: string | null
+          medical_disclaimer_version?: string | null
           phone?: string | null
+          privacy_accepted_at?: string | null
+          privacy_version?: string | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           user_type: string
         }
         Update: {
@@ -850,7 +862,13 @@ export type Database = {
           is_active?: boolean
           language?: string | null
           language_chosen_at?: string | null
+          medical_disclaimer_accepted_at?: string | null
+          medical_disclaimer_version?: string | null
           phone?: string | null
+          privacy_accepted_at?: string | null
+          privacy_version?: string | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           user_type?: string
         }
         Relationships: []
