@@ -13,11 +13,11 @@ export const Route = createFileRoute("/")({
         content:
           "Personalized maternal care navigation for every stage, culture, and country. Find support for fertility, pregnancy, postpartum, providers, community, events, and care preferences.",
       },
-      { property: "og:title", content: "Eve & Eden Health" },
+      { property: "og:title", content: "Eve & Eden Health — Maternal care navigation" },
       {
         property: "og:description",
         content:
-          "Personalized maternal care navigation for every stage, culture, and country.",
+          "Personalized maternal care navigation for every stage, culture, and country. Find support for fertility, pregnancy, postpartum, providers, community, events, and care preferences.",
       },
     ],
   }),
