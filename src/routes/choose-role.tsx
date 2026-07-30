@@ -100,23 +100,16 @@ function ChooseRolePage() {
     <main className="flex min-h-dvh items-center justify-center bg-eve-sand px-6 py-12">
       <div className="w-full max-w-md">
         <SectionLabel>One more step</SectionLabel>
-        <h1 className="mt-2 font-serif text-4xl text-eve-teal">
-          How will you use Eve &amp; Eden?
-        </h1>
+        <h1 className="mt-2 font-serif text-4xl text-eve-teal">How will you use Eve &amp; Eden?</h1>
         <p className="mt-2 font-sans text-sm text-eve-muted">
-          We need this to show you the right experience. Nothing is assumed for
-          you.
+          We need this to show you the right experience. Nothing is assumed for you.
         </p>
 
         {checking ? (
           <p className="mt-8 font-sans text-sm text-eve-muted">Loading…</p>
         ) : (
           <>
-            <div
-              role="radiogroup"
-              aria-label="Account type"
-              className="mt-6 space-y-2"
-            >
+            <div role="radiogroup" aria-label="Account type" className="mt-6 space-y-2">
               {OPTIONS.map((opt) => (
                 <button
                   key={opt.value}

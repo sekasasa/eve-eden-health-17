@@ -7,11 +7,7 @@ import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import {
-  buildConsentRecord,
-  PASSWORD_MIN_LENGTH,
-  passwordIssues,
-} from "@/lib/consent";
+import { buildConsentRecord, PASSWORD_MIN_LENGTH, passwordIssues } from "@/lib/consent";
 import { track } from "@/lib/analytics";
 
 export const Route = createFileRoute("/signup")({
@@ -62,9 +58,7 @@ function SignupPage() {
     typeof window !== "undefined"
       ? (sessionStorage.getItem(PENDING_TYPE_KEY) as UserType | null)
       : null;
-  const [userType, setUserType] = useState<UserType | null>(
-    search.type ?? preserved ?? null,
-  );
+  const [userType, setUserType] = useState<UserType | null>(search.type ?? preserved ?? null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -73,11 +67,9 @@ function SignupPage() {
   const [error, setError] = useState<string | null>(null);
 
   const pwIssues = password ? passwordIssues(password) : [];
-  const canSubmit =
-    !!userType && consented && pwIssues.length === 0 && !loading;
+  const canSubmit = !!userType && consented && pwIssues.length === 0 && !loading;
 
-  const redirectFor = (t: UserType) =>
-    TYPE_OPTIONS.find((o) => o.value === t)?.redirect ?? "/";
+  const redirectFor = (t: UserType) => TYPE_OPTIONS.find((o) => o.value === t)?.redirect ?? "/";
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,14 +144,11 @@ function SignupPage() {
       <div className="w-full max-w-md">
         <SectionLabel>Create account</SectionLabel>
         <h1 className="mt-2 font-serif text-4xl text-eve-teal">Welcome</h1>
-        <p className="mt-2 font-sans text-sm text-eve-muted">
-          Join Eve &amp; Eden Health.
-        </p>
+        <p className="mt-2 font-sans text-sm text-eve-muted">Join Eve &amp; Eden Health.</p>
 
         <fieldset className="mt-6">
           <legend className="font-sans text-sm text-eve-muted">
-            How will you use Eve &amp; Eden?{" "}
-            <span className="text-eve-rose">Required</span>
+            How will you use Eve &amp; Eden? <span className="text-eve-rose">Required</span>
           </legend>
           <div
             role="radiogroup"
@@ -253,10 +242,9 @@ function SignupPage() {
             </span>
           </label>
           <p id="signup-consent-help" className="font-sans text-xs text-eve-muted">
-            Eve &amp; Eden gives general information and helps you find care. It
-            does not provide medical diagnosis or treatment and is not a
-            substitute for a qualified clinician. In an emergency, contact local
-            emergency services.
+            Eve &amp; Eden gives general information and helps you find care. It does not provide
+            medical diagnosis or treatment and is not a substitute for a qualified clinician. In an
+            emergency, contact local emergency services.
           </p>
 
           {error && (

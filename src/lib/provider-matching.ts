@@ -136,19 +136,19 @@ const CITY_ALIASES: Record<string, string> = {
   "dar el beida": "casablanca",
   "dar elbeida": "casablanca",
   "الدار البيضاء": "casablanca",
-  "الرباط": "rabat",
+  الرباط: "rabat",
   rbat: "rabat",
   "rabat-sale": "rabat",
   "rabat-sale-kenitra": "rabat",
-  "sale": "sale",
-  "salé": "sale",
-  "سلا": "sale",
-  "kenitra": "kenitra",
-  "القنيطرة": "kenitra",
-  "mohammadia": "mohammedia",
-  "المحمدية": "mohammedia",
-  "marrakesh": "marrakech",
-  "مراكش": "marrakech",
+  sale: "sale",
+  salé: "sale",
+  سلا: "sale",
+  kenitra: "kenitra",
+  القنيطرة: "kenitra",
+  mohammadia: "mohammedia",
+  المحمدية: "mohammedia",
+  marrakesh: "marrakech",
+  مراكش: "marrakech",
 };
 
 export function normalizeCity(value?: string | null): string | null {
@@ -162,7 +162,6 @@ export function normalizeCity(value?: string | null): string | null {
   if (!s) return null;
   return CITY_ALIASES[s] ?? CITY_ALIASES[value.trim().toLowerCase()] ?? s;
 }
-
 
 /* ------------------------------------------------------------------ */
 /* Specialty taxonomy                                                  */

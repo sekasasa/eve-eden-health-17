@@ -121,9 +121,7 @@ function LoginPage() {
             required
             className="bg-white"
           />
-          {error && (
-            <p className="font-sans text-sm text-eve-rose">{error}</p>
-          )}
+          {error && <p className="font-sans text-sm text-eve-rose">{error}</p>}
           <PrimaryButton type="submit" disabled={loading} className="w-full">
             {loading ? "Signing in…" : "Sign in"}
           </PrimaryButton>

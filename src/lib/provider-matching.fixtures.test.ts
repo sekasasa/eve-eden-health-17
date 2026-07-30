@@ -184,9 +184,7 @@ describe("Casablanca and Rabat discovery", () => {
       languages: ["English"],
       strict: { language: true },
     });
-    expect(out.results.every((r) => (r.languages ?? []).includes("English"))).toBe(
-      true,
-    );
+    expect(out.results.every((r) => (r.languages ?? []).includes("English"))).toBe(true);
   });
 
   it("broadens to the regional corridor when the exact city has nothing", () => {
