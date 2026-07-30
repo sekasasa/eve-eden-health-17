@@ -14,6 +14,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ChooseRoleRouteImport } from './routes/choose-role'
 import { Route as ChooseLanguageRouteImport } from './routes/choose-language'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProgramSettingsRouteImport } from './routes/program.settings'
@@ -105,6 +106,11 @@ const PartnerRoute = PartnerRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChooseRoleRoute = ChooseRoleRouteImport.update({
+  id: '/choose-role',
+  path: '/choose-role',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChooseLanguageRoute = ChooseLanguageRouteImport.update({
@@ -448,6 +454,7 @@ const EdenVendorContentIdEditRoute = EdenVendorContentIdEditRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/choose-language': typeof ChooseLanguageRoute
+  '/choose-role': typeof ChooseRoleRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
   '/privacy': typeof PrivacyRoute
@@ -522,6 +529,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/choose-language': typeof ChooseLanguageRoute
+  '/choose-role': typeof ChooseRoleRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
   '/privacy': typeof PrivacyRoute
@@ -597,6 +605,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/choose-language': typeof ChooseLanguageRoute
+  '/choose-role': typeof ChooseRoleRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
   '/privacy': typeof PrivacyRoute
@@ -673,6 +682,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/choose-language'
+    | '/choose-role'
     | '/login'
     | '/partner'
     | '/privacy'
@@ -747,6 +757,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/choose-language'
+    | '/choose-role'
     | '/login'
     | '/partner'
     | '/privacy'
@@ -821,6 +832,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/choose-language'
+    | '/choose-role'
     | '/login'
     | '/partner'
     | '/privacy'
@@ -896,6 +908,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChooseLanguageRoute: typeof ChooseLanguageRoute
+  ChooseRoleRoute: typeof ChooseRoleRoute
   LoginRoute: typeof LoginRoute
   PartnerRoute: typeof PartnerRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -987,6 +1000,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/choose-role': {
+      id: '/choose-role'
+      path: '/choose-role'
+      fullPath: '/choose-role'
+      preLoaderRoute: typeof ChooseRoleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/choose-language': {
@@ -1585,6 +1605,7 @@ const EdenVendorContentRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChooseLanguageRoute: ChooseLanguageRoute,
+  ChooseRoleRoute: ChooseRoleRoute,
   LoginRoute: LoginRoute,
   PartnerRoute: PartnerRoute,
   PrivacyRoute: PrivacyRoute,
@@ -1643,3 +1664,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
