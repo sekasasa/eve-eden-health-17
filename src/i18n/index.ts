@@ -37,6 +37,39 @@ export function normalizeLang(value?: string | null): AppLang {
   return "en";
 }
 
+/**
+ * Missing-translation policy.
+ *
+ * We never silently mix English into a French or Arabic screen. When a key is
+ * missing we record it (so it can be exported for translators) and render an
+ * intentional localized fallback string instead of raw English.
+ */
+const missingKeys = new Set<string>();
+
+export function recordMissingKey(lng: string, key: string) {
+  const id = `${lng}:${key}`;
+  if (missingKeys.has(id)) return;
+  missingKeys.add(id);
+  if (typeof console !== "undefined") {
+    console.warn(`[i18n] missing translation ${id}`);
+  }
+}
+
+export function missingTranslationKeys(): string[] {
+  return [...missingKeys];
+}
+
+/** Intentional, localized placeholder — never English inside an ar/fr screen. */
+const FALLBACK_TEXT: Record<string, string> = {
+  en: "Not available yet",
+  fr: "Bientôt disponible",
+  ar: "غير متوفر بعد",
+};
+
+export function localizedFallback(lng: string): string {
+  return FALLBACK_TEXT[lng] ?? FALLBACK_TEXT.en;
+}
+
 if (!i18n.isInitialized) {
   void i18n.use(initReactI18next).init({
     resources: {
@@ -48,6 +81,14 @@ if (!i18n.isInitialized) {
     fallbackLng: "en",
     interpolation: { escapeValue: false },
     returnNull: false,
+    saveMissing: true,
+    parseMissingKeyHandler: (key: string) => {
+      recordMissingKey(i18n.language, key);
+      return localizedFallback(i18n.language);
+    },
+    missingKeyHandler: (lngs: readonly string[], _ns: string, key: string) => {
+      recordMissingKey(lngs?.[0] ?? i18n.language, key);
+    },
   });
 }
 

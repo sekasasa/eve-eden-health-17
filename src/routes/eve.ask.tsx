@@ -26,6 +26,9 @@ import {
   suggestedPromptsFromPrefs,
 } from "@/lib/personalization";
 import { LanguageFallbackNotice } from "@/components/LanguageFallbackNotice";
+import { assessRisk, urgentGuidance } from "@/lib/urgent-safety";
+import { flagOffCopy, isFeatureEnabled } from "@/lib/flags";
+import { ANALYTICS_EVENTS, track, trackError } from "@/lib/analytics";
 
 export const Route = createFileRoute("/eve/ask")({
   component: AskEvePage,
@@ -42,27 +45,11 @@ type Msg = {
   role: "user" | "assistant";
   content: string;
   urgent?: boolean;
+  /** Rendered with a "not a clinical answer" label. */
+  system?: boolean;
   suggestProvider?: boolean;
   createdAt: number;
 };
-
-const URGENT_KEYWORDS = [
-  "bleeding",
-  "saigne",
-  "saignement",
-  "severe pain",
-  "douleur sévère",
-  "douleur intense",
-  "no movement",
-  "ne bouge",
-  "emergency",
-  "urgence",
-  "fainting",
-  "evanou",
-  "contractions",
-  "water broke",
-  "perte des eaux",
-];
 
 const PROVIDER_HINTS = [
   "doctor",
@@ -87,11 +74,6 @@ const QUICK_REPLIES: QuickReply[] = [
   { chip: "Emotional support", label: "I need emotional support" },
   { chip: "Provider search", label: "Help me find the right provider" },
 ];
-
-function isUrgent(text: string) {
-  const t = text.toLowerCase();
-  return URGENT_KEYWORDS.some((k) => t.includes(k));
-}
 
 function suggestsProvider(text: string) {
   const t = text.toLowerCase();
@@ -118,6 +100,11 @@ function AskEveInner() {
   const navigate = useNavigate();
   const askFn = useServerFn(askEve);
   const { prefs } = useCarePreferences();
+  const aiEnabled = isFeatureEnabled("askEveAi");
+  const [sendError, setSendError] = useState<
+    null | "offline" | "rate_limit" | "error"
+  >(null);
+  const [lastPrompt, setLastPrompt] = useState("");
   const emergency = emergencyContact(prefs.country);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -168,17 +155,62 @@ function AskEveInner() {
   const send = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || pending) return;
-    const urgent = isUrgent(trimmed); // urgency derived ONLY from user message
+    setSendError(null);
+
+    // Urgency is derived ONLY from the mother's own words, via the shared
+    // safety module — never from generated output.
+    const assessment = assessRisk(trimmed);
     const userMsg: Msg = {
       id: crypto.randomUUID(),
       role: "user",
       content: trimmed,
-      urgent,
+      urgent: assessment.urgent,
       createdAt: Date.now(),
     };
-    const nextHistory = [...messages, userMsg];
-    setMessages(nextHistory);
+    setMessages((cur) => [...cur, userMsg]);
     setInput("");
+    setLastPrompt(trimmed);
+
+    if (assessment.urgent) {
+      // Suppress every generic reassurance path: no AI call, escalation only.
+      track(ANALYTICS_EVENTS.aiEscalationShown, {
+        category: assessment.primary ?? "unknown",
+        crisis: assessment.crisis,
+      });
+      setMessages((cur) => [
+        ...cur,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          system: true,
+          content:
+            "I'm not going to answer this one with general information. What you described needs a person, not an app — please use the emergency guidance above now.",
+          createdAt: Date.now(),
+        },
+      ]);
+      return;
+    }
+
+    if (!aiEnabled) {
+      track(ANALYTICS_EVENTS.featureBlockedByFlag, { flag: "askEveAi" });
+      setMessages((cur) => [
+        ...cur,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          system: true,
+          content: flagOffCopy("askEveAi"),
+          createdAt: Date.now(),
+        },
+      ]);
+      return;
+    }
+
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      setSendError("offline");
+      return;
+    }
+
     setPending(true);
 
     const history = messages.slice(-10).map((m) => ({
@@ -186,39 +218,49 @@ function AskEveInner() {
       content: m.content,
     }));
 
-    const res = await askFn({
-      data: {
-        message: trimmed,
-        pregnancy_week: profile?.pregnancy_week ?? null,
-        language: profile?.language ?? prefs.language ?? null,
-        dietary_pref: profile?.dietary_notes ?? null,
-        country: profile?.country ?? prefs.country ?? null,
-        prefs: {
-          stage: prefs.stage,
-          region: prefs.region,
-          city: prefs.city,
-          dialect: prefs.dialect,
-          cultural: prefs.cultural_prefs,
-          dietary: prefs.dietary_prefs,
-          birth: prefs.birth_prefs,
+    try {
+      const res = await askFn({
+        data: {
+          message: trimmed,
+          pregnancy_week: profile?.pregnancy_week ?? null,
+          language: profile?.language ?? prefs.language ?? null,
+          dietary_pref: profile?.dietary_notes ?? null,
+          country: profile?.country ?? prefs.country ?? null,
+          prefs: {
+            stage: prefs.stage,
+            region: prefs.region,
+            city: prefs.city,
+            dialect: prefs.dialect,
+            cultural: prefs.cultural_prefs,
+            dietary: prefs.dietary_prefs,
+            birth: prefs.birth_prefs,
+          },
+          history,
         },
-        history,
-      },
-    });
+      });
 
-    const replyText =
-      res.reply ??
-      res.error ??
-      "Sorry, Eve couldn't reply just now.";
-    const reply: Msg = {
-      id: crypto.randomUUID(),
-      role: "assistant",
-      content: replyText,
-      suggestProvider: suggestsProvider(replyText),
-      createdAt: Date.now(),
-    };
-    setMessages((cur) => [...cur, reply]);
-    setPending(false);
+      if (!res.reply) {
+        setSendError(res.error?.toLowerCase().includes("rate") ? "rate_limit" : "error");
+        setPending(false);
+        return;
+      }
+
+      setMessages((cur) => [
+        ...cur,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: res.reply as string,
+          suggestProvider: suggestsProvider(res.reply as string),
+          createdAt: Date.now(),
+        },
+      ]);
+    } catch (err) {
+      trackError("ask_eve_send", err);
+      setSendError("error");
+    } finally {
+      setPending(false);
+    }
   };
 
   return (
@@ -256,9 +298,20 @@ function AskEveInner() {
         {/* Thin persistent safety banner */}
         <div className="border-b border-eve-muted/10 bg-eve-cream/60 px-3 py-2 text-center">
           <p className="font-sans text-eve-teal-dark" style={{ fontSize: "10.5px", lineHeight: 1.4 }}>
-            Eve can help you prepare, understand your options, and find support. Eve does not diagnose or replace medical care.
+            Eve can help you prepare, understand your options, and find support. Eve does not diagnose or replace medical care. Answers are not reviewed by a clinician.
           </p>
         </div>
+
+        {!aiEnabled && (
+          <div
+            role="status"
+            className="border-b border-amber-200 bg-amber-50 px-3 py-2 text-center"
+          >
+            <p className="font-sans text-amber-800" style={{ fontSize: "10.5px", lineHeight: 1.4 }}>
+              {flagOffCopy("askEveAi")}
+            </p>
+          </div>
+        )}
 
         {/* Thread */}
         <div
@@ -290,6 +343,31 @@ function AskEveInner() {
 
         {/* Input bar (above BottomNav) */}
         <div className="fixed bottom-20 left-1/2 z-40 w-full max-w-sm -translate-x-1/2 border-t border-eve-muted/20 bg-eve-cream px-3 py-2">
+          {sendError && (
+            <div
+              role="alert"
+              className="mb-2 flex items-center justify-between gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2"
+            >
+              <p className="font-sans text-amber-800" style={{ fontSize: "11px" }}>
+                {sendError === "offline"
+                  ? "You're offline. Your question is saved here — send it when you're back online."
+                  : sendError === "rate_limit"
+                    ? "Eve is busy right now. Please wait a moment and try again."
+                    : "That didn't send. Please try again."}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSendError(null);
+                  if (lastPrompt) void send(lastPrompt);
+                }}
+                className="min-h-11 shrink-0 rounded-full bg-eve-teal px-3 font-sans text-white"
+                style={{ fontSize: "11px" }}
+              >
+                Retry
+              </button>
+            </div>
+          )}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -306,7 +384,11 @@ function AskEveInner() {
             >
               <Mic className="h-4 w-4" />
             </button>
+            <label htmlFor="ask-eve-input" className="sr-only">
+              Write your question for Eve
+            </label>
             <input
+              id="ask-eve-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask Eve anything..."
@@ -450,7 +532,22 @@ function MessageBubble({
       <div className="flex items-start gap-2">
         <EveAvatar />
         <div className="max-w-[78%] space-y-2">
-          <div className="rounded-2xl rounded-tl-sm border border-eve-muted/20 bg-eve-cream p-3">
+          <div
+            className={cn(
+              "rounded-2xl rounded-tl-sm border p-3",
+              msg.system
+                ? "border-amber-300 bg-amber-50"
+                : "border-eve-muted/20 bg-eve-cream",
+            )}
+          >
+            {msg.system && (
+              <p
+                className="mb-1 font-sans font-medium uppercase tracking-wide text-amber-700"
+                style={{ fontSize: "9px" }}
+              >
+                Eve & Eden notice — not a clinical answer
+              </p>
+            )}
             <p
               className="font-sans text-eve-teal-dark"
               style={{ fontSize: "13px", lineHeight: "1.45" }}
@@ -589,6 +686,11 @@ function EveAvatar() {
 
 function DisclaimerModal({ onClose }: { onClose: () => void }) {
   const { prefs } = useCarePreferences();
+  const aiEnabled = isFeatureEnabled("askEveAi");
+  const [sendError, setSendError] = useState<
+    null | "offline" | "rate_limit" | "error"
+  >(null);
+  const [lastPrompt, setLastPrompt] = useState("");
   const emergency = emergencyContact(prefs.country);
   return (
     <div

@@ -9,9 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ChooseRoleRouteImport } from './routes/choose-role'
 import { Route as ChooseLanguageRouteImport } from './routes/choose-language'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProgramSettingsRouteImport } from './routes/program.settings'
@@ -80,9 +83,19 @@ import { Route as EdenVendorContentNewRouteImport } from './routes/eden.vendor.c
 import { Route as ChwMothersIdVisitRouteImport } from './routes/chw.mothers.$id.visit'
 import { Route as EdenVendorContentIdEditRouteImport } from './routes/eden.vendor.content.$id.edit'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnerRoute = PartnerRouteImport.update({
@@ -93,6 +106,11 @@ const PartnerRoute = PartnerRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChooseRoleRoute = ChooseRoleRouteImport.update({
+  id: '/choose-role',
+  path: '/choose-role',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChooseLanguageRoute = ChooseLanguageRouteImport.update({
@@ -436,9 +454,12 @@ const EdenVendorContentIdEditRoute = EdenVendorContentIdEditRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/choose-language': typeof ChooseLanguageRoute
+  '/choose-role': typeof ChooseRoleRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
+  '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
   '/admin/provider-leads': typeof AdminProviderLeadsRoute
@@ -508,9 +529,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/choose-language': typeof ChooseLanguageRoute
+  '/choose-role': typeof ChooseRoleRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
+  '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
   '/admin/provider-leads': typeof AdminProviderLeadsRoute
@@ -581,9 +605,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/choose-language': typeof ChooseLanguageRoute
+  '/choose-role': typeof ChooseRoleRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
+  '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/admin/alerts': typeof AdminAlertsRoute
   '/admin/guidance': typeof AdminGuidanceRoute
   '/admin/provider-leads': typeof AdminProviderLeadsRoute
@@ -655,9 +682,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/choose-language'
+    | '/choose-role'
     | '/login'
     | '/partner'
+    | '/privacy'
     | '/signup'
+    | '/terms'
     | '/admin/alerts'
     | '/admin/guidance'
     | '/admin/provider-leads'
@@ -727,9 +757,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/choose-language'
+    | '/choose-role'
     | '/login'
     | '/partner'
+    | '/privacy'
     | '/signup'
+    | '/terms'
     | '/admin/alerts'
     | '/admin/guidance'
     | '/admin/provider-leads'
@@ -799,9 +832,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/choose-language'
+    | '/choose-role'
     | '/login'
     | '/partner'
+    | '/privacy'
     | '/signup'
+    | '/terms'
     | '/admin/alerts'
     | '/admin/guidance'
     | '/admin/provider-leads'
@@ -872,9 +908,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChooseLanguageRoute: typeof ChooseLanguageRoute
+  ChooseRoleRoute: typeof ChooseRoleRoute
   LoginRoute: typeof LoginRoute
   PartnerRoute: typeof PartnerRoute
+  PrivacyRoute: typeof PrivacyRoute
   SignupRoute: typeof SignupRoute
+  TermsRoute: typeof TermsRoute
   AdminAlertsRoute: typeof AdminAlertsRoute
   AdminGuidanceRoute: typeof AdminGuidanceRoute
   AdminProviderLeadsRoute: typeof AdminProviderLeadsRoute
@@ -928,11 +967,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partner': {
@@ -947,6 +1000,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/choose-role': {
+      id: '/choose-role'
+      path: '/choose-role'
+      fullPath: '/choose-role'
+      preLoaderRoute: typeof ChooseRoleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/choose-language': {
@@ -1545,9 +1605,12 @@ const EdenVendorContentRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChooseLanguageRoute: ChooseLanguageRoute,
+  ChooseRoleRoute: ChooseRoleRoute,
   LoginRoute: LoginRoute,
   PartnerRoute: PartnerRoute,
+  PrivacyRoute: PrivacyRoute,
   SignupRoute: SignupRoute,
+  TermsRoute: TermsRoute,
   AdminAlertsRoute: AdminAlertsRoute,
   AdminGuidanceRoute: AdminGuidanceRoute,
   AdminProviderLeadsRoute: AdminProviderLeadsRoute,

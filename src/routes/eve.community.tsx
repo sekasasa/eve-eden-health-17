@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Heart, MessageCircle, Bookmark, Flame, Plus, X, ArrowLeft, Users, ShieldCheck, Sparkles, Calendar } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Flame, Plus, X, ArrowLeft, Users, ShieldCheck, Sparkles, Calendar, Flag } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { ContentCard } from "@/components/ui/ContentCard";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -8,6 +8,8 @@ import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { useCarePreferences } from "@/hooks/useCarePreferences";
 import { prefHelpers } from "@/lib/personalization";
 import { eveToast } from "@/lib/eve-toast";
+import { flagOffCopy, isFeatureEnabled } from "@/lib/flags";
+import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
 import { rankForProfile, type ContentRow } from "@/lib/content-filter";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -210,6 +212,8 @@ function CommunityPage() {
   }, [prefs.stage, profile.stage]);
   const [active, setActive] = useState<CategoryKey>(defaultCategory);
   const [open, setOpen] = useState(false);
+  const postingEnabled = isFeatureEnabled("communityPosting");
+  const moderationEnabled = isFeatureEnabled("communityModeration");
   const [hearts, setHearts] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
 
@@ -383,11 +387,25 @@ function CommunityPage() {
       {/* New community post */}
       <div className="mt-4">
         <button
-          onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full bg-eve-teal px-4 py-2 text-sm font-medium text-white shadow-sm transition active:scale-95"
+          onClick={() => {
+            if (!postingEnabled) {
+              track(ANALYTICS_EVENTS.featureBlockedByFlag, { flag: "communityPosting" });
+              return;
+            }
+            setOpen(true);
+          }}
+          disabled={!postingEnabled}
+          aria-disabled={!postingEnabled}
+          title={postingEnabled ? undefined : flagOffCopy("communityPosting")}
+          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-eve-teal px-4 py-2 text-sm font-medium text-white shadow-sm transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
         >
-          <Plus className="h-4 w-4" /> New Post
+          <Plus className="h-4 w-4" /> {postingEnabled ? "New Post" : "Posting opens soon"}
         </button>
+        {!postingEnabled && (
+          <p role="status" className="mt-2 text-[11px] text-eve-muted">
+            {flagOffCopy("communityPosting")}
+          </p>
+        )}
         {profile.stage && (
           <p className="mt-2 text-[11px] text-eve-muted">
             Showing community posts relevant to your profile.
@@ -416,6 +434,19 @@ function CommunityPage() {
         </div>
       </div>
 
+      {/* Seeded-content disclosure — these threads are written examples, not
+          real mothers' posts, until the pilot community goes live. */}
+      <div
+        role="note"
+        className="mt-5 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3"
+      >
+        <p className="text-[11px] leading-relaxed text-eve-muted">
+          <span className="font-semibold text-eve-teal-dark">Example conversations.</span>{" "}
+          The threads below were written by the Eve &amp; Eden team to show how this
+          space works. Real posts appear once the community pilot opens.
+        </p>
+      </div>
+
       {/* Posts */}
       <div className="mt-5 space-y-3">
         {filtered.length === 0 ? (
@@ -426,12 +457,18 @@ function CommunityPage() {
             <p className="mt-1 text-sm text-eve-muted">
               Share a question or experience. Posts are anonymous by default.
             </p>
-            <button
-              onClick={() => setOpen(true)}
-              className="mt-4 inline-flex items-center gap-2 rounded-full bg-eve-teal px-4 py-2 text-sm font-medium text-white"
-            >
-              <Plus className="h-4 w-4" /> New Post
-            </button>
+            {postingEnabled ? (
+              <button
+                onClick={() => setOpen(true)}
+                className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-eve-teal px-4 py-2 text-sm font-medium text-white"
+              >
+                <Plus className="h-4 w-4" /> New Post
+              </button>
+            ) : (
+              <p className="mt-4 text-[12px] text-eve-muted">
+                {flagOffCopy("communityPosting")}
+              </p>
+            )}
           </div>
         ) : (
           filtered.map((p) => {
@@ -457,6 +494,9 @@ function CommunityPage() {
                     <p className="truncate text-[13px] font-medium text-eve-teal-dark">{p.anonName}</p>
                     <p className="text-[11px] text-eve-muted">{p.timeAgo}</p>
                   </div>
+                  <span className="rounded-full border border-eve-sand bg-white px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-eve-muted">
+                    Sample
+                  </span>
                   {p.trending && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[10px] font-semibold text-eve-terra">
                       <Flame className="h-3 w-3" /> Trending
@@ -510,6 +550,21 @@ function CommunityPage() {
                   >
                     <Bookmark className={cn("h-4 w-4", saved[p.id] && "fill-current")} />
                   </button>
+                  <button
+                    type="button"
+                    aria-label="Report this post"
+                    onClick={() =>
+                      eveToast.info(
+                        moderationEnabled
+                          ? "Thanks — a moderator will review this post."
+                          : "Reporting isn't live yet. Email support@eveandeden.health and we'll act on it.",
+                      )
+                    }
+                    className="inline-flex items-center gap-1 text-eve-muted underline-offset-2 hover:underline"
+                  >
+                    <Flag className="h-3.5 w-3.5" />
+                    <span className="text-[11px]">Report</span>
+                  </button>
                 </div>
 
                 {p.topAnswer && (
@@ -559,9 +614,9 @@ function NewPostSheet({
   }
 
   function submit() {
-    eveToast.success(
-      anonymous ? "Post shared anonymously" : "Post shared",
-    );
+    // Posting is not connected to a persisted, moderated backend yet, so we
+    // never claim a post was shared. See FLAG_DEFAULTS.communityPosting.
+    eveToast.info(flagOffCopy("communityPosting"));
     onClose();
   }
 

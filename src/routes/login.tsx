@@ -35,8 +35,14 @@ function LoginPage() {
       .maybeSingle();
     let userType = data?.user_type as string | undefined;
     if (!userType) {
+      // Never assume a role. Use the role explicitly chosen before the OAuth
+      // hop; otherwise ask for it.
       const pending = sessionStorage.getItem("eve_pending_user_type");
-      userType = pending || "mother";
+      if (!pending) {
+        navigate({ to: "/choose-role" });
+        return;
+      }
+      userType = pending;
       await supabase.from("profiles").upsert({
         id: userId,
         user_type: userType,
@@ -44,6 +50,7 @@ function LoginPage() {
       sessionStorage.removeItem("eve_pending_user_type");
     }
     const dest = REDIRECT_BY_TYPE[userType] ?? "/eve/home";
+
     if (!data?.language_chosen_at) {
       navigate({ to: "/choose-language", search: { next: dest } });
       return;
@@ -114,9 +121,7 @@ function LoginPage() {
             required
             className="bg-white"
           />
-          {error && (
-            <p className="font-sans text-sm text-eve-rose">{error}</p>
-          )}
+          {error && <p className="font-sans text-sm text-eve-rose">{error}</p>}
           <PrimaryButton type="submit" disabled={loading} className="w-full">
             {loading ? "Signing in…" : "Sign in"}
           </PrimaryButton>
