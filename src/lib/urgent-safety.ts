@@ -230,8 +230,10 @@ export function assessRisk(input: string | null | undefined): RiskAssessment {
 export type UrgentGuidance = {
   headline: string;
   body: string;
-  emergencyNumber: string;
+  emergencyNumber: string | null;
   emergencyLabel: string;
+  /** Country-aware instruction, safe when no number is mapped. */
+  emergencyMessage: string;
   /** True when reassurance/AI answers must be suppressed entirely. */
   suppressReassurance: boolean;
 };
@@ -280,6 +282,7 @@ export function urgentGuidance(
     body: BODIES[assessment.primary],
     emergencyNumber: contact.number,
     emergencyLabel: contact.label,
+    emergencyMessage: contact.message,
     suppressReassurance: true,
   };
 }
