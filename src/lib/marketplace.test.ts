@@ -66,8 +66,9 @@ describe("marketplace field contamination", () => {
     const opts = marketplaceLanguageOptions([
       v({ languages: ["french", "Arabic, English spoken on request; call us"] }),
     ]);
-    expect(opts).toEqual(["Arabic, English spoken on request; call us"].length ? ["French"] : []);
+    expect(opts).toEqual(["French"]);
   });
+
 
   it("labels unknown categories generically rather than leaking raw values", () => {
     expect(categoryLabel("care_services")).toBe("Shop");
