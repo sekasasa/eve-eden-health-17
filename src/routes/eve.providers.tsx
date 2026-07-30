@@ -288,10 +288,12 @@ function EveProviders() {
       let q = supabase
         .from("providers")
         .select(
-          "id,full_name,specialty,clinic_name,city,country,bio,languages,services,credentials,avg_rating,review_count,consultation_fee_mad,is_verified,accepting_patients",
+          "id,full_name,specialty,clinic_name,city,country,bio,languages,services,credentials,avg_rating,review_count,consultation_fee_mad,is_verified,accepting_patients,review_status",
         )
         .eq("is_verified", true)
+        .in("review_status", ["verified", "approved"])
         .order("avg_rating", { ascending: false, nullsFirst: false });
+
       if (query.trim()) {
         const term = `%${query.trim()}%`;
         q = q.or(
