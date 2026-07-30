@@ -231,10 +231,20 @@ function PassportPage() {
               />
               <input
                 value={form.file_url}
-                onChange={(e) => setForm({ ...form, file_url: e.target.value })}
-                placeholder="Link to file (optional)"
+                onChange={(e) => {
+                  setForm({ ...form, file_url: e.target.value });
+                  setLinkError(null);
+                }}
+                inputMode="url"
+                aria-invalid={!!linkError}
+                aria-describedby="passport-link-help"
+                placeholder="https:// link to file (optional)"
                 className="input"
               />
+              <p id="passport-link-help" className="font-sans text-[11px] text-eve-muted">
+                {linkError ?? `Secure https links only — PDF, image or document, under ${Math.round(MAX_DOC_BYTES / (1024 * 1024))} MB.`}
+              </p>
+
               <textarea
                 rows={2}
                 value={form.notes}
