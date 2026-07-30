@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ChooseLanguageRouteImport } from './routes/choose-language'
@@ -89,6 +90,11 @@ const TermsRoute = TermsRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnerRoute = PartnerRouteImport.update({
@@ -444,6 +450,7 @@ export interface FileRoutesByFullPath {
   '/choose-language': typeof ChooseLanguageRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
+  '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/admin/alerts': typeof AdminAlertsRoute
@@ -517,6 +524,7 @@ export interface FileRoutesByTo {
   '/choose-language': typeof ChooseLanguageRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
+  '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/admin/alerts': typeof AdminAlertsRoute
@@ -591,6 +599,7 @@ export interface FileRoutesById {
   '/choose-language': typeof ChooseLanguageRoute
   '/login': typeof LoginRoute
   '/partner': typeof PartnerRoute
+  '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/admin/alerts': typeof AdminAlertsRoute
@@ -666,6 +675,7 @@ export interface FileRouteTypes {
     | '/choose-language'
     | '/login'
     | '/partner'
+    | '/privacy'
     | '/signup'
     | '/terms'
     | '/admin/alerts'
@@ -739,6 +749,7 @@ export interface FileRouteTypes {
     | '/choose-language'
     | '/login'
     | '/partner'
+    | '/privacy'
     | '/signup'
     | '/terms'
     | '/admin/alerts'
@@ -812,6 +823,7 @@ export interface FileRouteTypes {
     | '/choose-language'
     | '/login'
     | '/partner'
+    | '/privacy'
     | '/signup'
     | '/terms'
     | '/admin/alerts'
@@ -886,6 +898,7 @@ export interface RootRouteChildren {
   ChooseLanguageRoute: typeof ChooseLanguageRoute
   LoginRoute: typeof LoginRoute
   PartnerRoute: typeof PartnerRoute
+  PrivacyRoute: typeof PrivacyRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   AdminAlertsRoute: typeof AdminAlertsRoute
@@ -953,6 +966,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partner': {
@@ -1567,6 +1587,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChooseLanguageRoute: ChooseLanguageRoute,
   LoginRoute: LoginRoute,
   PartnerRoute: PartnerRoute,
+  PrivacyRoute: PrivacyRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   AdminAlertsRoute: AdminAlertsRoute,
