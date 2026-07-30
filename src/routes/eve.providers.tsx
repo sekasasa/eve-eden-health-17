@@ -245,11 +245,8 @@ function EveProviders() {
     })();
   }, [query]);
 
-  const region = filterRegion ?? regionOf(prefs);
-  const regionalLangs = useMemo(
-    () => priorityLanguagesForRegion(region as ReturnType<typeof regionOf>),
-    [region],
-  );
+
+
 
   // Preferences are RANKING signals. They only hard-filter when the mother
   // explicitly enables a strict filter. Fallback ladder is transparent.
