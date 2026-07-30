@@ -26,6 +26,8 @@ export type MatchProviderRecord = {
   is_verified: boolean | null;
   accepting_patients: boolean | null;
   status?: string | null;
+  /** Moderation field in this database ("verified" / "approved" are public). */
+  review_status?: string | null;
 };
 
 /* ------------------------------------------------------------------ */
@@ -177,12 +179,20 @@ const INACTIVE_STATUSES = new Set([
 const PLACEHOLDER_NAME = /^(test|demo|sample|placeholder|tbd|n\/?a|unknown|xxx+)\b/i;
 
 /**
- * A record is displayable only when it is verified, active, and has a
- * usable name. Everything else is quarantined (never rendered).
+ * `providers.review_status` is the moderation field in this database. Only
+ * these values are eligible for public display.
+ */
+export const ELIGIBLE_REVIEW_STATUSES = new Set(["verified", "approved"]);
+
+/**
+ * A record is displayable only when it is verified, moderation-approved,
+ * active, and has a usable name. Everything else is quarantined.
  */
 export function isDisplayableProvider(p: MatchProviderRecord): boolean {
   if (!p) return false;
   if (p.is_verified !== true) return false;
+  const review = (p.review_status ?? "").trim().toLowerCase();
+  if (review && !ELIGIBLE_REVIEW_STATUSES.has(review)) return false;
   const status = (p.status ?? "").trim().toLowerCase();
   if (status && INACTIVE_STATUSES.has(status)) return false;
   const name = (p.full_name ?? "").trim();

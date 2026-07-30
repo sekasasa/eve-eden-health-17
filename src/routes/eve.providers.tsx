@@ -288,10 +288,12 @@ function EveProviders() {
       let q = supabase
         .from("providers")
         .select(
-          "id,full_name,specialty,clinic_name,city,country,bio,languages,services,credentials,avg_rating,review_count,consultation_fee_mad,is_verified,accepting_patients",
+          "id,full_name,specialty,clinic_name,city,country,bio,languages,services,credentials,avg_rating,review_count,consultation_fee_mad,is_verified,accepting_patients,review_status",
         )
         .eq("is_verified", true)
+        .in("review_status", ["verified", "approved"])
         .order("avg_rating", { ascending: false, nullsFirst: false });
+
       if (query.trim()) {
         const term = `%${query.trim()}%`;
         q = q.or(
@@ -367,20 +369,76 @@ function EveProviders() {
   const matched = filtered.length;
 
   const activeChips = useMemo(() => {
-    const chips: string[] = [];
-    if (specialty !== "All") chips.push(specialty);
-    if (criteria.city) chips.push(`${criteria.city}${strictLocation ? " (only)" : ""}`);
-    if (criteria.country) chips.push(criteria.country);
-    (criteria.languages ?? []).forEach((l) => chips.push(`${l}${strictLanguage ? " (only)" : ""}`));
-    if (criteria.dialect) chips.push(criteria.dialect);
-    if (criteria.virtual) chips.push("Virtual care");
-    if (criteria.homeVisit) chips.push("Home visit");
+    const chips: { key: string; label: string; onRemove?: () => void }[] = [];
+    if (specialty !== "All")
+      chips.push({ key: "specialty", label: specialty, onRemove: () => setSpecialty("All") });
+    if (criteria.city)
+      chips.push({
+        key: "city",
+        label: `${criteria.city}${strictLocation ? " (only)" : ""}`,
+        onRemove: filterCity
+          ? () => setFilterCity("")
+          : strictLocation
+            ? () => setStrictLocation(false)
+            : undefined,
+      });
+    if (criteria.country)
+      chips.push({
+        key: "country",
+        label: criteria.country,
+        onRemove: filterCountry ? () => setFilterCountry("") : undefined,
+      });
+    (criteria.languages ?? []).forEach((l) =>
+      chips.push({
+        key: `lang-${l}`,
+        label: `${l}${strictLanguage ? " (only)" : ""}`,
+        onRemove: filterLanguages.includes(l)
+          ? () => setFilterLanguages((xs) => xs.filter((x) => x !== l))
+          : strictLanguage
+            ? () => setStrictLanguage(false)
+            : undefined,
+      }),
+    );
+    if (criteria.dialect)
+      chips.push({
+        key: "dialect",
+        label: criteria.dialect,
+        onRemove: filterDialect ? () => setFilterDialect("") : undefined,
+      });
+    if (criteria.virtual)
+      chips.push({
+        key: "virtual",
+        label: "Virtual care",
+        onRemove: () => setFilterVirtual(false),
+      });
+    if (criteria.homeVisit)
+      chips.push({
+        key: "home",
+        label: "Home visit",
+        onRemove: () => setFilterHomeVisit(false),
+      });
     filterPrefs.forEach((id) => {
       const opt = ALL_PREF_OPTIONS.find((o) => o.id === id);
-      if (opt) chips.push(`${opt.label}${strictPreferences ? " (only)" : ""}`);
+      if (opt)
+        chips.push({
+          key: `pref-${id}`,
+          label: `${opt.label}${strictPreferences ? " (only)" : ""}`,
+          onRemove: () => setFilterPrefs((xs) => xs.filter((x) => x !== id)),
+        });
     });
     return chips;
-  }, [specialty, criteria, filterPrefs, strictLocation, strictLanguage, strictPreferences]);
+  }, [
+    specialty,
+    criteria,
+    filterPrefs,
+    filterCity,
+    filterCountry,
+    filterLanguages,
+    filterDialect,
+    strictLocation,
+    strictLanguage,
+    strictPreferences,
+  ]);
 
   const femalePreferred = prefHelpers.femalePreferred(prefs) || filterPrefs.includes("female");
   const verifiedFemaleConfirmable = filtered.some((p) =>
@@ -548,10 +606,20 @@ function EveProviders() {
         <div className="mt-3 flex flex-wrap gap-1.5">
           {activeChips.map((c) => (
             <span
-              key={c}
-              className="rounded-full bg-eve-cream px-2.5 py-1 font-sans text-[10px] text-eve-teal-dark"
+              key={c.key}
+              className="inline-flex items-center gap-1 rounded-full bg-eve-cream px-2.5 py-1 font-sans text-[10px] text-eve-teal-dark"
             >
-              {c}
+              {c.label}
+              {c.onRemove && (
+                <button
+                  type="button"
+                  aria-label={`Remove filter ${c.label}`}
+                  onClick={c.onRemove}
+                  className="text-eve-muted hover:text-eve-teal-dark"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
             </span>
           ))}
         </div>

@@ -114,3 +114,24 @@ describe("Casablanca matching fallback", () => {
     expect(out.results[0].full_name).toBe("Near");
   });
 });
+
+describe("review_status eligibility", () => {
+  it("excludes rows that are not moderation-approved", () => {
+    expect(isDisplayableProvider(p({ review_status: "pending" }))).toBe(false);
+    expect(isDisplayableProvider(p({ review_status: "rejected" }))).toBe(false);
+    expect(isDisplayableProvider(p({ review_status: "verified" }))).toBe(true);
+    expect(isDisplayableProvider(p({ review_status: "approved" }))).toBe(true);
+  });
+
+  it("keeps ineligible rows out of Casablanca results entirely", () => {
+    const out = matchProviders(
+      [
+        p({ full_name: "Pending Doc", review_status: "pending" }),
+        p({ full_name: "Approved Doc", review_status: "verified" }),
+      ],
+      { city: "Casablanca", country: "Morocco" },
+    );
+    expect(out.results.map((r) => r.full_name)).toEqual(["Approved Doc"]);
+    expect(out.excludedCount).toBe(1);
+  });
+});
