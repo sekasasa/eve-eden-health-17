@@ -9,6 +9,14 @@ import { useCarePreferences } from "@/hooks/useCarePreferences";
 import { prefHelpers } from "@/lib/personalization";
 import { eveToast } from "@/lib/eve-toast";
 import { flagOffCopy, isFeatureEnabled } from "@/lib/flags";
+import {
+  isCommunityReadOnly,
+  isReported,
+  readReports,
+  reportAcknowledgement,
+  submitReport,
+  type ReportStore,
+} from "@/lib/moderation";
 import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
 import { rankForProfile, type ContentRow } from "@/lib/content-filter";
 import { supabase } from "@/integrations/supabase/client";
@@ -212,8 +220,15 @@ function CommunityPage() {
   }, [prefs.stage, profile.stage]);
   const [active, setActive] = useState<CategoryKey>(defaultCategory);
   const [open, setOpen] = useState(false);
-  const postingEnabled = isFeatureEnabled("communityPosting");
   const moderationEnabled = isFeatureEnabled("communityModeration");
+  // Posting requires BOTH the posting flag and a verified moderation backend.
+  const readOnly = isCommunityReadOnly();
+  const postingEnabled = !readOnly;
+  const [reports, setReports] = useState<ReportStore>({});
+
+  useEffect(() => {
+    setReports(readReports());
+  }, []);
   const [hearts, setHearts] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
 
@@ -402,9 +417,15 @@ function CommunityPage() {
           <Plus className="h-4 w-4" /> {postingEnabled ? "New Post" : "Posting opens soon"}
         </button>
         {!postingEnabled && (
-          <p role="status" className="mt-2 text-[11px] text-eve-muted">
-            {flagOffCopy("communityPosting")}
-          </p>
+          <div role="status" className="mt-2 space-y-1">
+            <p className="text-[11px] text-eve-muted">{flagOffCopy("communityPosting")}</p>
+            {!moderationEnabled && (
+              <p className="text-[11px] text-eve-muted">
+                Community is read-only until moderation is staffed. Posts below are sample
+                content written by our team, not replies from other members.
+              </p>
+            )}
+          </div>
         )}
         {profile.stage && (
           <p className="mt-2 text-[11px] text-eve-muted">
@@ -473,6 +494,16 @@ function CommunityPage() {
         ) : (
           filtered.map((p) => {
             const cat = CATEGORIES.find((c) => c.key === p.category)!;
+            if (isReported(p.id, reports)) {
+              return (
+                <article
+                  key={p.id}
+                  className="rounded-2xl border border-eve-sand bg-white p-4 text-[12px] text-eve-muted"
+                >
+                  You reported this post, so it is hidden on this device.
+                </article>
+              );
+            }
             const liked = hearts[p.id] ?? 0;
             return (
               <article
@@ -553,13 +584,10 @@ function CommunityPage() {
                   <button
                     type="button"
                     aria-label="Report this post"
-                    onClick={() =>
-                      eveToast.info(
-                        moderationEnabled
-                          ? "Thanks — a moderator will review this post."
-                          : "Reporting isn't live yet. Email support@eveandeden.health and we'll act on it.",
-                      )
-                    }
+                    onClick={() => {
+                      setReports(submitReport(p.id, "other"));
+                      eveToast.info(reportAcknowledgement());
+                    }}
                     className="inline-flex items-center gap-1 text-eve-muted underline-offset-2 hover:underline"
                   >
                     <Flag className="h-3.5 w-3.5" />

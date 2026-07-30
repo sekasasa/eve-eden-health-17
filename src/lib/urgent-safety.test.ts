@@ -46,6 +46,29 @@ describe("assessRisk", () => {
     expect(a.primary).toBe("self_harm");
   });
 
+  it("detects immediate-danger language in English, French and Arabic", () => {
+    for (const text of [
+      "someone is hurting me at home",
+      "il me frappe tous les jours",
+      "زوجي كيضربني",
+    ]) {
+      const a = assessRisk(text);
+      expect(a.categories).toContain("immediate_danger");
+      expect(a.crisis).toBe(true);
+    }
+  });
+
+  it("prioritises immediate danger over obstetric symptoms", () => {
+    const a = assessRisk("I have severe headache and he is hurting me");
+    expect(a.primary).toBe("immediate_danger");
+  });
+
+  it("never claims clinician review in guidance copy", () => {
+    const g = urgentGuidance(assessRisk("severe bleeding"), "MA");
+    expect(g!.emergencyMessage.toLowerCase()).not.toMatch(/doctor (has|will) review|clinician review/);
+  });
+
+
   it("is accent and case insensitive", () => {
     expect(normalizeText("Douleur Sévère")).toBe("douleur severe");
     expect(isUrgentText("DOULEUR SÉVÈRE")).toBe(true);
