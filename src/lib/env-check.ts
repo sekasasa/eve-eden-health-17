@@ -6,10 +6,7 @@
  * reported as warnings so a release check can show what is unconfigured.
  */
 
-export const REQUIRED_CLIENT_ENV = [
-  "VITE_SUPABASE_URL",
-  "VITE_SUPABASE_PUBLISHABLE_KEY",
-] as const;
+export const REQUIRED_CLIENT_ENV = ["VITE_SUPABASE_URL", "VITE_SUPABASE_PUBLISHABLE_KEY"] as const;
 
 export const OPTIONAL_CLIENT_ENV = [
   "VITE_FLAG_ASK_EVE_AI",

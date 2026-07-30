@@ -7,11 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { toast } from "sonner";
 import { isFeatureEnabled } from "@/lib/flags";
-import {
-  MAX_DOC_BYTES,
-  SHARING_PREREQUISITES,
-  validateDocumentLink,
-} from "@/lib/passport-safety";
+import { MAX_DOC_BYTES, SHARING_PREREQUISITES, validateDocumentLink } from "@/lib/passport-safety";
 
 export const Route = createFileRoute("/eve/passport")({
   head: () => ({
@@ -25,8 +21,7 @@ export const Route = createFileRoute("/eve/passport")({
       { property: "og:title", content: "Care Passport — Eve & Eden Health" },
       {
         property: "og:description",
-        content:
-          "A private maternal health record you control, with sharing you can revoke.",
+        content: "A private maternal health record you control, with sharing you can revoke.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -34,7 +29,6 @@ export const Route = createFileRoute("/eve/passport")({
   }),
   component: PassportPage,
 });
-
 
 type Doc = {
   id: string;
@@ -105,7 +99,9 @@ function PassportPage() {
     ]);
     setDocs((d.data ?? []) as Doc[]);
     setShares((s.data ?? []) as Share[]);
-    const vendorIds = Array.from(new Set((s.data ?? []).map((x: { vendor_id: string }) => x.vendor_id)));
+    const vendorIds = Array.from(
+      new Set((s.data ?? []).map((x: { vendor_id: string }) => x.vendor_id)),
+    );
     if (vendorIds.length) {
       const { data: vs } = await supabase
         .from("vendors")
@@ -151,7 +147,6 @@ function PassportPage() {
     setDocs((d) => d.filter((x) => x.id !== id));
   }
 
-
   async function revokeShare(id: string) {
     const { error } = await supabase
       .from("passport_shares")
@@ -174,18 +169,14 @@ function PassportPage() {
 
   return (
     <EveShell>
-      <Link
-        to="/eve/home"
-        className="mb-3 inline-flex items-center gap-1 text-xs text-eve-muted"
-      >
+      <Link to="/eve/home" className="mb-3 inline-flex items-center gap-1 text-xs text-eve-muted">
         <ArrowLeft className="h-3 w-3" /> Back
       </Link>
       <h1 className="font-serif text-2xl text-eve-teal-dark">Care Passport</h1>
       <p className="mt-1 font-sans text-sm text-eve-muted">
-        A single, private record only you can see. Sharing with a provider is not switched on
-        yet — nothing here leaves your account.
+        A single, private record only you can see. Sharing with a provider is not switched on yet —
+        nothing here leaves your account.
       </p>
-
 
       <div className="mt-5 rounded-2xl bg-white p-4">
         <p className="font-sans text-xs uppercase tracking-wide text-eve-muted">About me</p>
@@ -198,9 +189,7 @@ function PassportPage() {
 
       <section className="mt-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-sans text-sm font-semibold text-eve-teal-dark">
-            My documents
-          </h2>
+          <h2 className="font-sans text-sm font-semibold text-eve-teal-dark">My documents</h2>
           <button
             onClick={() => setAdding(!adding)}
             className="inline-flex items-center gap-1 rounded-full bg-eve-teal px-3 py-1.5 text-xs font-medium text-white"
@@ -242,7 +231,8 @@ function PassportPage() {
                 className="input"
               />
               <p id="passport-link-help" className="font-sans text-[11px] text-eve-muted">
-                {linkError ?? `Secure https links only — PDF, image or document, under ${Math.round(MAX_DOC_BYTES / (1024 * 1024))} MB.`}
+                {linkError ??
+                  `Secure https links only — PDF, image or document, under ${Math.round(MAX_DOC_BYTES / (1024 * 1024))} MB.`}
               </p>
 
               <textarea
@@ -280,9 +270,7 @@ function PassportPage() {
             <li key={d.id} className="rounded-2xl bg-white p-4">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="font-sans text-sm font-semibold text-eve-teal-dark">
-                    {d.title}
-                  </p>
+                  <p className="font-sans text-sm font-semibold text-eve-teal-dark">{d.title}</p>
                   <p className="mt-0.5 font-sans text-[11px] uppercase tracking-wide text-eve-teal">
                     {d.doc_type}
                     {d.sensitive && (
@@ -291,9 +279,7 @@ function PassportPage() {
                       </span>
                     )}
                   </p>
-                  {d.notes && (
-                    <p className="mt-1 font-sans text-xs text-eve-muted">{d.notes}</p>
-                  )}
+                  {d.notes && <p className="mt-1 font-sans text-xs text-eve-muted">{d.notes}</p>}
                 </div>
                 <button
                   onClick={() => removeDoc(d.id)}
@@ -318,8 +304,8 @@ function PassportPage() {
               <Lock className="h-3.5 w-3.5" /> Sharing is turned off for now
             </p>
             <p className="mt-1 font-sans text-xs text-eve-muted">
-              We will not let you send health documents to a provider until these are in place
-              and independently checked:
+              We will not let you send health documents to a provider until these are in place and
+              independently checked:
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-4 font-sans text-xs text-eve-muted">
               {SHARING_PREREQUISITES.map((p) => (
@@ -341,10 +327,7 @@ function PassportPage() {
             </li>
           ) : (
             shares.map((s) => (
-              <li
-                key={s.id}
-                className="flex items-start justify-between rounded-2xl bg-white p-4"
-              >
+              <li key={s.id} className="flex items-start justify-between rounded-2xl bg-white p-4">
                 <div>
                   <p className="font-sans text-sm font-semibold text-eve-teal-dark">
                     {vendors[s.vendor_id] ?? "Partner"}
@@ -367,7 +350,6 @@ function PassportPage() {
           )}
         </ul>
       </section>
-
 
       <div className="mt-6">
         <SafetyDisclaimer />

@@ -25,7 +25,6 @@ import {
 import { type LifeStage } from "@/lib/match-data";
 import { eveToast } from "@/lib/eve-toast";
 
-
 export const Route = createFileRoute("/eve/match/results")({
   component: MatchResults,
 });
@@ -48,20 +47,40 @@ type Pathway = {
   providerCategories: string[]; // substring match on provider.category
 };
 
-const tool = (
-  to: string,
-  label: string,
-  icon: React.ReactNode,
-): Tool => ({ to, label, icon });
+const tool = (to: string, label: string, icon: React.ReactNode): Tool => ({ to, label, icon });
 
 const TOOLS = {
-  labs: tool("/eve/match/labs", "Understand labs", <FlaskConical className="h-4 w-4 text-eve-teal" />),
-  rx: tool("/eve/match/prescriptions", "Prescription support", <Pill className="h-4 w-4 text-eve-terra" />),
-  insurance: tool("/eve/match/insurance", "Insurance & payment", <ShieldCheck className="h-4 w-4 text-eve-forest" />),
+  labs: tool(
+    "/eve/match/labs",
+    "Understand labs",
+    <FlaskConical className="h-4 w-4 text-eve-teal" />,
+  ),
+  rx: tool(
+    "/eve/match/prescriptions",
+    "Prescription support",
+    <Pill className="h-4 w-4 text-eve-terra" />,
+  ),
+  insurance: tool(
+    "/eve/match/insurance",
+    "Insurance & payment",
+    <ShieldCheck className="h-4 w-4 text-eve-forest" />,
+  ),
   family: tool("/eve/match/family", "Invite family", <Users className="h-4 w-4 text-eve-rose" />),
-  navigator: tool("/eve/ask", "Care navigator", <MessageCircle className="h-4 w-4 text-eve-teal" />),
-  providers: tool("/eve/providers", "Find a provider", <Stethoscope className="h-4 w-4 text-eve-teal" />),
-  shops: tool("/eve/vendors", "Shops & services", <ShoppingBag className="h-4 w-4 text-eve-terra" />),
+  navigator: tool(
+    "/eve/ask",
+    "Care navigator",
+    <MessageCircle className="h-4 w-4 text-eve-teal" />,
+  ),
+  providers: tool(
+    "/eve/providers",
+    "Find a provider",
+    <Stethoscope className="h-4 w-4 text-eve-teal" />,
+  ),
+  shops: tool(
+    "/eve/vendors",
+    "Shops & services",
+    <ShoppingBag className="h-4 w-4 text-eve-terra" />,
+  ),
   edit: tool("/eve/match", "Update my answers", <PhoneCall className="h-4 w-4 text-eve-muted" />),
 };
 
@@ -241,12 +260,10 @@ const PATHWAYS: Partial<Record<LifeStage, Pathway>> = {
   },
 };
 
-
 const DEFAULT_PATHWAY: Pathway = {
   eyebrow: "Your matches",
   headline: "Here are your best next steps",
-  recommended:
-    "Book a first visit with a matched provider and save your questions ahead of time.",
+  recommended: "Book a first visit with a matched provider and save your questions ahead of time.",
   actions: [
     { label: "Find care", to: "/eve/providers" },
     { label: "Insurance & payment", to: "/eve/match/insurance" },
@@ -270,16 +287,12 @@ function MatchResults() {
     };
   }, []);
 
-  const pathway: Pathway =
-    (intake.stage && PATHWAYS[intake.stage]) || DEFAULT_PATHWAY;
+  const pathway: Pathway = (intake.stage && PATHWAYS[intake.stage]) || DEFAULT_PATHWAY;
 
   // pathway.providerCategories drives the Find Care filter below
 
-
   const urgencyNote =
-    intake.urgency === "today"
-      ? "We've prioritised providers available today."
-      : null;
+    intake.urgency === "today" ? "We've prioritised providers available today." : null;
 
   return (
     <EveShell>
@@ -314,11 +327,10 @@ function MatchResults() {
 
       {/* Your next steps — numbered, actionable */}
       <section className="mx-3 mt-4 rounded-2xl bg-eve-teal p-4 text-white">
-        <p className="text-[10px] uppercase tracking-widest text-white/70">
-          Your next steps
-        </p>
+        <p className="text-[10px] uppercase tracking-widest text-white/70">Your next steps</p>
         <p className="mt-1 text-sm leading-relaxed text-white/90">
-          {urgencyNote ? `${urgencyNote} ` : ""}{pathway.recommended}
+          {urgencyNote ? `${urgencyNote} ` : ""}
+          {pathway.recommended}
         </p>
         <ol className="mt-3 flex flex-col gap-2">
           {pathway.actions.slice(0, 3).map((a, i) => (
@@ -372,7 +384,6 @@ function MatchResults() {
           </span>
         </button>
       </section>
-
 
       {/* Payment options */}
       <section className="mt-5 px-3">
@@ -431,14 +442,12 @@ function MatchResults() {
       </div>
 
       <p className="mt-5 px-3 pb-2 text-[10px] leading-relaxed text-eve-muted">
-        Eve & Eden provides education and care navigation — not diagnosis. For
-        urgent or life-threatening symptoms, please contact emergency services
-        or seek immediate medical care.
+        Eve & Eden provides education and care navigation — not diagnosis. For urgent or
+        life-threatening symptoms, please contact emergency services or seek immediate medical care.
       </p>
     </EveShell>
   );
 }
-
 
 function PaymentOption({
   title,
@@ -491,9 +500,7 @@ function ToolTile({
       onClick={onClick}
       className="flex flex-col items-start gap-2 rounded-xl border border-eve-muted/20 bg-white p-3"
     >
-      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-eve-cream">
-        {icon}
-      </div>
+      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-eve-cream">{icon}</div>
       <p className="text-[11px] font-medium text-eve-teal-dark">{label}</p>
     </Link>
   );

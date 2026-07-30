@@ -61,7 +61,9 @@ function AdminVendors() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   useEffect(() => {
     if (selected) setCommission(((selected.commission_rate ?? 0.1) * 100).toFixed(1));
@@ -70,27 +72,47 @@ function AdminVendors() {
   const filtered = filter === "all" ? rows : rows.filter((r) => r.review_status === filter);
 
   const verify = async (v: Vendor) => {
-    const { error } = await supabase.from("vendors").update({
-      review_status: "verified", is_verified: true, rejection_reason: null,
-    }).eq("id", v.id);
+    const { error } = await supabase
+      .from("vendors")
+      .update({
+        review_status: "verified",
+        is_verified: true,
+        rejection_reason: null,
+      })
+      .eq("id", v.id);
     if (error) return toast.error(error.message);
-    toast.success("Verified. Email notifications are not connected yet — contact the vendor directly.");
+    toast.success(
+      "Verified. Email notifications are not connected yet — contact the vendor directly.",
+    );
     setSelected(null);
     load();
   };
 
   const reject = async () => {
     if (!selected || !reason.trim()) return toast.error("Reason required");
-    const { error } = await supabase.from("vendors").update({
-      review_status: "rejected", is_verified: false, rejection_reason: reason,
-    }).eq("id", selected.id);
+    const { error } = await supabase
+      .from("vendors")
+      .update({
+        review_status: "rejected",
+        is_verified: false,
+        rejection_reason: reason,
+      })
+      .eq("id", selected.id);
     if (error) return toast.error(error.message);
-    toast.success("Rejected. Email notifications are not connected yet — contact the vendor directly.");
-    setReasonOpen(false); setReason(""); setSelected(null); load();
+    toast.success(
+      "Rejected. Email notifications are not connected yet — contact the vendor directly.",
+    );
+    setReasonOpen(false);
+    setReason("");
+    setSelected(null);
+    load();
   };
 
   const toggleFeatured = async (v: Vendor) => {
-    const { error } = await supabase.from("vendors").update({ is_featured: !v.is_featured }).eq("id", v.id);
+    const { error } = await supabase
+      .from("vendors")
+      .update({ is_featured: !v.is_featured })
+      .eq("id", v.id);
     if (error) return toast.error(error.message);
     load();
   };
@@ -99,7 +121,10 @@ function AdminVendors() {
     if (!selected) return;
     const pct = Number(commission);
     if (Number.isNaN(pct) || pct < 0 || pct > 100) return toast.error("Commission must be 0-100");
-    const { error } = await supabase.from("vendors").update({ commission_rate: pct / 100 }).eq("id", selected.id);
+    const { error } = await supabase
+      .from("vendors")
+      .update({ commission_rate: pct / 100 })
+      .eq("id", selected.id);
     if (error) return toast.error(error.message);
     toast.success("Commission updated");
     load();
@@ -121,9 +146,13 @@ function AdminVendors() {
               onClick={() => setFilter(s)}
               className={
                 "rounded-full px-3 py-1.5 font-sans text-xs capitalize " +
-                (filter === s ? "bg-eve-teal text-white" : "bg-white text-eve-muted ring-1 ring-eve-muted/20")
+                (filter === s
+                  ? "bg-eve-teal text-white"
+                  : "bg-white text-eve-muted ring-1 ring-eve-muted/20")
               }
-            >{s}</button>
+            >
+              {s}
+            </button>
           ))}
         </div>
       </div>
@@ -143,19 +172,38 @@ function AdminVendors() {
             </tr>
           </thead>
           <tbody>
-            {loading && <tr><td colSpan={8} className="px-4 py-8 text-center text-eve-muted">Loading…</td></tr>}
-            {!loading && filtered.length === 0 && <tr><td colSpan={8} className="px-4 py-8 text-center text-eve-muted">Nothing here yet.</td></tr>}
+            {loading && (
+              <tr>
+                <td colSpan={8} className="px-4 py-8 text-center text-eve-muted">
+                  Loading…
+                </td>
+              </tr>
+            )}
+            {!loading && filtered.length === 0 && (
+              <tr>
+                <td colSpan={8} className="px-4 py-8 text-center text-eve-muted">
+                  Nothing here yet.
+                </td>
+              </tr>
+            )}
             {filtered.map((v) => (
               <tr key={v.id} className="border-t border-eve-muted/10 hover:bg-eve-cream/30">
                 <td className="px-4 py-3 font-sans text-eve-forest">{v.business_name ?? "—"}</td>
                 <td className="px-4 py-3 font-sans text-eve-muted">{v.category ?? "—"}</td>
                 <td className="px-4 py-3 font-sans text-eve-muted">{v.city ?? "—"}</td>
                 <td className="px-4 py-3">
-                  <span className={"rounded-full px-2 py-0.5 font-sans text-xs capitalize " + STATUS_COLORS[v.review_status]}>
+                  <span
+                    className={
+                      "rounded-full px-2 py-0.5 font-sans text-xs capitalize " +
+                      STATUS_COLORS[v.review_status]
+                    }
+                  >
                     {v.review_status}
                   </span>
                 </td>
-                <td className="px-4 py-3 font-sans text-eve-muted">{((v.commission_rate ?? 0) * 100).toFixed(1)}%</td>
+                <td className="px-4 py-3 font-sans text-eve-muted">
+                  {((v.commission_rate ?? 0) * 100).toFixed(1)}%
+                </td>
                 <td className="px-4 py-3">
                   <Switch checked={!!v.is_featured} onCheckedChange={() => toggleFeatured(v)} />
                 </td>
@@ -163,7 +211,12 @@ function AdminVendors() {
                   {v.created_at ? new Date(v.created_at).toLocaleDateString() : "—"}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => setSelected(v)} className="font-sans text-xs text-eve-teal hover:underline">Review</button>
+                  <button
+                    onClick={() => setSelected(v)}
+                    className="font-sans text-xs text-eve-teal hover:underline"
+                  >
+                    Review
+                  </button>
                 </td>
               </tr>
             ))}
@@ -175,16 +228,29 @@ function AdminVendors() {
         <DialogContent className="max-w-2xl">
           {selected && (
             <>
-              <DialogHeader><DialogTitle>{selected.business_name}</DialogTitle></DialogHeader>
+              <DialogHeader>
+                <DialogTitle>{selected.business_name}</DialogTitle>
+              </DialogHeader>
               <div className="space-y-3 font-sans text-sm">
                 <Field label="Category" value={selected.category} />
                 <Field label="City" value={selected.city} />
                 <Field label="Description" value={selected.description} />
                 <div>
-                  <label className="font-sans text-xs uppercase tracking-wide text-eve-muted">Commission rate (%)</label>
+                  <label className="font-sans text-xs uppercase tracking-wide text-eve-muted">
+                    Commission rate (%)
+                  </label>
                   <div className="mt-1 flex gap-2">
-                    <Input type="number" min={0} max={100} step={0.1} value={commission} onChange={(e) => setCommission(e.target.value)} />
-                    <Button variant="outline" onClick={saveCommission}>Save</Button>
+                    <Input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={0.1}
+                      value={commission}
+                      onChange={(e) => setCommission(e.target.value)}
+                    />
+                    <Button variant="outline" onClick={saveCommission}>
+                      Save
+                    </Button>
                   </div>
                 </div>
                 {selected.rejection_reason && (
@@ -195,8 +261,21 @@ function AdminVendors() {
                 )}
               </div>
               <DialogFooter className="gap-2">
-                <Button variant="destructive" onClick={() => { setReasonOpen(true); setReason(""); }}>Reject</Button>
-                <Button onClick={() => verify(selected)} className="bg-eve-teal text-white hover:bg-eve-teal-dark">Verify</Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setReasonOpen(true);
+                    setReason("");
+                  }}
+                >
+                  Reject
+                </Button>
+                <Button
+                  onClick={() => verify(selected)}
+                  className="bg-eve-teal text-white hover:bg-eve-teal-dark"
+                >
+                  Verify
+                </Button>
               </DialogFooter>
             </>
           )}
@@ -205,11 +284,22 @@ function AdminVendors() {
 
       <Dialog open={reasonOpen} onOpenChange={setReasonOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Rejection reason</DialogTitle></DialogHeader>
-          <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason emailed to vendor" rows={5} />
+          <DialogHeader>
+            <DialogTitle>Rejection reason</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Reason emailed to vendor"
+            rows={5}
+          />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setReasonOpen(false)}>Cancel</Button>
-            <Button onClick={reject} className="bg-eve-teal text-white hover:bg-eve-teal-dark">Send rejection</Button>
+            <Button variant="outline" onClick={() => setReasonOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={reject} className="bg-eve-teal text-white hover:bg-eve-teal-dark">
+              Send rejection
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

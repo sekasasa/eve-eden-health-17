@@ -34,10 +34,18 @@ const PAGE = 20;
 
 function initials(n?: string | null) {
   if (!n) return "·";
-  return n.split(" ").filter(Boolean).slice(0, 2).map((s) => s[0]?.toUpperCase()).join("");
+  return n
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((s) => s[0]?.toUpperCase())
+    .join("");
 }
 
-function deriveRisk(p: { pregnancy_week: number | null; due_date: string | null }): Patient["risk"] {
+function deriveRisk(p: {
+  pregnancy_week: number | null;
+  due_date: string | null;
+}): Patient["risk"] {
   const w = p.pregnancy_week ?? 0;
   if (w >= 37) return "medium";
   if (w > 0 && w < 12) return "medium";
@@ -66,7 +74,9 @@ function EdenPatients() {
       }
       const { data: appts } = await supabase
         .from("appointments")
-        .select("scheduled_at,mother_id,mother:mothers(id,full_name,city,pregnancy_week,due_date,phone)")
+        .select(
+          "scheduled_at,mother_id,mother:mothers(id,full_name,city,pregnancy_week,due_date,phone)",
+        )
         .eq("provider_id", prov.id)
         .order("scheduled_at", { ascending: false });
 
@@ -140,7 +150,11 @@ function EdenPatients() {
     <EdenShell>
       <div className="flex items-center justify-between">
         <h1 className="font-sans text-2xl font-medium text-gray-900">My patients</h1>
-        <PrimaryButton disabled title="Adding patients from here is not available yet" className="px-4 py-2 text-sm opacity-60">
+        <PrimaryButton
+          disabled
+          title="Adding patients from here is not available yet"
+          className="px-4 py-2 text-sm opacity-60"
+        >
           + Add patient (coming soon)
         </PrimaryButton>
       </div>
