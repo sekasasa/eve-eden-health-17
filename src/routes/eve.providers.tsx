@@ -985,8 +985,9 @@ function EmptyState({
             disabled={notified}
             className="rounded-full border border-eve-teal/40 px-4 py-2 font-sans text-xs text-eve-teal disabled:opacity-60"
           >
-            {notified ? "We'll notify you" : "Notify me when providers are available"}
+            {notified ? "Saved on this device" : "Remind me here when providers join"}
           </button>
+
           {onClearFilters && (
             <button
               onClick={onClearFilters}
@@ -996,6 +997,11 @@ function EmptyState({
             </button>
           )}
         </div>
+        {notified && (
+          <p className="font-sans text-[11px] text-eve-muted">
+            Saved on this device only — we cannot email or message you yet.
+          </p>
+        )}
       </div>
     );
   }

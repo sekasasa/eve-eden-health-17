@@ -1,13 +1,32 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, Lock, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { SafetyDisclaimer } from "@/components/ui/SafetyDisclaimer";
 import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { toast } from "sonner";
+import { isFeatureEnabled } from "@/lib/flags";
+import { MAX_DOC_BYTES, SHARING_PREREQUISITES, validateDocumentLink } from "@/lib/passport-safety";
 
 export const Route = createFileRoute("/eve/passport")({
+  head: () => ({
+    meta: [
+      { title: "Care Passport — Eve & Eden Health" },
+      {
+        name: "description",
+        content:
+          "Keep your labs, scans, prescriptions and insurance documents in one private record you control.",
+      },
+      { property: "og:title", content: "Care Passport — Eve & Eden Health" },
+      {
+        property: "og:description",
+        content: "A private maternal health record you control, with sharing you can revoke.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: PassportPage,
 });
 
@@ -31,12 +50,16 @@ type Share = {
 const DOC_TYPES = ["lab", "scan", "rx", "discharge", "insurance", "claim", "care_note"];
 
 function PassportPage() {
+  const navigate = useNavigate();
   const { profile } = useSavedProfile();
+  const sharingEnabled = isFeatureEnabled("carePassportSharing");
   const [userId, setUserId] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [docs, setDocs] = useState<Doc[]>([]);
   const [shares, setShares] = useState<Share[]>([]);
   const [vendors, setVendors] = useState<Record<string, string>>({});
   const [adding, setAdding] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
   const [form, setForm] = useState({
     doc_type: "lab",
     title: "",
@@ -47,12 +70,21 @@ function PassportPage() {
 
   useEffect(() => {
     void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function load() {
+    // Authorization is enforced by row-level security on every query below;
+    // this check keeps an unauthenticated visitor from seeing an empty shell
+    // that looks like their (missing) record.
     const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) return;
+    setAuthChecked(true);
+    if (!auth.user) {
+      navigate({ to: "/login" });
+      return;
+    }
     setUserId(auth.user.id);
+
     const [d, s] = await Promise.all([
       supabase
         .from("care_documents")
@@ -67,7 +99,9 @@ function PassportPage() {
     ]);
     setDocs((d.data ?? []) as Doc[]);
     setShares((s.data ?? []) as Share[]);
-    const vendorIds = Array.from(new Set((s.data ?? []).map((x: { vendor_id: string }) => x.vendor_id)));
+    const vendorIds = Array.from(
+      new Set((s.data ?? []).map((x: { vendor_id: string }) => x.vendor_id)),
+    );
     if (vendorIds.length) {
       const { data: vs } = await supabase
         .from("vendors")
@@ -82,11 +116,17 @@ function PassportPage() {
   async function addDoc() {
     if (!userId) return;
     if (!form.title.trim()) return toast.error("Title required");
+    const link = validateDocumentLink(form.file_url);
+    if (!link.ok) {
+      setLinkError(link.reason);
+      return toast.error(link.reason);
+    }
+    setLinkError(null);
     const { error } = await supabase.from("care_documents").insert({
       customer_user_id: userId,
       doc_type: form.doc_type,
       title: form.title.trim(),
-      file_url: form.file_url || null,
+      file_url: form.file_url.trim() || null,
       notes: form.notes || null,
       sensitive: form.sensitive,
     });
@@ -98,7 +138,11 @@ function PassportPage() {
   }
 
   async function removeDoc(id: string) {
-    const { error } = await supabase.from("care_documents").delete().eq("id", id);
+    const { error } = await supabase
+      .from("care_documents")
+      .delete()
+      .eq("id", id)
+      .eq("customer_user_id", userId ?? "");
     if (error) return toast.error(error.message);
     setDocs((d) => d.filter((x) => x.id !== id));
   }
@@ -113,17 +157,25 @@ function PassportPage() {
     toast.success("Access revoked");
   }
 
+  if (!authChecked) {
+    return (
+      <EveShell>
+        <p className="mt-8 text-center font-sans text-sm text-eve-muted">
+          Loading your private record…
+        </p>
+      </EveShell>
+    );
+  }
+
   return (
     <EveShell>
-      <Link
-        to="/eve/home"
-        className="mb-3 inline-flex items-center gap-1 text-xs text-eve-muted"
-      >
+      <Link to="/eve/home" className="mb-3 inline-flex items-center gap-1 text-xs text-eve-muted">
         <ArrowLeft className="h-3 w-3" /> Back
       </Link>
       <h1 className="font-serif text-2xl text-eve-teal-dark">Care Passport</h1>
       <p className="mt-1 font-sans text-sm text-eve-muted">
-        A single, private record you control. Share what you choose, with whom you choose.
+        A single, private record only you can see. Sharing with a provider is not switched on yet —
+        nothing here leaves your account.
       </p>
 
       <div className="mt-5 rounded-2xl bg-white p-4">
@@ -137,9 +189,7 @@ function PassportPage() {
 
       <section className="mt-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-sans text-sm font-semibold text-eve-teal-dark">
-            My documents
-          </h2>
+          <h2 className="font-sans text-sm font-semibold text-eve-teal-dark">My documents</h2>
           <button
             onClick={() => setAdding(!adding)}
             className="inline-flex items-center gap-1 rounded-full bg-eve-teal px-3 py-1.5 text-xs font-medium text-white"
@@ -170,10 +220,21 @@ function PassportPage() {
               />
               <input
                 value={form.file_url}
-                onChange={(e) => setForm({ ...form, file_url: e.target.value })}
-                placeholder="Link to file (optional)"
+                onChange={(e) => {
+                  setForm({ ...form, file_url: e.target.value });
+                  setLinkError(null);
+                }}
+                inputMode="url"
+                aria-invalid={!!linkError}
+                aria-describedby="passport-link-help"
+                placeholder="https:// link to file (optional)"
                 className="input"
               />
+              <p id="passport-link-help" className="font-sans text-[11px] text-eve-muted">
+                {linkError ??
+                  `Secure https links only — PDF, image or document, under ${Math.round(MAX_DOC_BYTES / (1024 * 1024))} MB.`}
+              </p>
+
               <textarea
                 rows={2}
                 value={form.notes}
@@ -209,9 +270,7 @@ function PassportPage() {
             <li key={d.id} className="rounded-2xl bg-white p-4">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="font-sans text-sm font-semibold text-eve-teal-dark">
-                    {d.title}
-                  </p>
+                  <p className="font-sans text-sm font-semibold text-eve-teal-dark">{d.title}</p>
                   <p className="mt-0.5 font-sans text-[11px] uppercase tracking-wide text-eve-teal">
                     {d.doc_type}
                     {d.sensitive && (
@@ -220,9 +279,7 @@ function PassportPage() {
                       </span>
                     )}
                   </p>
-                  {d.notes && (
-                    <p className="mt-1 font-sans text-xs text-eve-muted">{d.notes}</p>
-                  )}
+                  {d.notes && <p className="mt-1 font-sans text-xs text-eve-muted">{d.notes}</p>}
                 </div>
                 <button
                   onClick={() => removeDoc(d.id)}
@@ -241,10 +298,28 @@ function PassportPage() {
         <h2 className="font-sans text-sm font-semibold text-eve-teal-dark">
           Who can see my passport
         </h2>
-        <p className="mt-1 font-sans text-xs text-eve-muted inline-flex items-center gap-1">
-          <ShieldCheck className="h-3 w-3" /> You control what each partner sees, and you can
-          revoke access anytime.
-        </p>
+        {!sharingEnabled && (
+          <div className="mt-2 rounded-2xl border border-eve-muted/20 bg-white p-4">
+            <p className="inline-flex items-center gap-1 font-sans text-sm font-semibold text-eve-teal-dark">
+              <Lock className="h-3.5 w-3.5" /> Sharing is turned off for now
+            </p>
+            <p className="mt-1 font-sans text-xs text-eve-muted">
+              We will not let you send health documents to a provider until these are in place and
+              independently checked:
+            </p>
+            <ul className="mt-2 list-disc space-y-1 pl-4 font-sans text-xs text-eve-muted">
+              {SHARING_PREREQUISITES.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {sharingEnabled && (
+          <p className="mt-1 inline-flex items-center gap-1 font-sans text-xs text-eve-muted">
+            <ShieldCheck className="h-3 w-3" /> You control what each partner sees, and you can
+            revoke access anytime.
+          </p>
+        )}
         <ul className="mt-3 space-y-2">
           {shares.length === 0 ? (
             <li className="rounded-2xl bg-white p-4 text-sm text-eve-muted">
@@ -252,10 +327,7 @@ function PassportPage() {
             </li>
           ) : (
             shares.map((s) => (
-              <li
-                key={s.id}
-                className="flex items-start justify-between rounded-2xl bg-white p-4"
-              >
+              <li key={s.id} className="flex items-start justify-between rounded-2xl bg-white p-4">
                 <div>
                   <p className="font-sans text-sm font-semibold text-eve-teal-dark">
                     {vendors[s.vendor_id] ?? "Partner"}

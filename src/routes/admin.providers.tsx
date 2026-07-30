@@ -69,7 +69,9 @@ function AdminProviders() {
       .update({ review_status: "verified", is_verified: true, rejection_reason: null })
       .eq("id", p.id);
     if (error) return toast.error(error.message);
-    toast.success("Verified — welcome email queued");
+    toast.success(
+      "Verified. Email notifications are not connected yet — contact the provider directly.",
+    );
     setSelected(null);
     load();
   };
@@ -81,7 +83,9 @@ function AdminProviders() {
       .update({ review_status: "rejected", is_verified: false, rejection_reason: reason })
       .eq("id", selected.id);
     if (error) return toast.error(error.message);
-    toast.success("Rejected — notification email queued");
+    toast.success(
+      "Rejected. Email notifications are not connected yet — contact the provider directly.",
+    );
     setActionType(null);
     setReason("");
     setSelected(null);
@@ -91,7 +95,7 @@ function AdminProviders() {
   const requestInfo = async () => {
     if (!selected || !reason.trim()) return toast.error("Message required");
     // In a real build this would call a server function that sends the email.
-    toast.success("Info request email queued to provider");
+    toast.success("Marked as needing more info. Email sending is not connected yet.");
     setActionType(null);
     setReason("");
   };
@@ -137,10 +141,18 @@ function AdminProviders() {
           </thead>
           <tbody>
             {loading && (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-eve-muted">Loading…</td></tr>
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center text-eve-muted">
+                  Loading…
+                </td>
+              </tr>
             )}
             {!loading && filtered.length === 0 && (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-eve-muted">No providers in this view.</td></tr>
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center text-eve-muted">
+                  No providers in this view.
+                </td>
+              </tr>
             )}
             {filtered.map((p) => (
               <tr key={p.id} className="border-t border-eve-muted/10 hover:bg-eve-cream/30">
@@ -148,7 +160,12 @@ function AdminProviders() {
                 <td className="px-4 py-3 font-sans text-eve-muted">{p.specialty ?? "—"}</td>
                 <td className="px-4 py-3 font-sans text-eve-muted">{p.city ?? "—"}</td>
                 <td className="px-4 py-3">
-                  <span className={"rounded-full px-2 py-0.5 font-sans text-xs capitalize " + STATUS_COLORS[p.review_status]}>
+                  <span
+                    className={
+                      "rounded-full px-2 py-0.5 font-sans text-xs capitalize " +
+                      STATUS_COLORS[p.review_status]
+                    }
+                  >
                     {p.review_status}
                   </span>
                 </td>
@@ -156,7 +173,10 @@ function AdminProviders() {
                   {p.created_at ? new Date(p.created_at).toLocaleDateString() : "—"}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => setSelected(p)} className="font-sans text-xs text-eve-teal hover:underline">
+                  <button
+                    onClick={() => setSelected(p)}
+                    className="font-sans text-xs text-eve-teal hover:underline"
+                  >
                     Review
                   </button>
                 </td>
@@ -179,9 +199,18 @@ function AdminProviders() {
                 <Field label="Clinic" value={selected.clinic_name} />
                 <Field label="License #" value={selected.license_number} />
                 <Field label="Languages" value={selected.languages?.join(", ")} />
-                <Field label="Consultation fee" value={selected.consultation_fee_mad ? `${selected.consultation_fee_mad} MAD` : null} />
-                <div className="col-span-2"><Field label="Clinic address" value={selected.clinic_address} /></div>
-                <div className="col-span-2"><Field label="Bio" value={selected.bio} /></div>
+                <Field
+                  label="Consultation fee"
+                  value={
+                    selected.consultation_fee_mad ? `${selected.consultation_fee_mad} MAD` : null
+                  }
+                />
+                <div className="col-span-2">
+                  <Field label="Clinic address" value={selected.clinic_address} />
+                </div>
+                <div className="col-span-2">
+                  <Field label="Bio" value={selected.bio} />
+                </div>
                 {selected.rejection_reason && (
                   <div className="col-span-2 rounded-lg bg-red-50 p-3 text-red-800">
                     <p className="text-xs font-semibold">Previous rejection</p>
@@ -190,9 +219,30 @@ function AdminProviders() {
                 )}
               </dl>
               <DialogFooter className="gap-2">
-                <Button variant="outline" onClick={() => { setActionType("info"); setReason(""); }}>Request more info</Button>
-                <Button variant="destructive" onClick={() => { setActionType("reject"); setReason(""); }}>Reject</Button>
-                <Button onClick={() => verify(selected)} className="bg-eve-teal text-white hover:bg-eve-teal-dark">Verify</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setActionType("info");
+                    setReason("");
+                  }}
+                >
+                  Request more info
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setActionType("reject");
+                    setReason("");
+                  }}
+                >
+                  Reject
+                </Button>
+                <Button
+                  onClick={() => verify(selected)}
+                  className="bg-eve-teal text-white hover:bg-eve-teal-dark"
+                >
+                  Verify
+                </Button>
               </DialogFooter>
             </>
           )}
@@ -202,17 +252,28 @@ function AdminProviders() {
       <Dialog open={!!actionType} onOpenChange={(o) => !o && setActionType(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{actionType === "reject" ? "Rejection reason" : "Request more info"}</DialogTitle>
+            <DialogTitle>
+              {actionType === "reject" ? "Rejection reason" : "Request more info"}
+            </DialogTitle>
           </DialogHeader>
           <Textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder={actionType === "reject" ? "Why is this provider being rejected?" : "What additional info do you need?"}
+            placeholder={
+              actionType === "reject"
+                ? "Why is this provider being rejected?"
+                : "What additional info do you need?"
+            }
             rows={5}
           />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setActionType(null)}>Cancel</Button>
-            <Button onClick={actionType === "reject" ? reject : requestInfo} className="bg-eve-teal text-white hover:bg-eve-teal-dark">
+            <Button variant="outline" onClick={() => setActionType(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={actionType === "reject" ? reject : requestInfo}
+              className="bg-eve-teal text-white hover:bg-eve-teal-dark"
+            >
               Send
             </Button>
           </DialogFooter>

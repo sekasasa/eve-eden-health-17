@@ -1,12 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 import { ProgramShell } from "@/components/shells/ProgramShell";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/program/reports")({
   component: ProgramReports,
@@ -21,8 +30,12 @@ const RANGES = [
 function ProgramReports() {
   const [rangeId, setRangeId] = useState("90");
   const days = RANGES.find((r) => r.id === rangeId)!.days;
-  const [mothers, setMothers] = useState<{ id: string; created_at: string | null; district: string | null }[]>([]);
-  const [visits, setVisits] = useState<{ id: string; visit_date: string; referred: boolean; mother_id: string; chw_id: string }[]>([]);
+  const [mothers, setMothers] = useState<
+    { id: string; created_at: string | null; district: string | null }[]
+  >([]);
+  const [visits, setVisits] = useState<
+    { id: string; visit_date: string; referred: boolean; mother_id: string; chw_id: string }[]
+  >([]);
   const [alerts, setAlerts] = useState<{ id: string; created_at: string; resolved: boolean }[]>([]);
   const [riskLevels, setRiskLevels] = useState<{ risk_level: string | null }[]>([]);
 
@@ -31,7 +44,10 @@ function ProgramReports() {
       const since = new Date(Date.now() - days * 86400000).toISOString();
       const [mRes, vRes, aRes, rRes] = await Promise.all([
         supabase.from("chw_mothers").select("id,created_at,district").gte("created_at", since),
-        supabase.from("visits").select("id,visit_date,referred,mother_id,chw_id").gte("visit_date", since.slice(0, 10)),
+        supabase
+          .from("visits")
+          .select("id,visit_date,referred,mother_id,chw_id")
+          .gte("visit_date", since.slice(0, 10)),
         supabase.from("chw_alerts").select("id,created_at,resolved").gte("created_at", since),
         supabase.from("chw_mothers").select("risk_level"),
       ]);
@@ -82,13 +98,18 @@ function ProgramReports() {
 
   const motherSet = new Set(visits.map((v) => v.mother_id));
   const avgVisits = motherSet.size ? (visits.length / motherSet.size).toFixed(1) : "0";
-  const referralRate = visits.length ? Math.round((visits.filter((v) => v.referred).length / visits.length) * 100) : 0;
+  const referralRate = visits.length
+    ? Math.round((visits.filter((v) => v.referred).length / visits.length) * 100)
+    : 0;
   const resolved48 = alerts.filter((a) => a.resolved).length;
   const resolvePct = alerts.length ? Math.round((resolved48 / alerts.length) * 100) : 0;
   const districts = new Set(mothers.map((m) => m.district).filter(Boolean));
 
   const districtTable = useMemo(() => {
-    const map = new Map<string, { mothers: Set<string>; chws: Set<string>; visits: number; high: number; total: number }>();
+    const map = new Map<
+      string,
+      { mothers: Set<string>; chws: Set<string>; visits: number; high: number; total: number }
+    >();
     mothers.forEach((m) => {
       const d = m.district ?? "—";
       const e = map.get(d) ?? { mothers: new Set(), chws: new Set(), visits: 0, high: 0, total: 0 };
@@ -101,7 +122,10 @@ function ProgramReports() {
       const m = mothers.find((x) => x.id === v.mother_id);
       const d = m?.district ?? "—";
       const e = map.get(d);
-      if (e) { e.visits++; e.chws.add(v.chw_id); }
+      if (e) {
+        e.visits++;
+        e.chws.add(v.chw_id);
+      }
     });
     riskLevels.forEach(() => {});
     return [...map.entries()].map(([district, e]) => ({
@@ -118,14 +142,28 @@ function ProgramReports() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-sans text-2xl font-semibold text-eve-teal-dark">Impact reports</h1>
-          <p className="mt-1 font-sans text-sm text-gray-500">{RANGES.find((r) => r.id === rangeId)!.label}</p>
+          <p className="mt-1 font-sans text-sm text-gray-500">
+            {RANGES.find((r) => r.id === rangeId)!.label}
+          </p>
         </div>
         <div className="flex items-center gap-2">
-          <select value={rangeId} onChange={(e) => setRangeId(e.target.value)} className="rounded-lg border border-gray-200 px-3 py-2 font-sans text-sm">
-            {RANGES.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
+          <select
+            value={rangeId}
+            onChange={(e) => setRangeId(e.target.value)}
+            className="rounded-lg border border-gray-200 px-3 py-2 font-sans text-sm"
+          >
+            {RANGES.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.label}
+              </option>
+            ))}
           </select>
-          <button onClick={() => toast.info("PDF export coming soon")} className="rounded-lg bg-eve-teal px-4 py-2 font-sans text-sm font-medium text-white">
-            Export PDF
+          <button
+            disabled
+            title="PDF export is not available yet"
+            className="rounded-lg bg-eve-teal px-4 py-2 font-sans text-sm font-medium text-white opacity-60"
+          >
+            Export PDF (coming soon)
           </button>
         </div>
       </div>
@@ -134,7 +172,10 @@ function ProgramReports() {
         <div className="grid gap-4 md:grid-cols-3">
           <Stat label="Women reached" value={mothers.length} />
           <Stat label="Districts covered" value={districts.size} />
-          <Stat label="High-risk identified" value={riskLevels.filter((r) => r.risk_level === "high").length} />
+          <Stat
+            label="High-risk identified"
+            value={riskLevels.filter((r) => r.risk_level === "high").length}
+          />
         </div>
         <ChartCard title="Mothers registered over time">
           <ResponsiveContainer width="100%" height={260}>
@@ -173,8 +214,16 @@ function ProgramReports() {
           <ChartCard title="Risk distribution">
             <ResponsiveContainer width="100%" height={260}>
               <PieChart>
-                <Pie data={riskDist} dataKey="value" innerRadius={60} outerRadius={90} paddingAngle={2}>
-                  {riskDist.map((d, i) => <Cell key={i} fill={d.color} />)}
+                <Pie
+                  data={riskDist}
+                  dataKey="value"
+                  innerRadius={60}
+                  outerRadius={90}
+                  paddingAngle={2}
+                >
+                  {riskDist.map((d, i) => (
+                    <Cell key={i} fill={d.color} />
+                  ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
@@ -182,20 +231,28 @@ function ProgramReports() {
             <div className="mt-2 flex justify-center gap-4 text-xs text-gray-600">
               {riskDist.map((d) => (
                 <span key={d.name} className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full" style={{ background: d.color }} /> {d.name} ({d.value})
+                  <span className="h-2 w-2 rounded-full" style={{ background: d.color }} /> {d.name}{" "}
+                  ({d.value})
                 </span>
               ))}
             </div>
           </ChartCard>
           <div className="rounded-xl border border-gray-100 bg-white p-6">
-            <p className="font-sans text-sm font-semibold text-gray-900">High-risk cases resolved</p>
+            <p className="font-sans text-sm font-semibold text-gray-900">
+              High-risk cases resolved
+            </p>
             <p className="mt-1 font-sans text-xs text-gray-500">Target: 80% within 48h</p>
             <div className="mt-6">
               <p className="font-sans text-4xl font-semibold text-eve-teal-dark">{resolvePct}%</p>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-100">
-                <div className="h-full bg-eve-teal" style={{ width: `${Math.min(resolvePct, 100)}%` }} />
+                <div
+                  className="h-full bg-eve-teal"
+                  style={{ width: `${Math.min(resolvePct, 100)}%` }}
+                />
               </div>
-              <p className="mt-3 font-sans text-xs text-gray-500">{resolved48} of {alerts.length} alerts resolved</p>
+              <p className="mt-3 font-sans text-xs text-gray-500">
+                {resolved48} of {alerts.length} alerts resolved
+              </p>
             </div>
           </div>
         </div>
@@ -214,7 +271,13 @@ function ProgramReports() {
               </tr>
             </thead>
             <tbody>
-              {districtTable.length === 0 && <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-500">No district data.</td></tr>}
+              {districtTable.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-10 text-center text-gray-500">
+                    No district data.
+                  </td>
+                </tr>
+              )}
               {districtTable.map((r) => (
                 <tr key={r.district} className="border-t border-gray-100">
                   <td className="px-4 py-3 font-medium text-gray-900">{r.district}</td>
@@ -232,13 +295,18 @@ function ProgramReports() {
       <Section title="5. Narrative summary">
         <div className="rounded-xl border border-gray-100 bg-white p-6">
           <p className="font-sans text-base leading-relaxed text-gray-700">
-            In the {RANGES.find((r) => r.id === rangeId)!.label.toLowerCase()}, Eve & Eden's program reached{" "}
-            <strong className="text-eve-teal-dark">{mothers.length}</strong> women across{" "}
-            <strong className="text-eve-teal-dark">{districts.size}</strong> districts. CHW workers conducted{" "}
-            <strong className="text-eve-teal-dark">{visits.length}</strong> home visits.{" "}
-            <strong className="text-eve-teal-dark">{riskLevels.filter((r) => r.risk_level === "high").length}</strong>{" "}
+            In the {RANGES.find((r) => r.id === rangeId)!.label.toLowerCase()}, Eve & Eden's program
+            reached <strong className="text-eve-teal-dark">{mothers.length}</strong> women across{" "}
+            <strong className="text-eve-teal-dark">{districts.size}</strong> districts. CHW workers
+            conducted <strong className="text-eve-teal-dark">{visits.length}</strong> home visits.{" "}
+            <strong className="text-eve-teal-dark">
+              {riskLevels.filter((r) => r.risk_level === "high").length}
+            </strong>{" "}
             high-risk cases were identified and{" "}
-            <strong className="text-eve-teal-dark">{visits.filter((v) => v.referred).length}</strong> referrals were made.
+            <strong className="text-eve-teal-dark">
+              {visits.filter((v) => v.referred).length}
+            </strong>{" "}
+            referrals were made.
           </p>
         </div>
       </Section>
