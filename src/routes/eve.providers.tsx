@@ -240,71 +240,68 @@ function EveProviders() {
     [region],
   );
 
-  // Apply hard filters first (country/city/virtual/home/etc) then rank.
-  const { filtered, matched } = useMemo(() => {
-    const base = specialty === "All"
-      ? items
-      : items.filter((p) => (p.specialty ?? "").toLowerCase().includes(specialty.toLowerCase()));
-
-    const passed = base.filter((p) => {
-      const hay = haystackFor(p);
-      if (filterCountry.trim()) {
-        const c = filterCountry.trim().toLowerCase();
-        if (!(p.country ?? "").toLowerCase().includes(c)) return false;
-      }
-      if (filterCity.trim()) {
-        const c = filterCity.trim().toLowerCase();
-        if (!(p.city ?? "").toLowerCase().includes(c)) return false;
-      }
-      if (filterVirtual && !/virtual|telehealth|teleconsult|online|en ligne/.test(hay)) return false;
-      if (filterHomeVisit && !/home visit|à domicile|domicile|home-visit|in-home/.test(hay)) return false;
-      if (filterLanguages.length > 0) {
-        const langs = (p.languages ?? []).map((l) => l.toLowerCase());
-        const ok = filterLanguages.some((sel) =>
-          langs.some((l) => l.includes(sel.toLowerCase().split(" / ")[0])),
-        );
-        if (!ok) return false;
-      }
-      if (filterDialect.trim()) {
-        const d = filterDialect.trim().toLowerCase();
-        const langs = (p.languages ?? []).map((l) => l.toLowerCase());
-        if (!langs.some((l) => l.includes(d))) return false;
-      }
-      for (const id of filterPrefs) {
-        const opt = ALL_PREF_OPTIONS.find((o) => o.id === id);
-        if (!opt) continue;
-        const ok = opt.keywords.some((k) => hay.includes(k));
-        if (!ok) return false;
-      }
-      return true;
-    });
-
-    const score = (p: Provider) => {
-      let s = providerPersonalizationScore(
-        {
-          languages: p.languages,
-          city: p.city,
-          services: toLowerList(p.services),
-          credentials: toLowerList(p.credentials),
-        },
-        prefs,
-      );
-      if (regionalLangs.length && (p.languages ?? []).some((l) => regionalLangs.includes(l.toLowerCase()))) s += 1;
-      const userLang = (profile.language ?? "").toLowerCase();
-      const userCity = (profile.city ?? "").toLowerCase();
-      if (!prefs.language && userLang && (p.languages ?? []).some((l) => l.toLowerCase().includes(userLang))) s += 2;
-      if (!prefs.city && userCity && (p.city ?? "").toLowerCase().includes(userCity)) s += 2;
-      if (p.accepting_patients) s += 1;
-      if (p.is_verified) s += 1;
-      s += (p.avg_rating ?? 0) / 5;
-      return s;
-    };
-
+  // Preferences are RANKING signals. They only hard-filter when the mother
+  // explicitly enables a strict filter. Fallback ladder is transparent.
+  const criteria = useMemo<MatchCriteria>(() => {
+    const city = filterCity || prefs.city || profile.city || null;
+    const country = filterCountry || prefs.country || null;
+    const languages = filterLanguages.length
+      ? filterLanguages
+      : prefs.language
+        ? [prefs.language]
+        : profile.language
+          ? [profile.language]
+          : [];
+    const dialect = filterDialect || prefs.dialect || null;
     return {
-      filtered: [...passed].sort((a, b) => score(b) - score(a)),
-      matched: passed.length,
+      specialty,
+      country,
+      city,
+      languages,
+      dialect,
+      virtual: filterVirtual,
+      homeVisit: filterHomeVisit,
+      preferenceKeywords: filterPrefs
+        .map((id) => ALL_PREF_OPTIONS.find((o) => o.id === id)?.keywords ?? [])
+        .filter((g) => g.length > 0)
+        .map((g) => [...g]),
+      strict: {
+        country: strictLocation && !!country,
+        city: strictLocation && !!city,
+        language: strictLanguage && languages.length > 0,
+        dialect: strictLanguage && !!dialect,
+        virtual: filterVirtual,
+        homeVisit: filterHomeVisit,
+        preferences: strictPreferences,
+      },
     };
-  }, [items, specialty, prefs, profile.language, profile.city, regionalLangs, filterCountry, filterCity, filterVirtual, filterHomeVisit, filterLanguages, filterDialect, filterPrefs]);
+  }, [
+    specialty,
+    filterCountry,
+    filterCity,
+    filterLanguages,
+    filterDialect,
+    filterVirtual,
+    filterHomeVisit,
+    filterPrefs,
+    strictLocation,
+    strictLanguage,
+    strictPreferences,
+    prefs.city,
+    prefs.country,
+    prefs.language,
+    prefs.dialect,
+    profile.city,
+    profile.language,
+  ]);
+
+  const match = useMemo(
+    () => matchProviders(items as MatchProviderRecord[], criteria),
+    [items, criteria],
+  );
+  const filtered = match.results as Provider[];
+  const matched = filtered.length;
+
 
   const femalePreferred = prefHelpers.femalePreferred(prefs) || filterPrefs.includes("female");
   const verifiedFemaleConfirmable = filtered.some((p) => /female|women's health|women only/.test(haystackFor(p)));
