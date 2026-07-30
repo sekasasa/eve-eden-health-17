@@ -6,7 +6,7 @@ import { SafetyDisclaimer } from "@/components/ui/SafetyDisclaimer";
 import { supabase } from "@/integrations/supabase/client";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { toast } from "sonner";
-import { isFlagOn } from "@/lib/flags";
+import { isFeatureEnabled } from "@/lib/flags";
 import {
   MAX_DOC_BYTES,
   SHARING_PREREQUISITES,
