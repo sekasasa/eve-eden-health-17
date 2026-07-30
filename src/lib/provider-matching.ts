@@ -126,15 +126,43 @@ export function normalizeLanguage(value?: string | null): string | null {
   return LANGUAGE_ALIASES[head] ?? head;
 }
 
+/**
+ * City spellings seen across seeded rows, onboarding free text and Arabic or
+ * French input, mapped to one canonical key.
+ */
+const CITY_ALIASES: Record<string, string> = {
+  casa: "casablanca",
+  "casablanca-settat": "casablanca",
+  "dar el beida": "casablanca",
+  "dar elbeida": "casablanca",
+  "الدار البيضاء": "casablanca",
+  "الرباط": "rabat",
+  rbat: "rabat",
+  "rabat-sale": "rabat",
+  "rabat-sale-kenitra": "rabat",
+  "sale": "sale",
+  "salé": "sale",
+  "سلا": "sale",
+  "kenitra": "kenitra",
+  "القنيطرة": "kenitra",
+  "mohammadia": "mohammedia",
+  "المحمدية": "mohammedia",
+  "marrakesh": "marrakech",
+  "مراكش": "marrakech",
+};
+
 export function normalizeCity(value?: string | null): string | null {
   if (!value) return null;
   const s = value
     .trim()
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-  return s || null;
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ");
+  if (!s) return null;
+  return CITY_ALIASES[s] ?? CITY_ALIASES[value.trim().toLowerCase()] ?? s;
 }
+
 
 /* ------------------------------------------------------------------ */
 /* Specialty taxonomy                                                  */
