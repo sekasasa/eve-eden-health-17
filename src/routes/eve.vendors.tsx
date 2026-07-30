@@ -283,18 +283,8 @@ function EveVendors() {
               </option>
             ))}
           </select>
-          <select
-            value={credential}
-            onChange={(e) => setCredential(e.target.value)}
-            className="flex-1 rounded-full border border-eve-muted/30 bg-white px-3 py-2 font-sans text-xs text-eve-forest outline-none"
-          >
-            <option value="">All credentials</option>
-            {credentialOptions.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+        </div>
+
         </div>
         <div className="flex items-center gap-2 rounded-full border border-eve-muted/30 bg-white px-3 py-2">
           <ArrowUpDown className="h-3.5 w-3.5 text-eve-muted" />
