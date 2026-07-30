@@ -15,41 +15,13 @@ export const Route = createFileRoute("/eve/vendors")({
   component: EveVendors,
 });
 
-const CATEGORIES = [
-  "All",
-  "Care Services",
-  "Maternity wear",
-  "Baby gear",
-  "Nutrition",
-  "Pharmacy",
-  "Classes",
+const CATEGORY_TABS = [
+  { value: "all", label: "All" },
+  ...MARKETPLACE_CATEGORIES.map((c) => ({ value: c.value as string, label: c.label })),
 ] as const;
 
-const CATEGORY_VALUE: Record<string, string> = {
-  "Care Services": "care_services",
-  "Maternity wear": "maternity_wear",
-  "Baby gear": "baby_gear",
-  Nutrition: "nutrition",
-  Pharmacy: "pharmacy",
-  Classes: "classes",
-};
+type Vendor = MarketplaceVendor;
 
-type Vendor = {
-  id: string;
-  business_name: string | null;
-  category: string | null;
-  city: string | null;
-  country: string | null;
-  logo_url: string | null;
-  is_verified: boolean | null;
-  is_featured: boolean | null;
-  description: string | null;
-  services: string | null;
-  languages: string[] | null;
-  credentials: string | null;
-  avg_rating: number | null;
-  created_at: string | null;
-};
 
 function initials(name: string | null) {
   if (!name) return "??";
