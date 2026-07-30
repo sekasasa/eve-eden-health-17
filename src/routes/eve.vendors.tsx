@@ -303,8 +303,8 @@ function EveVendors() {
             onClick={() => {
               setServiceQuery("");
               setLanguage("");
-              setCredential("");
-              setCat("All");
+              setCat("all");
+
               setSortBy("recommended");
             }}
             className="self-end font-sans text-[11px] text-eve-teal"
