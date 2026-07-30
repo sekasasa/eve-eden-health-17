@@ -358,7 +358,11 @@ function EveProviders() {
     setFilterLanguages([]);
     setFilterDialect("");
     setFilterPrefs([]);
+    setStrictLocation(false);
+    setStrictLanguage(false);
+    setStrictPreferences(false);
   }
+
 
   function toggleLang(l: string) {
     setFilterLanguages((cur) => cur.includes(l) ? cur.filter((x) => x !== l) : [...cur, l]);
