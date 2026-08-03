@@ -227,18 +227,30 @@ function CommunityPage() {
         </p>
       )}
 
-      {tabBacked && liveLoadFailed && (
+      {tabBacked && feedStatus === "fallback" && (
         <p
           role="status"
+          data-testid="community-live-error"
           className="mt-4 rounded-2xl border border-eve-sand bg-white px-4 py-3 text-[13px] leading-relaxed text-eve-teal-dark/75 rtl:text-right"
         >
-          {t("community.detail.liveUnavailable")}
+          {t("community.detail.liveUnavailableShort")}
         </p>
       )}
 
-      {tabBacked && usingSeeded && (
+      {tabBacked && feedStatus === "empty" && (
+        <p
+          role="status"
+          data-testid="community-empty-notice"
+          className="mt-4 rounded-2xl border border-eve-sand bg-white px-4 py-3 text-[13px] leading-relaxed text-eve-teal-dark/75 rtl:text-right"
+        >
+          {t("community.detail.noPublishedShort")}
+        </p>
+      )}
+
+      {tabBacked && !loading && usingSeeded && (
         <div
           role="note"
+          data-testid="community-sample-disclosure"
           className="mt-4 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3 rtl:text-right"
         >
           <p className="text-[13px] leading-relaxed text-eve-teal-dark/75">
