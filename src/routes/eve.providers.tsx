@@ -265,13 +265,33 @@ function EveProviders() {
   const [strictLanguage, setStrictLanguage] = useState(false);
   const [strictPreferences, setStrictPreferences] = useState(false);
 
+  // Community source context (topic enum only — never post text).
+  const search = Route.useSearch();
+  const communityTopic = search.source === "community" ? search.topic : undefined;
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  useEffect(() => {
+    if (!communityTopic) return;
+    track(ANALYTICS_EVENTS.providerDirectoryOpenedFromCommunity, { topic: communityTopic });
+  }, [communityTopic]);
+
   // Pre-select specialty + seed from care prefs
   useEffect(() => {
     if (!hydrated || autoApplied) return;
+    if (communityTopic) {
+      const mapped = specialtyForTopic(communityTopic);
+      const preset = FILTERS.find((f) => f === mapped);
+      if (preset) {
+        setSpecialty(preset);
+        setAutoApplied(true);
+        return;
+      }
+    }
     const stage = profile.stage as LifeStage | undefined;
     const preset = stage && STAGE_FILTER[stage];
     if (preset) setSpecialty(preset);
     setAutoApplied(true);
+
   }, [hydrated, profile.stage, autoApplied]);
 
   // Seed filters from saved care preferences once they load
