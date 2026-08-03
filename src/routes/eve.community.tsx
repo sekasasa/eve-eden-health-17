@@ -37,7 +37,10 @@ import {
   postsForTab,
   type CategoryKey,
   type FeedTabKey,
+  type Post,
 } from "@/lib/community-seed";
+import { getPublishedPosts } from "@/features/community/services/communityService";
+import { adaptPosts } from "@/features/community/adapters/communityAdapter";
 
 export const Route = createFileRoute("/eve/community")({
   head: () => ({
@@ -223,7 +226,16 @@ function CommunityPage() {
         </p>
       )}
 
-      {tabBacked && (
+      {tabBacked && liveLoadFailed && (
+        <p
+          role="status"
+          className="mt-4 rounded-2xl border border-eve-sand bg-white px-4 py-3 text-[13px] leading-relaxed text-eve-teal-dark/75 rtl:text-right"
+        >
+          {t("community.detail.liveUnavailable")}
+        </p>
+      )}
+
+      {tabBacked && usingSeeded && (
         <div
           role="note"
           className="mt-4 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3 rtl:text-right"
