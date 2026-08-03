@@ -125,10 +125,12 @@ function CommunityPage() {
 
   const filtered = useMemo(() => {
     if (!tabBacked) return [];
+    const source = usingSeeded ? SEED_POSTS : persistedPosts;
     const byCategory =
-      active === "all" ? SEED_POSTS : SEED_POSTS.filter((p) => p.category === active);
+      active === "all" ? source : source.filter((p) => p.category === active);
     return postsForTab(byCategory, tab);
-  }, [active, tab, tabBacked]);
+  }, [active, tab, tabBacked, usingSeeded, persistedPosts]);
+
 
   return (
     <EveShell>
