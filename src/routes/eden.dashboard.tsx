@@ -1,10 +1,25 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDownRight, ArrowUpRight, PenLine } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { EdenShell } from "@/components/shells/EdenShell";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { CoordinationPanels } from "@/components/CoordinationPanels";
+import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
+import {
+  ProviderGrowthOverview,
+  type GrowthMetric,
+} from "@/components/provider-dashboard/ProviderGrowthOverview";
+import {
+  ProviderPriorityActions,
+  type PriorityAction,
+  type PriorityActionKey,
+} from "@/components/provider-dashboard/ProviderPriorityActions";
+import {
+  ProviderOpportunityList,
+  type OpportunityItem,
+} from "@/components/provider-dashboard/ProviderOpportunityList";
+import { ProviderPracticeLinks } from "@/components/provider-dashboard/ProviderPracticeLinks";
 
 export const Route = createFileRoute("/eden/dashboard")({
   component: EdenDashboard,
@@ -20,7 +35,11 @@ type Appt = {
   mother: { id: string; full_name: string | null; pregnancy_week: number | null } | null;
 };
 
-type KPI = { label: string; value: number; delta: number };
+type AccountState = {
+  isVerified: boolean;
+  hasServices: boolean;
+  profileComplete: boolean;
+};
 
 function initials(n?: string | null) {
   if (!n) return "·";
@@ -46,12 +65,14 @@ type ProfileStrength = {
 
 function EdenDashboard() {
   const [name, setName] = useState<string>("");
-  const [kpis, setKpis] = useState<KPI[]>([
-    { label: "Active patients", value: 0, delta: 0 },
-    { label: "Appointments this week", value: 0, delta: 0 },
-    { label: "Pending confirmations", value: 0, delta: 0 },
-    { label: "No-shows this month", value: 0, delta: 0 },
+  const { t } = useTranslation();
+  const [metrics, setMetrics] = useState<GrowthMetric[]>([
+    { key: "pendingRequests", value: 0 },
+    { key: "upcomingConfirmed", value: 0 },
+    { key: "peopleSeen30d", value: 0 },
   ]);
+  const [opportunities, setOpportunities] = useState<OpportunityItem[]>([]);
+  const [account, setAccount] = useState<AccountState | null>(null);
   const [today, setToday] = useState<Appt[]>([]);
   const [recent, setRecent] = useState<
     { id: string; full_name: string | null; pregnancy_week: number | null; last_visit: string }[]
@@ -65,7 +86,9 @@ function EdenDashboard() {
       if (!auth.user) return;
       const { data: p } = await supabase
         .from("providers")
-        .select("id,full_name,specialty,clinic_name,bio,languages,consultation_fee_mad,phone,accepting_patients")
+        .select(
+          "id,full_name,specialty,clinic_name,bio,languages,consultation_fee_mad,phone,accepting_patients,is_verified,services",
+        )
         .eq("user_id", auth.user.id)
         .maybeSingle();
       if (!p) {
@@ -73,6 +96,18 @@ function EdenDashboard() {
         return;
       }
       setName(p.full_name ?? "");
+      setAccount({
+        isVerified: p.is_verified === true,
+        hasServices: !!(p.services && p.services.trim()),
+        profileComplete: !!(
+          p.specialty &&
+          p.clinic_name &&
+          p.bio &&
+          p.bio.trim().length > 30 &&
+          p.languages &&
+          p.languages.length
+        ),
+      });
       setStrength({
         hasLanguages: !!(p.languages && p.languages.length),
         hasBio: !!(p.bio && p.bio.trim().length > 30),
