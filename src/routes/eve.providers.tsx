@@ -31,9 +31,18 @@ import {
 } from "@/lib/provider-matching";
 
 import type { LifeStage } from "@/lib/match-data";
+import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
+import { CommunityContextBanner } from "@/components/providers/CommunityContextBanner";
+import { isCareTopic, specialtyForTopic, type CareTopic } from "@/lib/community-care-actions";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/providers")({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { source?: "community"; topic?: CareTopic } => ({
+    source: search.source === "community" ? "community" : undefined,
+    topic: isCareTopic(search.topic) ? search.topic : undefined,
+  }),
   component: EveProviders,
 });
 
@@ -256,14 +265,34 @@ function EveProviders() {
   const [strictLanguage, setStrictLanguage] = useState(false);
   const [strictPreferences, setStrictPreferences] = useState(false);
 
+  // Community source context (topic enum only — never post text).
+  const search = Route.useSearch();
+  const communityTopic = search.source === "community" ? search.topic : undefined;
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  useEffect(() => {
+    if (!communityTopic) return;
+    track(ANALYTICS_EVENTS.providerDirectoryOpenedFromCommunity, { topic: communityTopic });
+  }, [communityTopic]);
+
   // Pre-select specialty + seed from care prefs
   useEffect(() => {
     if (!hydrated || autoApplied) return;
+    if (communityTopic) {
+      const mapped = specialtyForTopic(communityTopic);
+      const preset = FILTERS.find((f) => f === mapped);
+      if (preset) {
+        setSpecialty(preset);
+        setAutoApplied(true);
+        return;
+      }
+    }
     const stage = profile.stage as LifeStage | undefined;
     const preset = stage && STAGE_FILTER[stage];
     if (preset) setSpecialty(preset);
     setAutoApplied(true);
-  }, [hydrated, profile.stage, autoApplied]);
+
+  }, [hydrated, profile.stage, autoApplied, communityTopic]);
 
   // Seed filters from saved care preferences once they load
   useEffect(() => {
@@ -492,6 +521,11 @@ function EveProviders() {
         Search by region, language, dialect, and what matters to you. We rank using only your stated
         preferences.
       </p>
+
+      {communityTopic && !bannerDismissed && (
+        <CommunityContextBanner topic={communityTopic} onDismiss={() => setBannerDismissed(true)} />
+      )}
+
 
       {(profile.stage || profile.city || profile.language || prefs.region) && (
         <div className="mt-3 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 text-[12px] text-eve-teal-dark">

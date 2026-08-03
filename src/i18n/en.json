@@ -275,5 +275,34 @@
       "profile": "Profile & settings",
       "contentStudio": "Content studio"
     }
+  },
+  "communityCare": {
+    "action": {
+      "provider": "Find providers",
+      "nutrition": "Find nutrition support",
+      "emotional": "Find mental-health support",
+      "ivf": "Find fertility care",
+      "ttc": "Find fertility care",
+      "pregnancy": "Explore relevant providers",
+      "postpartum": "Explore relevant providers",
+      "newborn": "Explore relevant providers",
+      "symptoms": "Find care",
+      "birth": "Explore birth support"
+    },
+    "actionNote": "Directory options only — not medical advice.",
+    "banner": {
+      "provider": "Explore providers who may support this topic",
+      "nutrition": "Find care related to nutrition support",
+      "emotional": "Find care related to emotional and mental-health support",
+      "ivf": "Find care related to fertility",
+      "ttc": "Find care related to fertility",
+      "pregnancy": "Explore providers who may support pregnancy care",
+      "postpartum": "Explore providers who may support postpartum care",
+      "newborn": "Explore providers who may support newborn care",
+      "symptoms": "Find care related to this topic",
+      "birth": "Explore providers who may support birth preferences",
+      "disclaimer": "These are directory options, not clinical recommendations or guaranteed matches. If something feels urgent, seek local emergency care.",
+      "dismiss": "Dismiss"
+    }
   }
 }

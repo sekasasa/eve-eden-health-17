@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Bookmark, Flag, Flame, Heart, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CommunityCareAction } from "@/components/community/CommunityCareAction";
 import { CATEGORIES, toneBadge, type Post } from "@/lib/community-seed";
 
 /** One seeded community thread. Always labelled as sample content. */
@@ -119,6 +120,8 @@ export function CommunityPostCard({
           </p>
         </div>
       )}
+
+      <CommunityCareAction category={post.category} />
     </article>
   );
 }
