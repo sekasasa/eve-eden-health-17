@@ -187,6 +187,117 @@ export type Database = {
           },
         ]
       }
+      community_posts: {
+        Row: {
+          anonymous_alias: string | null
+          author_id: string | null
+          body: string
+          category: string
+          city: string | null
+          country_code: string | null
+          created_at: string
+          id: string
+          is_anonymous: boolean
+          is_seeded: boolean
+          language_code: string | null
+          life_stage: string | null
+          status: string
+          title: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          anonymous_alias?: string | null
+          author_id?: string | null
+          body: string
+          category: string
+          city?: string | null
+          country_code?: string | null
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean
+          is_seeded?: boolean
+          language_code?: string | null
+          life_stage?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          anonymous_alias?: string | null
+          author_id?: string | null
+          body?: string
+          category?: string
+          city?: string | null
+          country_code?: string | null
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean
+          is_seeded?: boolean
+          language_code?: string | null
+          life_stage?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
+      community_replies: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          id: string
+          is_seeded: boolean
+          post_id: string
+          provider_id: string | null
+          reply_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          is_seeded?: boolean
+          post_id: string
+          provider_id?: string | null
+          reply_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          is_seeded?: boolean
+          post_id?: string
+          provider_id?: string | null
+          reply_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_replies_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_replies_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_seeds: {
         Row: {
           body_preview: string | null
@@ -1777,6 +1888,7 @@ export type Database = {
         }
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_provider_owner: { Args: { _provider_id: string }; Returns: boolean }
       is_vendor_owner: { Args: { _vendor_id: string }; Returns: boolean }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
