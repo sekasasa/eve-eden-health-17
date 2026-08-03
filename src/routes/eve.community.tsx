@@ -272,6 +272,17 @@ function CommunityPage() {
               {tab === "nearby" ? t("community.pilotNearby") : t("community.pilotFollowing")}
             </p>
           </div>
+        ) : loading ? (
+          <div role="status" aria-live="polite" data-testid="community-feed-loading">
+            <span className="sr-only">{t("community.loading")}</span>
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                aria-hidden="true"
+                className="mb-3 h-40 animate-pulse rounded-2xl bg-eve-cream/70"
+              />
+            ))}
+          </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-eve-muted/30 bg-eve-cream/40 px-6 py-10 text-center">
             <p className="font-serif text-lg text-eve-teal-dark">
