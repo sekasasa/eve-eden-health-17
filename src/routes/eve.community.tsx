@@ -21,10 +21,43 @@ import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
 import { rankForProfile, type ContentRow } from "@/lib/content-filter";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import {
+  CATEGORIES,
+  FEED_TABS,
+  LIFE_STAGES,
+  POST_TAGS,
+  SEED_POSTS,
+  UNBACKED_TAB_COPY,
+  categoryForStage,
+  postsForTab,
+  toneBadge,
+  toneBg,
+  type CategoryKey,
+  type FeedTabKey,
+} from "@/lib/community-seed";
 
 export const Route = createFileRoute("/eve/community")({
+  head: () => ({
+    meta: [
+      { title: "Community & support — Eve & Eden Health" },
+      {
+        name: "description",
+        content:
+          "Read questions and answers from mothers on fertility, pregnancy, postpartum and finding care.",
+      },
+      { property: "og:title", content: "Community & support — Eve & Eden Health" },
+      {
+        property: "og:description",
+        content:
+          "Read questions and answers from mothers on fertility, pregnancy, postpartum and finding care.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: CommunityPage,
 });
+
 
 type CategoryKey =
   | "all"
