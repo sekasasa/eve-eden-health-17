@@ -39,8 +39,10 @@ import {
   type FeedTabKey,
   type Post,
 } from "@/lib/community-seed";
-import { getPublishedPosts } from "@/features/community/services/communityService";
-import { adaptPosts } from "@/features/community/adapters/communityAdapter";
+import {
+  loadCommunityFeedWithFallback,
+  type CommunityFeedStatus,
+} from "@/features/community/services/communityFeed";
 
 export const Route = createFileRoute("/eve/community")({
   head: () => ({
