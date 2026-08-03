@@ -72,6 +72,7 @@ import { Route as EveMatchFamilyRouteImport } from './routes/eve.match.family'
 import { Route as EveEventsLaunchCasablanca2026RouteImport } from './routes/eve.events.launch-casablanca-2026'
 import { Route as EveEventsIdRouteImport } from './routes/eve.events.$id'
 import { Route as EveContentIdRouteImport } from './routes/eve.content.$id'
+import { Route as EveCommunityCirclesRouteImport } from './routes/eve.community.circles'
 import { Route as EdenVendorProductsRouteImport } from './routes/eden.vendor.products'
 import { Route as EdenVendorOrdersRouteImport } from './routes/eden.vendor.orders'
 import { Route as EdenVendorOnboardingRouteImport } from './routes/eden.vendor.onboarding'
@@ -81,6 +82,7 @@ import { Route as EdenVendorContentRouteImport } from './routes/eden.vendor.cont
 import { Route as EdenPatientsIdRouteImport } from './routes/eden.patients.$id'
 import { Route as EveProvidersIdBookRouteImport } from './routes/eve.providers.$id.book'
 import { Route as EveCommunityPostPostIdRouteImport } from './routes/eve.community.post.$postId'
+import { Route as EveCommunityCircleSlugRouteImport } from './routes/eve.community.circle.$slug'
 import { Route as EdenVendorContentNewRouteImport } from './routes/eden.vendor.content.new'
 import { Route as ChwMothersIdVisitRouteImport } from './routes/chw.mothers.$id.visit'
 import { Route as EdenVendorContentIdEditRouteImport } from './routes/eden.vendor.content.$id.edit'
@@ -402,6 +404,11 @@ const EveContentIdRoute = EveContentIdRouteImport.update({
   path: '/eve/content/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EveCommunityCirclesRoute = EveCommunityCirclesRouteImport.update({
+  id: '/circles',
+  path: '/circles',
+  getParentRoute: () => EveCommunityRoute,
+} as any)
 const EdenVendorProductsRoute = EdenVendorProductsRouteImport.update({
   id: '/eden/vendor/products',
   path: '/eden/vendor/products',
@@ -445,6 +452,11 @@ const EveProvidersIdBookRoute = EveProvidersIdBookRouteImport.update({
 const EveCommunityPostPostIdRoute = EveCommunityPostPostIdRouteImport.update({
   id: '/post/$postId',
   path: '/post/$postId',
+  getParentRoute: () => EveCommunityRoute,
+} as any)
+const EveCommunityCircleSlugRoute = EveCommunityCircleSlugRouteImport.update({
+  id: '/circle/$slug',
+  path: '/circle/$slug',
   getParentRoute: () => EveCommunityRoute,
 } as any)
 const EdenVendorContentNewRoute = EdenVendorContentNewRouteImport.update({
@@ -522,6 +534,7 @@ export interface FileRoutesByFullPath {
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/community/circles': typeof EveCommunityCirclesRoute
   '/eve/content/$id': typeof EveContentIdRoute
   '/eve/events/$id': typeof EveEventsIdRoute
   '/eve/events/launch-casablanca-2026': typeof EveEventsLaunchCasablanca2026Route
@@ -536,6 +549,7 @@ export interface FileRoutesByFullPath {
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
   '/eden/vendor/content/new': typeof EdenVendorContentNewRoute
+  '/eve/community/circle/$slug': typeof EveCommunityCircleSlugRoute
   '/eve/community/post/$postId': typeof EveCommunityPostPostIdRoute
   '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
   '/eden/vendor/content/$id/edit': typeof EdenVendorContentIdEditRoute
@@ -599,6 +613,7 @@ export interface FileRoutesByTo {
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/community/circles': typeof EveCommunityCirclesRoute
   '/eve/content/$id': typeof EveContentIdRoute
   '/eve/events/$id': typeof EveEventsIdRoute
   '/eve/events/launch-casablanca-2026': typeof EveEventsLaunchCasablanca2026Route
@@ -613,6 +628,7 @@ export interface FileRoutesByTo {
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
   '/eden/vendor/content/new': typeof EdenVendorContentNewRoute
+  '/eve/community/circle/$slug': typeof EveCommunityCircleSlugRoute
   '/eve/community/post/$postId': typeof EveCommunityPostPostIdRoute
   '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
   '/eden/vendor/content/$id/edit': typeof EdenVendorContentIdEditRoute
@@ -677,6 +693,7 @@ export interface FileRoutesById {
   '/eden/vendor/onboarding': typeof EdenVendorOnboardingRoute
   '/eden/vendor/orders': typeof EdenVendorOrdersRoute
   '/eden/vendor/products': typeof EdenVendorProductsRoute
+  '/eve/community/circles': typeof EveCommunityCirclesRoute
   '/eve/content/$id': typeof EveContentIdRoute
   '/eve/events/$id': typeof EveEventsIdRoute
   '/eve/events/launch-casablanca-2026': typeof EveEventsLaunchCasablanca2026Route
@@ -691,6 +708,7 @@ export interface FileRoutesById {
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
   '/eden/vendor/content/new': typeof EdenVendorContentNewRoute
+  '/eve/community/circle/$slug': typeof EveCommunityCircleSlugRoute
   '/eve/community/post/$postId': typeof EveCommunityPostPostIdRoute
   '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
   '/eden/vendor/content/$id/edit': typeof EdenVendorContentIdEditRoute
@@ -756,6 +774,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
+    | '/eve/community/circles'
     | '/eve/content/$id'
     | '/eve/events/$id'
     | '/eve/events/launch-casablanca-2026'
@@ -770,6 +789,7 @@ export interface FileRouteTypes {
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
     | '/eden/vendor/content/new'
+    | '/eve/community/circle/$slug'
     | '/eve/community/post/$postId'
     | '/eve/providers/$id/book'
     | '/eden/vendor/content/$id/edit'
@@ -833,6 +853,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
+    | '/eve/community/circles'
     | '/eve/content/$id'
     | '/eve/events/$id'
     | '/eve/events/launch-casablanca-2026'
@@ -847,6 +868,7 @@ export interface FileRouteTypes {
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
     | '/eden/vendor/content/new'
+    | '/eve/community/circle/$slug'
     | '/eve/community/post/$postId'
     | '/eve/providers/$id/book'
     | '/eden/vendor/content/$id/edit'
@@ -910,6 +932,7 @@ export interface FileRouteTypes {
     | '/eden/vendor/onboarding'
     | '/eden/vendor/orders'
     | '/eden/vendor/products'
+    | '/eve/community/circles'
     | '/eve/content/$id'
     | '/eve/events/$id'
     | '/eve/events/launch-casablanca-2026'
@@ -924,6 +947,7 @@ export interface FileRouteTypes {
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
     | '/eden/vendor/content/new'
+    | '/eve/community/circle/$slug'
     | '/eve/community/post/$postId'
     | '/eve/providers/$id/book'
     | '/eden/vendor/content/$id/edit'
@@ -1433,6 +1457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveContentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eve/community/circles': {
+      id: '/eve/community/circles'
+      path: '/circles'
+      fullPath: '/eve/community/circles'
+      preLoaderRoute: typeof EveCommunityCirclesRouteImport
+      parentRoute: typeof EveCommunityRoute
+    }
     '/eden/vendor/products': {
       id: '/eden/vendor/products'
       path: '/eden/vendor/products'
@@ -1496,6 +1527,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveCommunityPostPostIdRouteImport
       parentRoute: typeof EveCommunityRoute
     }
+    '/eve/community/circle/$slug': {
+      id: '/eve/community/circle/$slug'
+      path: '/circle/$slug'
+      fullPath: '/eve/community/circle/$slug'
+      preLoaderRoute: typeof EveCommunityCircleSlugRouteImport
+      parentRoute: typeof EveCommunityRoute
+    }
     '/eden/vendor/content/new': {
       id: '/eden/vendor/content/new'
       path: '/new'
@@ -1545,10 +1583,14 @@ const EdenPatientsRouteWithChildren = EdenPatientsRoute._addFileChildren(
 )
 
 interface EveCommunityRouteChildren {
+  EveCommunityCirclesRoute: typeof EveCommunityCirclesRoute
+  EveCommunityCircleSlugRoute: typeof EveCommunityCircleSlugRoute
   EveCommunityPostPostIdRoute: typeof EveCommunityPostPostIdRoute
 }
 
 const EveCommunityRouteChildren: EveCommunityRouteChildren = {
+  EveCommunityCirclesRoute: EveCommunityCirclesRoute,
+  EveCommunityCircleSlugRoute: EveCommunityCircleSlugRoute,
   EveCommunityPostPostIdRoute: EveCommunityPostPostIdRoute,
 }
 

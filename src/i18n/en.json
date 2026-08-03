@@ -225,7 +225,39 @@
       "liveUnavailableShort": "Unable to load the live community right now. Showing examples."
     },
     "loading": "Loading community conversations…",
-    "liveLabel": "Live community conversations"
+    "liveLabel": "Live community conversations",
+    "circles": {
+      "title": "Circles",
+      "intro": "Curated spaces organised around stage, place, experience, and culture.",
+      "filtersLabel": "Circle filters",
+      "filters": {
+        "all": "All",
+        "nearYou": "Near You",
+        "journey": "Journey",
+        "experience": "Experience",
+        "culture": "Culture & Language"
+      },
+      "explore": "Explore circles",
+      "view": "View circle",
+      "join": "Join",
+      "joined": "Joined",
+      "leave": "Leave",
+      "loading": "Loading circles",
+      "empty": "No circles in this filter yet.",
+      "loadError": "We could not load circles right now. Please try again later.",
+      "membershipLabel": "Your membership",
+      "membershipUnavailable": "Membership opens during the moderated pilot. You can browse circles now.",
+      "stateJoined": "You have joined this circle.",
+      "stateNotJoined": "You have not joined this circle.",
+      "conversationsClosed": "Circle conversations and posting are not open yet. Browsing is available during the pilot.",
+      "browseOnlyNotice": "Circles are curated by the Eve & Eden team. Member-created circles are not open yet.",
+      "backToDirectory": "All circles",
+      "backToCommunity": "Back to Community",
+      "notFound": "This circle is not available.",
+      "previewTitle": "Circles",
+      "previewNearYou": "Curated circles in your country.",
+      "previewGeneric": "Curated circles you can browse."
+    }
   },
   "providerCard": {
     "verified": "Verified",

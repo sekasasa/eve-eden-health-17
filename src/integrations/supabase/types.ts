@@ -187,6 +187,95 @@ export type Database = {
           },
         ]
       }
+      community_circle_members: {
+        Row: {
+          circle_id: string
+          id: string
+          joined_at: string
+          role: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          circle_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          circle_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_circle_members_circle_id_fkey"
+            columns: ["circle_id"]
+            isOneToOne: false
+            referencedRelation: "community_circles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_circles: {
+        Row: {
+          circle_type: string
+          city: string | null
+          country_code: string | null
+          created_at: string
+          description: string
+          id: string
+          is_curated: boolean
+          language_code: string | null
+          life_stage: string | null
+          name: string
+          slug: string
+          status: string
+          topic_category: string | null
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          circle_type: string
+          city?: string | null
+          country_code?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          is_curated?: boolean
+          language_code?: string | null
+          life_stage?: string | null
+          name: string
+          slug: string
+          status?: string
+          topic_category?: string | null
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          circle_type?: string
+          city?: string | null
+          country_code?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_curated?: boolean
+          language_code?: string | null
+          life_stage?: string | null
+          name?: string
+          slug?: string
+          status?: string
+          topic_category?: string | null
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
       community_posts: {
         Row: {
           anonymous_alias: string | null

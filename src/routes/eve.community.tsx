@@ -10,6 +10,7 @@ import { CommunityTabs } from "@/components/community/CommunityTabs";
 import { CommunityFilterSheet } from "@/components/community/CommunityFilterSheet";
 import { CommunityPostCard } from "@/components/community/CommunityPostCard";
 import { CommunityReadOnlyNotice } from "@/components/community/CommunityReadOnlyNotice";
+import { CommunityCirclesPreview } from "@/components/community/CommunityCirclesPreview";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { useCarePreferences } from "@/hooks/useCarePreferences";
 import { prefHelpers } from "@/lib/personalization";
@@ -193,6 +194,17 @@ function CommunityPage() {
         )}
       </div>
 
+      {/* B2. Circles entry */}
+      <div className="mt-4">
+        <Link
+          to="/eve/community/circles"
+          onClick={() => track(ANALYTICS_EVENTS.circlesDirectoryOpened)}
+          className="inline-flex min-h-11 items-center gap-2 rounded-full border border-eve-teal px-4 text-[13px] font-medium text-eve-teal"
+        >
+          <Users className="h-4 w-4" /> {t("community.circles.explore")}
+        </Link>
+      </div>
+
       {/* C. Feed tabs */}
       <div className="mt-4">
         <CommunityTabs
@@ -203,6 +215,9 @@ function CommunityPage() {
           }}
         />
       </div>
+
+      <CommunityCirclesPreview countryCode={prefs.country ?? null} />
+
 
       {/* D. Compact topic filters */}
       <div className="mt-3">
