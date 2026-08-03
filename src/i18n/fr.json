@@ -163,5 +163,47 @@
     "vendorsSub": "Produits et services de partenaires référencés",
     "saved": "Enregistré",
     "savedEmpty": "Les soins enregistrés apparaîtront ici."
+  },
+  "community": {
+    "title": "Communauté",
+    "intro": "Posez vos questions librement, apprenez d'autres femmes et consultez des conseils d'experts fiables.",
+    "tabsLabel": "Fil de la communauté",
+    "tabs": {
+      "for_you": "Pour vous",
+      "nearby": "À proximité",
+      "following": "Abonnements",
+      "expert": "Réponses d'experts",
+      "new": "Récents"
+    },
+    "groups": {
+      "journey": "Parcours",
+      "needs": "Besoins",
+      "culture": "Communauté et culture"
+    },
+    "filterCta": "Thèmes",
+    "filterTitle": "Choisir un thème",
+    "filterAll": "Tous les thèmes",
+    "filterClear": "Effacer",
+    "readOnlyTitle": "La communauté est en lecture seule pour l'instant",
+    "readOnlyBody": "Les publications ci-dessous sont des exemples rédigés par notre équipe, pas des réponses d'autres membres. Aucun modérateur n'a examiné de contenu, car la file de modération n'est pas encore active.",
+    "postCta": "Nouvelle publication",
+    "postingSoon": "Publication bientôt disponible",
+    "sampleDisclosureTitle": "Conversations d'exemple.",
+    "sampleDisclosure": "Les fils ci-dessous ont été rédigés par l'équipe Eve & Eden pour montrer le fonctionnement de cet espace. Les vraies publications arriveront avec le pilote.",
+    "sample": "Exemple",
+    "trending": "Tendance",
+    "topAnswer": "Meilleure réponse",
+    "topAnswerSample": "Réponse d'exemple rédigée par notre équipe, pas une réponse de clinicien vérifié.",
+    "heart": "Aimer cette publication",
+    "save": "Enregistrer cette publication",
+    "report": "Signaler",
+    "reportedHidden": "Vous avez signalé cette publication : elle est masquée sur cet appareil.",
+    "pilotTitle": "À venir avec le pilote communautaire",
+    "pilotNearby": "Nous n'avons pas encore de données de localisation sur ces conversations, nous ne devinerons donc pas ce qui est près de vous.",
+    "pilotFollowing": "Suivre d'autres membres arrivera avec le pilote. Vous ne suivez encore personne.",
+    "expertNote": "Fils avec une réponse rédigée par notre équipe. Les réponses de cliniciens vérifiés arriveront avec le pilote.",
+    "emptyTopic": "Aucune conversation d'exemple dans ce thème pour l'instant.",
+    "personalized": "Conversations d'exemple liées à l'étape enregistrée dans votre profil.",
+    "supportLabel": "Soutien et ressources"
   }
 }

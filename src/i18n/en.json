@@ -163,5 +163,47 @@
     "vendorsSub": "Products and care services from listed partners",
     "saved": "Saved",
     "savedEmpty": "Saved care will appear here."
+  },
+  "community": {
+    "title": "Community",
+    "intro": "Ask freely, learn from women like you, and see trusted expert guidance.",
+    "tabsLabel": "Community feed",
+    "tabs": {
+      "for_you": "For You",
+      "nearby": "Nearby",
+      "following": "Following",
+      "expert": "Expert Answers",
+      "new": "New"
+    },
+    "groups": {
+      "journey": "Journey",
+      "needs": "Needs",
+      "culture": "Community & Culture"
+    },
+    "filterCta": "Topics",
+    "filterTitle": "Choose a topic",
+    "filterAll": "All topics",
+    "filterClear": "Clear",
+    "readOnlyTitle": "Community is read-only for now",
+    "readOnlyBody": "Posts below are example conversations written by our team, not replies from other members. No moderator has reviewed member content because the moderation queue is not live yet.",
+    "postCta": "New post",
+    "postingSoon": "Posting opens soon",
+    "sampleDisclosureTitle": "Example conversations.",
+    "sampleDisclosure": "The threads below were written by the Eve & Eden team to show how this space works. Real posts appear once the community pilot opens.",
+    "sample": "Sample",
+    "trending": "Trending",
+    "topAnswer": "Top answer",
+    "topAnswerSample": "Example answer written by our team, not a verified clinician response.",
+    "heart": "Like this post",
+    "save": "Save this post",
+    "report": "Report",
+    "reportedHidden": "You reported this post, so it is hidden on this device.",
+    "pilotTitle": "Coming with the community pilot",
+    "pilotNearby": "We do not have location data on these conversations yet, so we will not guess what is near you.",
+    "pilotFollowing": "Following other members opens with the community pilot. Nothing is followed yet.",
+    "expertNote": "Threads with an answer written by our team. Verified clinician answers arrive with the pilot.",
+    "emptyTopic": "No example conversations in this topic yet.",
+    "personalized": "Showing example conversations relevant to your saved stage.",
+    "supportLabel": "Support & resources"
   }
 }
