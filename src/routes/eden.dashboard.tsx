@@ -81,6 +81,10 @@ function EdenDashboard() {
   const [strength, setStrength] = useState<ProfileStrength | null>(null);
 
   useEffect(() => {
+    track(ANALYTICS_EVENTS.providerDashboardOpened);
+  }, []);
+
+  useEffect(() => {
     (async () => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) return;
@@ -376,41 +380,6 @@ function EdenDashboard() {
         )}
       </section>
     </EdenShell>
-  );
-}
-
-function KpiCard({ kpi, loading }: { kpi: KPI; loading: boolean }) {
-  const up = kpi.delta >= 0;
-  return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <p className="font-sans text-xs uppercase tracking-wide text-gray-500">
-        {kpi.label}
-      </p>
-      {loading ? (
-        <div className="mt-3 h-8 w-16 animate-pulse rounded bg-gray-100" />
-      ) : (
-        <div className="mt-2 flex items-end justify-between">
-          <span className="font-sans text-[32px] font-bold leading-none text-eve-forest">
-            {kpi.value}
-          </span>
-          {kpi.delta !== 0 && (
-            <span
-              className={cn(
-                "inline-flex items-center gap-0.5 font-sans text-xs",
-                up ? "text-green-600" : "text-red-600",
-              )}
-            >
-              {up ? (
-                <ArrowUpRight className="h-3 w-3" />
-              ) : (
-                <ArrowDownRight className="h-3 w-3" />
-              )}
-              {Math.abs(kpi.delta)}%
-            </span>
-          )}
-        </div>
-      )}
-    </div>
   );
 }
 

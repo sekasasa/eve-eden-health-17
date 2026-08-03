@@ -38,6 +38,8 @@ export const ANALYTICS_EVENTS = {
   providerFollowClicked: "provider_follow_clicked",
   providerServicesOpened: "provider_services_opened",
   askIntentSelected: "ask_intent_selected",
+  providerDashboardOpened: "provider_dashboard_opened",
+  providerDashboardActionSelected: "provider_dashboard_action_selected",
 } as const;
 
 
