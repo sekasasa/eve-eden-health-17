@@ -1888,7 +1888,6 @@ export type Database = {
         }
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
-      is_provider_owner: { Args: { _provider_id: string }; Returns: boolean }
       is_vendor_owner: { Args: { _vendor_id: string }; Returns: boolean }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
