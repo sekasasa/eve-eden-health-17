@@ -150,6 +150,11 @@ export type Post = {
    * Persisted posts have no social metrics yet and carry no sample label.
    */
   persisted?: boolean;
+  /**
+   * False when no social metrics exist for this row (persisted posts). The UI
+   * hides hearts/replies/trending entirely rather than rendering zeros.
+   */
+  metricsAvailable?: boolean;
 };
 
 export const SEED_POSTS: Post[] = [
