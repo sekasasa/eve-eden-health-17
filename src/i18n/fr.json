@@ -214,7 +214,13 @@
       "repliesClosedBody": "Les réponses ouvriront pendant le pilote communautaire modéré. En attendant, vous pouvez lire, enregistrer et signaler les conversations d'exemple.",
       "related": "Conversations similaires",
       "notFoundTitle": "Conversation introuvable",
-      "notFoundBody": "Cette conversation n'existe pas ou n'est plus disponible."
+      "notFoundBody": "Cette conversation n'existe pas ou n'est plus disponible.",
+      "noPublished": "Aucune conversation publiée pour l'instant. Voici des exemples rédigés par notre équipe.",
+      "noReplies": "Pas encore de réponses.",
+      "pendingModeration": "En attente de la révision d'un modérateur.",
+      "postingUnavailable": "La publication n'est pas disponible pendant le pilote.",
+      "liveUnavailable": "Impossible de charger les conversations en direct pour le moment — voici des exemples.",
+      "repliesTitle": "Réponses"
     }
   },
   "providerCard": {
