@@ -215,5 +215,17 @@
     "clinic": "Clinique",
     "languages": "Langues",
     "noDetails": "Détails non encore communiqués"
+  },
+  "providerProfile": {
+    "about": "À propos",
+    "verifiedCredentials": "Qualifications vérifiées",
+    "verifiedCredentialsValue": "Notre équipe a vérifié l'identité et les coordonnées de cette fiche.",
+    "location": "Localisation",
+    "acceptingValue": "Accepte actuellement de nouvelles patientes.",
+    "notAcceptingValue": "N'accepte pas de nouvelles patientes pour le moment.",
+    "noDetails": "Ce prestataire n'a pas encore partagé plus de détails. Demandez-lui directement avant de réserver.",
+    "requestAppointment": "Demander un rendez-vous",
+    "requestNote": "Les demandes sont envoyées au prestataire. Rien n'est confirmé avant sa réponse.",
+    "unnamed": "Prestataire"
   }
 }

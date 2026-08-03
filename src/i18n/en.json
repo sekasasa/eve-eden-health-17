@@ -215,5 +215,17 @@
     "clinic": "Clinic",
     "languages": "Languages",
     "noDetails": "Details not shared yet"
+  },
+  "providerProfile": {
+    "about": "About",
+    "verifiedCredentials": "Credentials verified",
+    "verifiedCredentialsValue": "Our team checked this listing's identity and contact details.",
+    "location": "Location",
+    "acceptingValue": "Currently accepting new patients.",
+    "notAcceptingValue": "Not accepting new patients right now.",
+    "noDetails": "This provider has not shared more details with us yet. Ask them directly before booking.",
+    "requestAppointment": "Request appointment",
+    "requestNote": "Requests are sent to the provider. Nothing is confirmed until they reply.",
+    "unnamed": "Provider"
   }
 }
