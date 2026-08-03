@@ -226,6 +226,15 @@
     "noDetails": "This provider has not shared more details with us yet. Ask them directly before booking.",
     "requestAppointment": "Request appointment",
     "requestNote": "Requests are sent to the provider. Nothing is confirmed until they reply.",
-    "unnamed": "Provider"
+    "unnamed": "Provider",
+    "overview": "Overview",
+    "services": "Services",
+    "servicesEmpty": "Services have not been added yet. Ask this provider what they offer when you get in touch.",
+    "servicesNote": "Services come from the provider's own listing. Confirm scope and price with them directly.",
+    "availability": "Appointment details",
+    "availabilityEmpty": "No appointment details have been shared yet.",
+    "contact": "Clinic & location",
+    "contactEmpty": "Contact details have not been shared here. You can ask when you send a request.",
+    "aboutEmpty": "This provider has not written a care philosophy yet. Ask what their approach looks like when you get in touch."
   }
 }
