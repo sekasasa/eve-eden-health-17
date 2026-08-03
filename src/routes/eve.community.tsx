@@ -1,14 +1,20 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Heart, MessageCircle, Bookmark, Flame, Plus, X, ArrowLeft, Users, ShieldCheck, Sparkles, Calendar, Flag } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { X, ArrowLeft, Users, ShieldCheck, Sparkles, Calendar, Plus } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { ContentCard } from "@/components/ui/ContentCard";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { CommunityHeader } from "@/components/community/CommunityHeader";
+import { CommunityTabs } from "@/components/community/CommunityTabs";
+import { CommunityFilterSheet } from "@/components/community/CommunityFilterSheet";
+import { CommunityPostCard } from "@/components/community/CommunityPostCard";
+import { CommunityReadOnlyNotice } from "@/components/community/CommunityReadOnlyNotice";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { useCarePreferences } from "@/hooks/useCarePreferences";
 import { prefHelpers } from "@/lib/personalization";
 import { eveToast } from "@/lib/eve-toast";
-import { flagOffCopy, isFeatureEnabled } from "@/lib/flags";
+import { flagOffCopy } from "@/lib/flags";
 import {
   isCommunityReadOnly,
   isReported,
@@ -27,11 +33,8 @@ import {
   LIFE_STAGES,
   POST_TAGS,
   SEED_POSTS,
-  UNBACKED_TAB_COPY,
   categoryForStage,
   postsForTab,
-  toneBadge,
-  toneBg,
   type CategoryKey,
   type FeedTabKey,
 } from "@/lib/community-seed";
@@ -58,23 +61,22 @@ export const Route = createFileRoute("/eve/community")({
   component: CommunityPage,
 });
 
-
-
 function CommunityPage() {
   const nav = useNavigate();
+  const { t } = useTranslation();
   const { profile } = useSavedProfile();
   const { prefs } = useCarePreferences();
   const hideFamilyPromo = prefHelpers.privateFromFamily(prefs);
-  // Default category from stage
+
   const defaultCategory: CategoryKey = useMemo(
     () => categoryForStage(prefs.stage ?? profile.stage),
     [prefs.stage, profile.stage],
   );
   const [active, setActive] = useState<CategoryKey>(defaultCategory);
   const [tab, setTab] = useState<FeedTabKey>("for_you");
+  const [filterOpen, setFilterOpen] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const moderationEnabled = isFeatureEnabled("communityModeration");
   // Posting requires BOTH the posting flag and a verified moderation backend.
   const readOnly = isCommunityReadOnly();
   const postingEnabled = !readOnly;
@@ -83,7 +85,7 @@ function CommunityPage() {
   useEffect(() => {
     setReports(readReports());
   }, []);
-  const [hearts, setHearts] = useState<Record<string, number>>({});
+  const [hearts, setHearts] = useState<Record<string, boolean>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
 
   const [partnerContent, setPartnerContent] = useState<ContentRow[]>([]);
@@ -119,274 +121,146 @@ function CommunityPage() {
     [partnerContent, profile],
   );
 
+  const tabBacked = FEED_TABS.find((x) => x.key === tab)?.backed ?? false;
+
   const filtered = useMemo(() => {
+    if (!tabBacked) return [];
     const byCategory =
       active === "all" ? SEED_POSTS : SEED_POSTS.filter((p) => p.category === active);
     return postsForTab(byCategory, tab);
-  }, [active, tab]);
-
+  }, [active, tab, tabBacked]);
 
   return (
     <EveShell>
-      <div className="pt-2">
-        <button
-          onClick={() => nav({ to: "/eve/home" })}
-          className="mb-2 inline-flex items-center gap-1 text-xs text-eve-muted"
-        >
-          <ArrowLeft className="h-3 w-3" /> Back to dashboard
-        </button>
-        <h1 className="font-serif text-3xl text-eve-teal-dark">Community & support</h1>
-        <p className="mt-1 font-sans text-sm text-eve-muted">
-          Questions and answers from women at every stage. Support tools are below the feed.
-        </p>
+      <button
+        onClick={() => nav({ to: "/eve/home" })}
+        className="mb-2 mt-2 inline-flex min-h-11 items-center gap-1 text-[13px] text-eve-teal-dark/70 rtl:flex-row-reverse"
+      >
+        <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" /> {t("common.back")}
+      </button>
 
-      </div>
+      {/* A. Header */}
+      <CommunityHeader />
 
-      {/* Feed tabs — only tabs backed by real data are enabled. */}
-      <div className="-mx-5 mt-4 overflow-x-auto px-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div role="tablist" aria-label="Community feed" className="flex gap-2 pb-1">
-          {FEED_TABS.map((tabDef) => {
-            const enabled = tabDef.backed;
-            const isActive = tab === tabDef.key;
-            return (
-              <button
-                key={tabDef.key}
-                role="tab"
-                aria-selected={isActive}
-                disabled={!enabled}
-                title={enabled ? undefined : UNBACKED_TAB_COPY}
-                onClick={() => enabled && setTab(tabDef.key)}
-                className={cn(
-                  "min-h-11 shrink-0 rounded-full px-4 text-[13px] font-medium transition-colors",
-                  isActive ? "bg-eve-teal text-white" : "bg-eve-cream text-eve-teal-dark/70",
-                  !enabled && "cursor-not-allowed opacity-50",
-                )}
-              >
-                {tabDef.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-
-
-
-      {/* New community post */}
+      {/* B. Composer / status */}
       <div className="mt-4">
-        <button
-          onClick={() => {
-            if (!postingEnabled) {
-              track(ANALYTICS_EVENTS.featureBlockedByFlag, { flag: "communityPosting" });
-              return;
-            }
-            setOpen(true);
-          }}
-          disabled={!postingEnabled}
-          aria-disabled={!postingEnabled}
-          title={postingEnabled ? undefined : flagOffCopy("communityPosting")}
-          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-eve-teal px-4 py-2 text-sm font-medium text-white shadow-sm transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
-        >
-          <Plus className="h-4 w-4" /> {postingEnabled ? "New Post" : "Posting opens soon"}
-        </button>
-        {!postingEnabled && (
-          <div role="status" className="mt-2 space-y-1">
-            <p className="text-[12px] text-eve-muted">{flagOffCopy("communityPosting")}</p>
-            {!moderationEnabled && (
-              <p className="text-[12px] text-eve-muted">
-                Community is read-only until moderation is staffed. Posts below are sample
-                content written by our team, not replies from other members.
-              </p>
-            )}
-          </div>
+        {postingEnabled ? (
+          <button
+            onClick={() => setOpen(true)}
+            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-eve-teal px-4 text-[14px] font-medium text-white shadow-sm transition active:scale-95"
+          >
+            <Plus className="h-4 w-4" /> {t("community.postCta")}
+          </button>
+        ) : (
+          <CommunityReadOnlyNotice />
         )}
         {profile.stage && (
-          <p className="mt-2 text-[12px] text-eve-muted">
-            Showing community posts relevant to your profile.
+          <p className="mt-2 text-[13px] text-eve-teal-dark/70">
+            {t("community.personalized")}
           </p>
         )}
       </div>
 
-      {/* Category pills */}
-      <div className="-mx-5 mt-5 overflow-x-auto px-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex gap-2 pb-1">
-          {CATEGORIES.map((c) => {
-            const isActive = active === c.key;
-            return (
-              <button
-                key={c.key}
-                onClick={() => setActive(c.key)}
-                className={cn(
-                  "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200",
-                  isActive ? toneBg[c.tone] : "bg-eve-cream text-eve-muted",
-                )}
-              >
-                {c.label}
-              </button>
-            );
-          })}
-        </div>
+      {/* C. Feed tabs */}
+      <div className="mt-4">
+        <CommunityTabs
+          value={tab}
+          onChange={(next) => {
+            setTab(next);
+            track(ANALYTICS_EVENTS.communityTabSelected, { tab: next });
+          }}
+        />
       </div>
 
-      {/* Seeded-content disclosure — these threads are written examples, not
-          real mothers' posts, until the pilot community goes live. */}
-      <div
-        role="note"
-        className="mt-5 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3"
-      >
-        <p className="text-[12px] leading-relaxed text-eve-muted">
-          <span className="font-semibold text-eve-teal-dark">Example conversations.</span>{" "}
-          The threads below were written by the Eve &amp; Eden team to show how this
-          space works. Real posts appear once the community pilot opens.
+      {/* D. Compact topic filters */}
+      <div className="mt-3">
+        <CommunityFilterSheet
+          value={active}
+          open={filterOpen}
+          onOpenChange={(next) => {
+            setFilterOpen(next);
+            if (next) track(ANALYTICS_EVENTS.communityFilterOpened);
+          }}
+          onChange={(key) => {
+            setActive(key);
+            track(ANALYTICS_EVENTS.communityFilterSelected, { category: key });
+          }}
+        />
+      </div>
+
+      {/* E. Feed */}
+      {tab === "expert" && tabBacked && (
+        <p className="mt-4 text-[13px] leading-relaxed text-eve-teal-dark/70">
+          {t("community.expertNote")}
         </p>
-      </div>
+      )}
 
-      {/* Posts */}
-      <div className="mt-5 space-y-3">
-        {filtered.length === 0 ? (
+      {tabBacked && (
+        <div
+          role="note"
+          className="mt-4 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3 rtl:text-right"
+        >
+          <p className="text-[13px] leading-relaxed text-eve-teal-dark/75">
+            <span className="font-semibold text-eve-teal-dark">
+              {t("community.sampleDisclosureTitle")}
+            </span>{" "}
+            {t("community.sampleDisclosure")}
+          </p>
+        </div>
+      )}
+
+      <div className="mt-4 space-y-3">
+        {!tabBacked ? (
+          <div className="rounded-2xl border border-dashed border-eve-teal/30 bg-eve-cream/40 px-6 py-10 text-center">
+            <p className="font-serif text-lg text-eve-teal-dark">
+              {t("community.pilotTitle")}
+            </p>
+            <p className="mt-1 text-[14px] leading-relaxed text-eve-teal-dark/75">
+              {tab === "nearby" ? t("community.pilotNearby") : t("community.pilotFollowing")}
+            </p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-eve-muted/30 bg-eve-cream/40 px-6 py-10 text-center">
-            <p className="font-serif text-lg text-eve-forest">
-              Be the first to start a conversation in your community.
+            <p className="font-serif text-lg text-eve-teal-dark">
+              {t("community.emptyTopic")}
             </p>
-            <p className="mt-1 text-sm text-eve-muted">
-              Share a question or experience. Posts are anonymous by default.
-            </p>
-            {postingEnabled ? (
-              <button
-                onClick={() => setOpen(true)}
-                className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-eve-teal px-4 py-2 text-sm font-medium text-white"
-              >
-                <Plus className="h-4 w-4" /> New Post
-              </button>
-            ) : (
-              <p className="mt-4 text-[12px] text-eve-muted">
+            {!postingEnabled && (
+              <p className="mt-2 text-[13px] text-eve-teal-dark/70">
                 {flagOffCopy("communityPosting")}
               </p>
             )}
           </div>
         ) : (
-          filtered.map((p) => {
-            const cat = CATEGORIES.find((c) => c.key === p.category)!;
-            if (isReported(p.id, reports)) {
-              return (
-                <article
-                  key={p.id}
-                  className="rounded-2xl border border-eve-sand bg-white p-4 text-[12px] text-eve-muted"
-                >
-                  You reported this post, so it is hidden on this device.
-                </article>
-              );
-            }
-            const liked = hearts[p.id] ?? 0;
-            return (
+          filtered.map((p) =>
+            isReported(p.id, reports) ? (
               <article
                 key={p.id}
-                className="relative overflow-hidden rounded-2xl bg-eve-cream p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="rounded-2xl border border-eve-sand bg-white p-4 text-[13px] text-eve-teal-dark/70"
               >
-                <span className="absolute inset-y-0 left-0 w-[3px] bg-eve-teal" />
-
-                <div className="flex items-center gap-2">
-                  <span
-                    className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold text-white",
-                      p.avatarColor,
-                    )}
-                  >
-                    {p.avatarLetter}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-medium text-eve-teal-dark">{p.anonName}</p>
-                    <p className="text-[12px] text-eve-muted">{p.timeAgo}</p>
-                  </div>
-                  <span className="rounded-full border border-eve-sand bg-white px-2 py-0.5 text-[12px] font-semibold uppercase tracking-wide text-eve-muted">
-                    Sample
-                  </span>
-                  {p.trending && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[12px] font-semibold text-eve-terra">
-                      <Flame className="h-3 w-3" /> Trending
-                    </span>
-                  )}
-                </div>
-
-                <span
-                  className={cn(
-                    "mt-3 inline-block rounded-full px-2 py-0.5 text-[12px] font-medium",
-                    toneBadge[cat.tone],
-                  )}
-                >
-                  {cat.label}
-                </span>
-
-                <h2 className="mt-2 font-serif text-[17px] font-semibold leading-snug text-eve-teal-dark">
-                  {p.title}
-                </h2>
-                <p className="mt-1 line-clamp-2 text-[13px] text-eve-muted">{p.body}</p>
-                <Link
-                  to="/eve/community"
-                  className="mt-1 inline-block text-[12px] font-medium text-eve-teal"
-                >
-                  Read more
-                </Link>
-
-                <div className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[12px] text-eve-muted">
-                  <button
-                    onClick={() =>
-                      setHearts((h) => ({ ...h, [p.id]: (h[p.id] ?? 0) === 0 ? 1 : 0 }))
-                    }
-                    className={cn(
-                      "inline-flex items-center gap-1 transition active:scale-110",
-                      liked > 0 && "text-eve-rose",
-                    )}
-                  >
-                    <Heart className={cn("h-4 w-4", liked > 0 && "fill-current")} />
-                    {p.hearts + liked}
-                  </button>
-                  <span className="inline-flex items-center gap-1">
-                    <MessageCircle className="h-4 w-4" />
-                    {p.replies}
-                  </span>
-                  <button
-                    onClick={() => setSaved((s) => ({ ...s, [p.id]: !s[p.id] }))}
-                    className={cn(
-                      "ml-auto inline-flex items-center gap-1",
-                      saved[p.id] && "text-eve-teal",
-                    )}
-                  >
-                    <Bookmark className={cn("h-4 w-4", saved[p.id] && "fill-current")} />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Report this post"
-                    onClick={() => {
-                      setReports(submitReport(p.id, "other"));
-                      eveToast.info(reportAcknowledgement());
-                    }}
-                    className="inline-flex items-center gap-1 text-eve-muted underline-offset-2 hover:underline"
-                  >
-                    <Flag className="h-3.5 w-3.5" />
-                    <span className="text-[12px]">Report</span>
-                  </button>
-                </div>
-
-                {p.topAnswer && (
-                  <div className="mt-3 border-t border-eve-sand pt-3">
-                    <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-teal">
-                      Top answer
-                    </p>
-                    <p className="mt-1 line-clamp-2 text-[12px] text-eve-muted">{p.topAnswer}</p>
-                  </div>
-                )}
+                {t("community.reportedHidden")}
               </article>
-            );
-          })
+            ) : (
+              <CommunityPostCard
+                key={p.id}
+                post={p}
+                hearted={Boolean(hearts[p.id])}
+                saved={Boolean(saved[p.id])}
+                onHeart={() => setHearts((h) => ({ ...h, [p.id]: !h[p.id] }))}
+                onSave={() => setSaved((s) => ({ ...s, [p.id]: !s[p.id] }))}
+                onReport={() => {
+                  setReports(submitReport(p.id, "other"));
+                  eveToast.info(reportAcknowledgement());
+                }}
+              />
+            ),
+          )
         )}
       </div>
 
-      <button className="mt-5 w-full rounded-full border border-eve-teal py-2.5 text-sm font-medium text-eve-teal transition hover:bg-eve-teal-light">
-        Load more
-      </button>
-
-      {/* Support resources live below the feed: the conversation comes first. */}
+      {/* F. Secondary modules below the feed */}
+      <div className="mt-8">
+        <SectionLabel>{t("community.supportLabel")}</SectionLabel>
+      </div>
       <SupportSections
         hideFamilyPromo={hideFamilyPromo}
         personalizedContent={personalizedContent}
@@ -396,10 +270,10 @@ function CommunityPage() {
 
       {/* New post sheet */}
       {open && <NewPostSheet onClose={() => setOpen(false)} prefs={prefs} />}
-
     </EveShell>
   );
 }
+
 
 function SupportSections({
   hideFamilyPromo,
