@@ -215,7 +215,7 @@ function CommunityPage() {
         />
       </div>
 
-      <CommunityCirclesPreview countryCode={prefs.country ?? profile.country ?? null} />
+      <CommunityCirclesPreview countryCode={prefs.country ?? null} />
 
 
       {/* D. Compact topic filters */}
