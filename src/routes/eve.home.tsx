@@ -239,21 +239,19 @@ function EveHome() {
         {skipped && !intake && (
           <div className="mx-3 mt-2 flex items-center justify-between gap-3 rounded-xl border border-eve-terra/30 bg-eve-cream px-3 py-2">
             <p className="font-sans text-[12px] text-eve-teal-dark">
-              {lang === "fr"
-                ? "Personnalisez vos soins pour de meilleures recommandations."
-                : "Personalize your care to get better matches."}
+              {t("homev2.personalizeBanner")}
             </p>
             <button
               type="button"
               onClick={() => navigate({ to: "/eve/match" })}
               className="min-h-11 shrink-0 rounded-full bg-eve-teal px-3 font-sans text-[12px] text-white"
             >
-              {lang === "fr" ? "Compléter" : "Complete profile"}
+              {t("homev2.personalizeCta")}
             </button>
           </div>
         )}
 
-        {/* Greeting */}
+        {/* A. Greeting + universal need prompt */}
         <div className="px-3 rtl:text-right">
           <SectionLabel>
             {greeting}
@@ -265,86 +263,32 @@ function EveHome() {
           </h1>
         </div>
 
-        {/* 1. Universal need prompt */}
         <NeedPrompt />
 
-        {/* 2. Activity */}
+        {/* B. Activity */}
         <ActivityCard lang={lang} />
 
-        {/* 3. Your next step */}
-        {intake?.stage ? (
-          <button
-            type="button"
-            onClick={() => navigate({ to: "/eve/match/results" })}
-            className="mx-3 mt-3 block w-full rounded-2xl border border-eve-teal/30 bg-gradient-to-br from-white to-eve-teal-light/40 p-4 text-left transition-transform active:scale-[0.99] rtl:text-right"
-          >
-            <div className="flex items-start justify-between gap-3 rtl:flex-row-reverse">
-              <div className="min-w-0 flex-1">
-                <SectionLabel>
-                  {lang === "fr" ? "Votre prochaine étape" : lang === "ar" ? "خطوتك التالية" : "Your next step"}
-                </SectionLabel>
-                <p className="mt-1 font-serif text-eve-forest" style={{ fontSize: "17px" }}>
-                  {personalizedTitle}
-                </p>
-                <p className="mt-1 font-sans text-[13px] text-eve-teal-dark/70">
-                  {lang === "fr"
-                    ? "Voir vos prochaines étapes et soins recommandés."
-                    : lang === "ar"
-                      ? "اطلعي على خطواتك التالية والرعاية الموصى بها."
-                      : "See your next steps and recommended care."}
-                </p>
-              </div>
-              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-eve-teal text-white">
-                <ArrowRight className="h-4 w-4 rtl:rotate-180" />
-              </span>
-            </div>
-          </button>
-        ) : isPregnancyStage ? (
-          <div className="mx-3 mt-3">
-            {loading ? (
-              <SkeletonBlock className="h-32" />
-            ) : (
-              <div className="rounded-2xl border border-eve-teal/20 bg-white p-4">
-                <div className="flex items-center gap-4 rtl:flex-row-reverse">
-                  <StageRing week={week} size={58} />
-                  <div className="min-w-0 flex-1 rtl:text-right">
-                    <SectionLabel>{t(`trimester.${trimesterKey}`)}</SectionLabel>
-                    <p className="mt-1 font-sans text-[13px] text-eve-teal-dark">
-                      {t("home.babySize", { size: babySizeFor(week) })}
-                    </p>
-                    {dueDate && (
-                      <p className="mt-1 font-sans text-[12px] text-eve-teal-dark/70">
-                        {t("home.due", { date: dueDate })}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-eve-teal-light">
-                  <div
-                    className="h-full rounded-full bg-eve-teal transition-all"
-                    style={{ width: `${progressPct}%` }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        ) : stage && STAGE_SUBTITLE[stage] ? (
-          <div className="mx-3 mt-3 rounded-2xl border border-eve-teal/20 bg-white p-4 rtl:text-right">
-            <SectionLabel>{lang === "fr" ? "Où vous en êtes" : "Where you are"}</SectionLabel>
-            <p className="mt-1 font-sans text-[14px] text-eve-teal-dark">
-              {STAGE_SUBTITLE[stage]![lang]}
-            </p>
-          </div>
-        ) : null}
+        {/* C. One prioritized next step */}
+        <NextStep hasIntake={Boolean(intake?.stage)} planTitle={personalizedTitle} />
 
-        {/* 4. Upcoming */}
-        <UpcomingSection lang={lang} />
-
-        {/* 5. Community preview */}
+        {/* D. Community preview */}
         <CommunityPreview stage={stage ?? null} lang={lang} />
 
-        {/* 6. Providers for you */}
+        {/* E. Providers for you */}
         <ProvidersPreview prefs={prefs} lang={lang} />
+
+        {/* F. Upcoming appointments & events */}
+        <UpcomingSection lang={lang} />
+
+        {/* G. Compact care-plan summary */}
+        <CarePlanSummary
+          loading={loading}
+          isPregnancyStage={isPregnancyStage}
+          week={week}
+          dueDate={dueDate}
+          trimesterKey={trimesterKey}
+          stageSubtitle={stage && STAGE_SUBTITLE[stage] ? STAGE_SUBTITLE[stage]![lang] : null}
+        />
 
         {/* Guidance */}
         <div className="mx-3 mt-5">
