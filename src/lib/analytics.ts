@@ -40,6 +40,8 @@ export const ANALYTICS_EVENTS = {
   askIntentSelected: "ask_intent_selected",
   providerDashboardOpened: "provider_dashboard_opened",
   providerDashboardActionSelected: "provider_dashboard_action_selected",
+  communityCareActionSelected: "community_care_action_selected",
+  providerDirectoryOpenedFromCommunity: "provider_directory_opened_from_community",
 } as const;
 
 export type AnalyticsEvent = (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS];
