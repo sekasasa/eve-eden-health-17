@@ -66,18 +66,14 @@ function CommunityPage() {
   const { prefs } = useCarePreferences();
   const hideFamilyPromo = prefHelpers.privateFromFamily(prefs);
   // Default category from stage
-  const defaultCategory: CategoryKey = useMemo(() => {
-    const s = prefs.stage ?? profile.stage;
-    if (s === "postpartum") return "postpartum";
-    if (s === "newborn") return "newborn";
-    if (s === "pregnant") return "pregnancy";
-    if (s === "trying") return "ttc";
-    if (s === "fertility") return "ivf";
-    if (s === "family") return "culture";
-    return "all";
-  }, [prefs.stage, profile.stage]);
+  const defaultCategory: CategoryKey = useMemo(
+    () => categoryForStage(prefs.stage ?? profile.stage),
+    [prefs.stage, profile.stage],
+  );
   const [active, setActive] = useState<CategoryKey>(defaultCategory);
+  const [tab, setTab] = useState<FeedTabKey>("for_you");
   const [open, setOpen] = useState(false);
+
   const moderationEnabled = isFeatureEnabled("communityModeration");
   // Posting requires BOTH the posting flag and a verified moderation backend.
   const readOnly = isCommunityReadOnly();
