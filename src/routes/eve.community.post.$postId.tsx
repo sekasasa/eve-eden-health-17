@@ -62,17 +62,35 @@ function BackLink() {
   );
 }
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isPersistedPostId(id: string): boolean {
+  return UUID_RE.test(id);
+}
+
 function CommunityPostDetailPage() {
   const { postId } = Route.useParams();
   const { t } = useTranslation();
-  const seededPost = useMemo(() => postById(postId), [postId]);
+  // A UUID always addresses a persisted row. A seeded id never hits the
+  // database, and a missing UUID never falls back to an unrelated sample.
+  const wantsPersisted = isPersistedPostId(postId);
+  const seededPost = useMemo(
+    () => (wantsPersisted ? undefined : postById(postId)),
+    [postId, wantsPersisted],
+  );
 
-  // A persisted published post wins over a seeded sample with the same id.
   const [persistedPost, setPersistedPost] = useState<Post | null>(null);
   const [replies, setReplies] = useState<CommunityReplyView[]>([]);
-  const [loadingPersisted, setLoadingPersisted] = useState(true);
+  const [loadingPersisted, setLoadingPersisted] = useState(wantsPersisted);
 
   useEffect(() => {
+    if (!wantsPersisted) {
+      setPersistedPost(null);
+      setReplies([]);
+      setLoadingPersisted(false);
+      return;
+    }
     let cancelled = false;
     setLoadingPersisted(true);
     (async () => {
@@ -98,7 +116,7 @@ function CommunityPostDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [postId]);
+  }, [postId, wantsPersisted]);
 
   const post = persistedPost ?? seededPost;
   const isPersisted = Boolean(persistedPost);
@@ -123,7 +141,7 @@ function CommunityPostDetailPage() {
         <EveShell>
           <BackLink />
           <p role="status" className="mt-6 text-[14px] text-eve-teal-dark/70">
-            {t("common.loading", { defaultValue: "Loading…" })}
+            {t("community.loading")}
           </p>
         </EveShell>
       );

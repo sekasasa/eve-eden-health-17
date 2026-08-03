@@ -39,8 +39,10 @@ import {
   type FeedTabKey,
   type Post,
 } from "@/lib/community-seed";
-import { getPublishedPosts } from "@/features/community/services/communityService";
-import { adaptPosts } from "@/features/community/adapters/communityAdapter";
+import {
+  loadCommunityFeedWithFallback,
+  type CommunityFeedStatus,
+} from "@/features/community/services/communityFeed";
 
 export const Route = createFileRoute("/eve/community")({
   head: () => ({
@@ -124,41 +126,40 @@ function CommunityPage() {
     [partnerContent, profile],
   );
 
-  // Persisted community conversations. Nothing is published yet in the pilot,
-  // so the seeded sample feed remains the truthful fallback.
-  const [persistedPosts, setPersistedPosts] = useState<Post[]>([]);
-  const [liveLoadFailed, setLiveLoadFailed] = useState(false);
+  // Persisted community conversations, loaded through the typed service with a
+  // truthful seeded fallback. Nothing here enables posting.
+  const [feedPosts, setFeedPosts] = useState<Post[]>([]);
+  const [feedStatus, setFeedStatus] = useState<CommunityFeedStatus | "loading">("loading");
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const result = await getPublishedPosts({ limit: 30 });
+      const result = await loadCommunityFeedWithFallback({ limit: 30 });
       if (cancelled) return;
-      if (!result.ok) {
-        setLiveLoadFailed(true);
-        return;
-      }
-      const posts = adaptPosts(result.data);
-      setPersistedPosts(posts);
-      track(ANALYTICS_EVENTS.communityPersistedFeedLoaded, { count: posts.length });
+      setFeedPosts(result.posts);
+      setFeedStatus(result.status);
+      track(ANALYTICS_EVENTS.communityPersistedFeedLoaded, {
+        persisted_count: result.source === "persisted" ? result.posts.length : 0,
+        fallback_count: result.source === "seeded_fallback" ? result.posts.length : 0,
+        source: result.source,
+      });
     })();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const usingSeeded = persistedPosts.length === 0;
-
+  const loading = feedStatus === "loading";
+  const usingSeeded = feedStatus !== "live";
 
   const tabBacked = FEED_TABS.find((x) => x.key === tab)?.backed ?? false;
 
   const filtered = useMemo(() => {
     if (!tabBacked) return [];
-    const source = usingSeeded ? SEED_POSTS : persistedPosts;
     const byCategory =
-      active === "all" ? source : source.filter((p) => p.category === active);
+      active === "all" ? feedPosts : feedPosts.filter((p) => p.category === active);
     return postsForTab(byCategory, tab);
-  }, [active, tab, tabBacked, usingSeeded, persistedPosts]);
+  }, [active, tab, tabBacked, feedPosts]);
 
 
   return (
@@ -226,18 +227,30 @@ function CommunityPage() {
         </p>
       )}
 
-      {tabBacked && liveLoadFailed && (
+      {tabBacked && feedStatus === "fallback" && (
         <p
           role="status"
+          data-testid="community-live-error"
           className="mt-4 rounded-2xl border border-eve-sand bg-white px-4 py-3 text-[13px] leading-relaxed text-eve-teal-dark/75 rtl:text-right"
         >
-          {t("community.detail.liveUnavailable")}
+          {t("community.detail.liveUnavailableShort")}
         </p>
       )}
 
-      {tabBacked && usingSeeded && (
+      {tabBacked && feedStatus === "empty" && (
+        <p
+          role="status"
+          data-testid="community-empty-notice"
+          className="mt-4 rounded-2xl border border-eve-sand bg-white px-4 py-3 text-[13px] leading-relaxed text-eve-teal-dark/75 rtl:text-right"
+        >
+          {t("community.detail.noPublishedShort")}
+        </p>
+      )}
+
+      {tabBacked && !loading && usingSeeded && (
         <div
           role="note"
+          data-testid="community-sample-disclosure"
           className="mt-4 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3 rtl:text-right"
         >
           <p className="text-[13px] leading-relaxed text-eve-teal-dark/75">
@@ -258,6 +271,17 @@ function CommunityPage() {
             <p className="mt-1 text-[14px] leading-relaxed text-eve-teal-dark/75">
               {tab === "nearby" ? t("community.pilotNearby") : t("community.pilotFollowing")}
             </p>
+          </div>
+        ) : loading ? (
+          <div role="status" aria-live="polite" data-testid="community-feed-loading">
+            <span className="sr-only">{t("community.loading")}</span>
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                aria-hidden="true"
+                className="mb-3 h-40 animate-pulse rounded-2xl bg-eve-cream/70"
+              />
+            ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-eve-muted/30 bg-eve-cream/40 px-6 py-10 text-center">

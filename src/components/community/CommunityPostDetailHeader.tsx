@@ -24,6 +24,7 @@ export function CommunityPostDetailHeader({
 }) {
   const { t } = useTranslation();
   const cat = CATEGORIES.find((c) => c.key === post.category);
+  const showMetrics = post.metricsAvailable !== false && !post.persisted;
 
   return (
     <header className="rtl:text-right">
@@ -58,7 +59,7 @@ export function CommunityPostDetailHeader({
             {cat.label}
           </span>
         )}
-        {post.trending && (
+        {showMetrics && post.trending && (
           <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[12px] font-semibold text-eve-terra">
             <Flame className="h-3 w-3" aria-hidden="true" /> {t("community.trending")}
           </span>
@@ -70,8 +71,8 @@ export function CommunityPostDetailHeader({
       </h1>
 
       {/* Local-only hearts/saves/report apply to seeded samples only. */}
-      {!post.persisted && (
-      <div className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[13px] text-eve-teal-dark/75 rtl:flex-row-reverse">
+      {showMetrics && (
+      <div data-testid="community-detail-metrics" className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[13px] text-eve-teal-dark/75 rtl:flex-row-reverse">
         <button
           type="button"
           onClick={onHeart}
