@@ -1172,6 +1172,7 @@ function ProviderCard({
       services={typeof p.services === "string" ? p.services : (p.services ?? []).join(", ")}
       isVerified={p.is_verified}
       acceptingPatients={p.accepting_patients}
+      consultationFee={p.consultation_fee_mad}
       reviewCount={p.review_count}
       avgRating={p.avg_rating}
       reasons={reasons}
