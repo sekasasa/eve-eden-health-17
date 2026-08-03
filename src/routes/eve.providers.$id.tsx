@@ -18,7 +18,7 @@ import { EveShell } from "@/components/shells/EveShell";
 import { TrustBadge } from "@/components/ui/TrustBadge";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
-import { ProviderFollowButton } from "@/components/providers/ProviderFollowButton";
+import { ProviderProfileHeader } from "@/components/providers/ProviderProfileHeader";
 import {
   ProviderTrustSummary,
   ProviderReviewsNotice,
