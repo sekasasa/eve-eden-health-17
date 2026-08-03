@@ -208,44 +208,54 @@ function EdenDashboard() {
     setToday((xs) => xs.map((a) => (a.id === id ? { ...a, status: "completed" } : a)));
   }
 
+  const priorityActions: PriorityAction[] = account
+    ? [
+        { key: "getVerified" as const, to: "/eden/profile", done: account.isVerified },
+        { key: "completeProfile" as const, to: "/eden/onboarding", done: account.profileComplete },
+        { key: "addServices" as const, to: "/eden/profile", done: account.hasServices },
+        {
+          key: "respondRequests" as const,
+          to: "/eden/appointments",
+          done: opportunities.length === 0,
+        },
+        { key: "publishContent" as const, to: "/eden/vendor/content", done: false },
+      ].filter((a) => !a.done || a.key === "getVerified")
+    : [];
+
   return (
     <EdenShell>
-      <div>
+      <div className="rtl:text-right">
         <h1 className="font-sans text-2xl font-medium text-gray-900">
           {greet}, {name ? `Dr. ${name.split(" ").slice(-1)[0]}` : "Doctor"}
         </h1>
-        <p className="mt-1 font-sans text-sm text-gray-500">
-          Here is your practice at a glance — {todayStr}
+        <p className="mt-1 font-sans text-[14px] text-gray-500">
+          {t("providerDashboard.headerSubtitle")} — {todayStr}
         </p>
       </div>
 
-      {/* KPIs */}
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {kpis.map((k) => (
-          <KpiCard key={k.label} kpi={k} loading={loading} />
-        ))}
-      </div>
+      <ProviderGrowthOverview metrics={metrics} loading={loading} />
 
-      <Link
-        to="/eden/vendor/content"
-        className="mt-6 flex items-start gap-4 rounded-xl border border-eve-teal/30 bg-eve-teal-light/30 p-5 transition hover:bg-eve-teal-light/50"
-      >
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-teal text-white">
-          <PenLine className="h-5 w-5" />
-        </div>
-        <div className="flex-1">
-          <p className="font-sans text-sm font-semibold text-eve-teal-dark">Content Studio</p>
-          <p className="mt-0.5 font-sans text-xs text-gray-600">
-            Publish articles, videos, tips, and events to educate patients and grow your practice.
-          </p>
-        </div>
-        <span className="font-sans text-xs font-medium text-eve-teal">Open →</span>
-      </Link>
+      <ProviderPriorityActions
+        actions={priorityActions}
+        onSelect={(action: PriorityActionKey) =>
+          track(ANALYTICS_EVENTS.providerDashboardActionSelected, { action })
+        }
+      />
+
+      <ProviderOpportunityList items={opportunities} loading={loading} />
+
+      <ProviderPracticeLinks
+        onSelect={(action) =>
+          track(ANALYTICS_EVENTS.providerDashboardActionSelected, { action })
+        }
+      />
 
       {/* Profile strength */}
       {strength && <ProfileStrengthCard strength={strength} />}
 
       <CoordinationPanels />
+
+
 
 
       {/* Today's schedule */}
