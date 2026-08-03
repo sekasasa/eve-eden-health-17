@@ -47,6 +47,10 @@ export const ANALYTICS_EVENTS = {
   communityPersistedFeedLoaded: "community_persisted_feed_loaded",
   communityPersistedPostViewed: "community_persisted_post_viewed",
   communityCreateBlockedReadOnly: "community_create_blocked_read_only",
+  circlesDirectoryOpened: "circles_directory_opened",
+  circleOpened: "circle_opened",
+  circleJoinSelected: "circle_join_selected",
+  circleLeaveSelected: "circle_leave_selected",
 } as const;
 
 export type AnalyticsEvent = (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS];
