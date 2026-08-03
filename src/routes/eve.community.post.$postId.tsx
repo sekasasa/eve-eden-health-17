@@ -153,7 +153,7 @@ function CommunityPostDetailPage() {
   }
 
   const related = isPersisted ? [] : relatedPosts(post);
-  const hidden = isReported(post.id, reports);
+  const hidden = !isPersisted && isReported(post.id, reports);
 
   return (
     <EveShell>
