@@ -119,10 +119,12 @@ function CommunityPage() {
     [partnerContent, profile],
   );
 
-  const filtered = useMemo(
-    () => (active === "all" ? SEED_POSTS : SEED_POSTS.filter((p) => p.category === active)),
-    [active],
-  );
+  const filtered = useMemo(() => {
+    const byCategory =
+      active === "all" ? SEED_POSTS : SEED_POSTS.filter((p) => p.category === active);
+    return postsForTab(byCategory, tab);
+  }, [active, tab]);
+
 
   return (
     <EveShell>
