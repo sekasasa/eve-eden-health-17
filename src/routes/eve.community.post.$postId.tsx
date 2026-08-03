@@ -141,7 +141,7 @@ function CommunityPostDetailPage() {
         <EveShell>
           <BackLink />
           <p role="status" className="mt-6 text-[14px] text-eve-teal-dark/70">
-            {t("common.loading", { defaultValue: "Loading…" })}
+            {t("community.loading")}
           </p>
         </EveShell>
       );
