@@ -34,7 +34,7 @@ export function BottomNav() {
           aria-label={t("nav.ask")}
           aria-current={isActive("/eve/ask") ? "page" : undefined}
           className={cn(
-            "relative -mt-8 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-eve-teal text-white shadow-lg transition-transform active:scale-95",
+            "relative -mt-8 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-eve-teal text-white shadow-lg transition-transform active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-eve-teal/40",
             isActive("/eve/ask") && "ring-4 ring-eve-teal/25",
           )}
         >
@@ -65,7 +65,7 @@ function NavItem({
       to={to}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex min-h-[44px] min-w-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-1 text-center font-sans text-[11px] leading-tight",
+        "flex min-h-[44px] min-w-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-1 text-center font-sans text-[12px] leading-tight rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eve-teal focus-visible:ring-offset-2",
         active ? "font-semibold text-eve-teal" : "text-eve-teal-dark/70",
       )}
     >
