@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { TrustBadge } from "@/components/ui/TrustBadge";
+import { ProviderListCard } from "@/components/providers/ProviderListCard";
 import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { LanguageFallbackNotice } from "@/components/LanguageFallbackNotice";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
@@ -1160,86 +1161,22 @@ function ProviderCard({
     !!userLang && langs.some((l) => l.toLowerCase().includes(userLang.toLowerCase()));
 
   return (
-    <article className="rounded-2xl bg-white p-4 shadow-sm">
-      <div className="flex gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-eve-teal font-sans text-sm font-medium text-white">
-          {initials(p.full_name)}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="truncate font-sans text-sm font-medium text-eve-forest">
-              {p.full_name ?? "Doctor"}
-            </h3>
-            {p.is_verified && <TrustBadge />}
-            {p.accepting_patients && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-sans text-[12px] text-emerald-700">
-                <CheckCircle2 className="h-2.5 w-2.5" /> Accepting patients
-              </span>
-            )}
-          </div>
-          <p className="font-sans text-xs text-eve-muted">
-            {p.specialty ?? "General"}
-            {p.clinic_name ? ` • ${p.clinic_name}` : ""}
-          </p>
-
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-[12px] text-eve-muted">
-            {p.city && (
-              <span
-                className={cn("inline-flex items-center gap-1", cityMatch && "text-eve-teal-dark")}
-              >
-                <MapPin className="h-3 w-3" /> {p.city}
-                {p.country ? `, ${p.country}` : ""}
-              </span>
-            )}
-            {langs.length > 0 && (
-              <span
-                className={cn("inline-flex items-center gap-1", langMatch && "text-eve-teal-dark")}
-              >
-                <Languages className="h-3 w-3" /> {langs.slice(0, 3).join(", ")}
-              </span>
-            )}
-          </div>
-
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-0.5 font-sans text-[12px] text-eve-terra">
-              <Star className="h-3 w-3 fill-eve-terra" />
-              {p.avg_rating?.toFixed(1) ?? "—"}
-              <span className="text-eve-muted">{p.review_count ? ` (${p.review_count})` : ""}</span>
-            </span>
-            {p.consultation_fee_mad != null && (
-              <span className="rounded-full bg-eve-teal-light px-2 py-0.5 font-sans text-[12px] text-eve-teal-dark">
-                {p.consultation_fee_mad} MAD
-              </span>
-            )}
-          </div>
-
-          {reasons.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {reasons.map((r) => (
-                <span
-                  key={r}
-                  className="inline-flex items-center gap-1 rounded-full bg-eve-teal/10 px-2 py-0.5 font-sans text-[12px] text-eve-teal-dark"
-                >
-                  <Sparkles className="h-2.5 w-2.5" /> {r}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="mt-3 flex items-center justify-end gap-2">
-        <Link
-          to="/eve/providers/$id"
-          params={{ id: p.id }}
-          className="rounded-full px-3 py-1.5 font-sans text-xs text-eve-teal hover:bg-eve-teal-light"
-        >
-          View profile
-        </Link>
-        <Link to="/eve/providers/$id" params={{ id: p.id }} search={{ book: 1 }}>
-          <PrimaryButton className="px-4 py-2 text-xs">Book</PrimaryButton>
-        </Link>
-      </div>
-    </article>
+    <ProviderListCard
+      id={p.id}
+      name={p.full_name ?? "Provider"}
+      specialty={p.specialty}
+      clinicName={p.clinic_name}
+      city={p.city}
+      country={p.country}
+      languages={langs}
+      services={typeof p.services === "string" ? p.services : (p.services ?? []).join(", ")}
+      isVerified={p.is_verified}
+      acceptingPatients={p.accepting_patients}
+      reviewCount={p.review_count}
+      avgRating={p.avg_rating}
+      reasons={reasons}
+      cityMatch={cityMatch}
+      langMatch={langMatch}
+    />
   );
 }

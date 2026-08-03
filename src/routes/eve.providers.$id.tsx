@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-  useParams,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import {
   ArrowLeft,
-  Star,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -16,18 +10,28 @@ import {
   Stethoscope,
   Activity,
   Repeat,
+  MapPin,
+  Languages as LanguagesIcon,
+  BookOpen,
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { TrustBadge } from "@/components/ui/TrustBadge";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
+import { ProviderFollowButton } from "@/components/providers/ProviderFollowButton";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  ProviderTrustSummary,
+  ProviderReviewsNotice,
+} from "@/components/providers/ProviderTrustSummary";
+import {
+  ProviderAbout,
+  ProviderProfileTabs,
+  ProviderServices,
+  type ProviderTabKey,
+} from "@/components/providers/ProviderProfileTabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
+import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -47,7 +51,11 @@ type Provider = {
   clinic_name: string | null;
   bio: string | null;
   city: string | null;
+  country: string | null;
   languages: string[] | null;
+  services: string | null;
+  credentials: string | null;
+  years_in_practice: number | null;
   avg_rating: number | null;
   review_count: number | null;
   consultation_fee_mad: number | null;
@@ -65,9 +73,6 @@ function initials(name?: string | null) {
     .join("");
 }
 
-// Real reviews are not wired yet — never show fabricated reviews on production-facing pages.
-const REAL_REVIEWS: { rating: number; body: string }[] = [];
-
 function ProviderProfilePage() {
   const { id } = useParams({ from: "/eve/providers/$id" });
   const search = Route.useSearch();
@@ -75,17 +80,21 @@ function ProviderProfilePage() {
 
   const [p, setP] = useState<Provider | null>(null);
   const [loading, setLoading] = useState(true);
-  const [bioOpen, setBioOpen] = useState(false);
+  const [tab, setTab] = useState<ProviderTabKey>("overview");
   const [bookOpen, setBookOpen] = useState(!!search.book);
 
   useEffect(() => setBookOpen(!!search.book), [search.book]);
+
+  useEffect(() => {
+    track(ANALYTICS_EVENTS.providerProfileOpened, { source: "profile" });
+  }, [id]);
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase
         .from("providers")
         .select(
-          "id,full_name,specialty,clinic_name,bio,city,languages,avg_rating,review_count,consultation_fee_mad,is_verified,accepting_patients",
+          "id,full_name,specialty,clinic_name,bio,city,country,languages,services,credentials,years_in_practice,avg_rating,review_count,consultation_fee_mad,is_verified,accepting_patients",
         )
         .eq("id", id)
         .maybeSingle();
@@ -105,136 +114,135 @@ function ProviderProfilePage() {
   if (!p) {
     return (
       <EveShell>
-        <p className="font-sans text-sm text-eve-muted">Provider not found.</p>
+        <p className="font-sans text-[15px] text-eve-muted">Provider not found.</p>
       </EveShell>
     );
   }
 
-  const bio =
-    p.bio ??
-    "Experienced clinician dedicated to attentive, evidence-based care for mothers at every stage of pregnancy.";
+  const bio = p.bio?.trim();
 
   return (
     <EveShell>
       <button
         onClick={() => navigate({ to: "/eve/providers" })}
-        className="-ml-2 mb-2 inline-flex items-center gap-1 rounded-full px-2 py-1 font-sans text-sm text-eve-muted"
+        className="-ms-2 mb-2 inline-flex min-h-11 items-center gap-1 rounded-full px-2 font-sans text-[14px] text-eve-teal-dark/70 rtl:flex-row-reverse"
       >
-        <ArrowLeft className="h-4 w-4" /> Back
+        <ArrowLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" /> Back
       </button>
 
-      <section className="-mx-5 rounded-b-3xl bg-eve-cream px-5 pb-6 pt-4">
-        <div className="flex gap-3">
+      {/* Hero */}
+      <section className="-mx-5 rounded-b-3xl bg-eve-cream px-5 pb-6 pt-4 rtl:text-right">
+        <div className="flex gap-3 rtl:flex-row-reverse">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-eve-teal font-sans text-lg font-medium text-white">
             {initials(p.full_name)}
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className="font-serif text-[22px] leading-tight text-eve-forest">
-              {p.full_name}
-            </h1>
-            <p className="font-sans text-xs text-eve-muted">
-              {p.specialty}
+            <h1 className="font-serif text-[24px] leading-tight text-eve-forest">{p.full_name}</h1>
+            <p className="mt-0.5 font-sans text-[14px] text-eve-teal-dark/80">
+              {p.specialty ?? "General"}
               {p.clinic_name ? ` • ${p.clinic_name}` : ""}
             </p>
-            {p.is_verified && <TrustBadge className="mt-1" />}
+            {p.is_verified && <TrustBadge className="mt-1.5" />}
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 font-sans text-xs text-eve-terra">
-            <Star className="h-3 w-3 fill-eve-terra" />
-            {p.avg_rating?.toFixed(1) ?? "—"}
-            <span className="text-eve-muted">
-              {p.review_count ? `(${p.review_count})` : ""}
-            </span>
-          </span>
-          {p.consultation_fee_mad != null && (
-            <span className="rounded-full bg-eve-teal-light px-2.5 py-1 font-sans text-xs text-eve-teal-dark">
-              {p.consultation_fee_mad} MAD
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-[14px] text-eve-teal-dark/80 rtl:flex-row-reverse">
+          {p.city && (
+            <span className="inline-flex items-center gap-1 rtl:flex-row-reverse">
+              <MapPin className="h-4 w-4" aria-hidden="true" /> {p.city}
+              {p.country ? `, ${p.country}` : ""}
             </span>
           )}
-          {p.accepting_patients && (
-            <span className="rounded-full bg-green-100 px-2.5 py-1 font-sans text-xs text-green-700">
-              Accepting patients
+          {p.languages?.length ? (
+            <span className="inline-flex items-center gap-1 rtl:flex-row-reverse">
+              <LanguagesIcon className="h-4 w-4" aria-hidden="true" /> {p.languages.join(", ")}
             </span>
-          )}
+          ) : null}
         </div>
 
-        {p.languages?.length ? (
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {p.languages.map((l) => (
-              <span
-                key={l}
-                className="rounded-full border border-eve-muted/30 bg-white px-2 py-0.5 font-sans text-[10px] text-eve-muted"
-              >
-                {l}
-              </span>
-            ))}
-          </div>
-        ) : null}
+        {p.accepting_patients && (
+          <p className="mt-2 inline-flex rounded-full bg-emerald-50 px-3 py-1 font-sans text-[13px] text-emerald-700">
+            Accepting patients
+          </p>
+        )}
+
+        <div className="mt-3">
+          <ProviderFollowButton providerId={p.id} size="md" />
+        </div>
       </section>
 
-      <section className="mt-6">
-        <h2 className="font-serif text-lg text-eve-forest">
-          About {p.full_name?.split(" ")[0] ?? "the doctor"}
-        </h2>
-        <p
-          className={cn(
-            "mt-2 font-sans text-sm leading-relaxed text-eve-forest/80",
-            !bioOpen && "line-clamp-3",
-          )}
-        >
-          {bio}
-        </p>
-        {bio.length > 140 && (
-          <button
-            onClick={() => setBioOpen((v) => !v)}
-            className="mt-1 font-sans text-xs font-medium text-eve-teal"
+      <ProviderProfileTabs value={tab} onChange={setTab} />
+
+      {tab === "overview" && (
+        <>
+          <ProviderTrustSummary
+            isVerified={p.is_verified}
+            credentials={p.credentials}
+            clinicName={p.clinic_name}
+            yearsInPractice={p.years_in_practice}
+          />
+          <ProviderAbout
+            name={p.full_name}
+            bio={
+              bio ||
+              "This provider has not written a care philosophy yet. Ask what their approach looks like when you get in touch."
+            }
+          />
+          <ProviderReviewsNotice avgRating={p.avg_rating} reviewCount={p.review_count} />
+        </>
+      )}
+
+      {tab === "services" && (
+        <section className="mt-2 rtl:text-right">
+          <h2 className="mt-4 font-serif text-lg text-eve-forest">Services</h2>
+          <ProviderServices services={p.services} />
+          <p className="mt-3 font-sans text-[13px] leading-relaxed text-eve-teal-dark/70">
+            Services come from the provider's own listing. Confirm scope and price with them
+            directly — we do not verify availability.
+          </p>
+        </section>
+      )}
+
+      {tab === "community" && (
+        <section className="mt-4 rtl:text-right">
+          <h2 className="font-serif text-lg text-eve-forest">Community</h2>
+          <p className="mt-2 font-sans text-[14px] leading-relaxed text-eve-teal-dark/80">
+            Provider answers in the community open with our pilot. Nothing on this profile is a
+            recorded reply from this provider.
+          </p>
+          <Link
+            to="/eve/community"
+            className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-2xl border border-eve-sand bg-white px-4 font-sans text-[14px] font-medium text-eve-teal-dark rtl:flex-row-reverse"
           >
-            {bioOpen ? "Show less" : "Read more"}
-          </button>
-        )}
-      </section>
+            <BookOpen className="h-4 w-4" aria-hidden="true" />
+            Read example conversations
+          </Link>
+        </section>
+      )}
 
-      <section className="mt-6">
-        <div className="flex items-center justify-between">
-          <h2 className="font-serif text-lg text-eve-forest">Reviews</h2>
-        </div>
-        {REAL_REVIEWS.length === 0 ? (
-          <p className="mt-2 font-sans text-sm text-eve-muted">No reviews yet.</p>
-        ) : (
-          <>
-            <div className="mt-2 flex items-center gap-1 font-sans text-sm text-eve-terra">
-              <Star className="h-4 w-4 fill-eve-terra" />
-              {p.avg_rating?.toFixed(1) ?? "—"}
-              <span className="text-eve-muted">
-                {p.review_count ? `from ${p.review_count} reviews` : ""}
-              </span>
-            </div>
-            <ul className="mt-3 flex flex-col gap-2">
-              {REAL_REVIEWS.map((r, i) => (
-                <li key={i} className="rounded-2xl bg-white p-3">
-                  <div className="flex items-center gap-0.5 text-eve-terra">
-                    {Array.from({ length: r.rating }).map((_, idx) => (
-                      <Star key={idx} className="h-3 w-3 fill-eve-terra" />
-                    ))}
-                  </div>
-                  <p className="mt-1 font-sans text-sm text-eve-forest/80">
-                    {r.body}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </section>
+      {tab === "events" && (
+        <section className="mt-4 rtl:text-right">
+          <h2 className="font-serif text-lg text-eve-forest">Events</h2>
+          <p className="mt-2 font-sans text-[14px] leading-relaxed text-eve-teal-dark/80">
+            This provider has no events listed with us. Browse everything currently scheduled
+            instead.
+          </p>
+          <Link
+            to="/eve/events"
+            className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-2xl border border-eve-sand bg-white px-4 font-sans text-[14px] font-medium text-eve-teal-dark rtl:flex-row-reverse"
+          >
+            <CalendarDays className="h-4 w-4" aria-hidden="true" />
+            See events & classes
+          </Link>
+        </section>
+      )}
 
       <div className="h-24" />
 
       <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-sm -translate-x-1/2 border-t border-eve-muted/10 bg-white px-5 py-3">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="font-sans text-[10px] uppercase tracking-widest text-eve-muted">
+        <div className="flex items-center justify-between gap-3 rtl:flex-row-reverse">
+          <div className="rtl:text-right">
+            <p className="font-sans text-[11px] uppercase tracking-widest text-eve-muted">
               Consultation
             </p>
             <p className="font-serif text-lg text-eve-forest">
@@ -394,9 +402,7 @@ function BookingSheet({
 
           {step === 1 && (
             <div>
-              <p className="mb-3 font-sans text-sm text-eve-muted">
-                What kind of appointment?
-              </p>
+              <p className="mb-3 font-sans text-sm text-eve-muted">What kind of appointment?</p>
               <div className="grid grid-cols-2 gap-3">
                 {TYPES.map(({ value, icon: Icon }) => {
                   const active = type === value;
@@ -412,18 +418,12 @@ function BookingSheet({
                       )}
                     >
                       <Icon className="h-5 w-5 text-eve-teal" />
-                      <span className="font-sans text-sm font-medium text-eve-forest">
-                        {value}
-                      </span>
+                      <span className="font-sans text-sm font-medium text-eve-forest">{value}</span>
                     </button>
                   );
                 })}
               </div>
-              <PrimaryButton
-                disabled={!type}
-                onClick={() => setStep(2)}
-                className="mt-6 w-full"
-              >
+              <PrimaryButton disabled={!type} onClick={() => setStep(2)} className="mt-6 w-full">
                 Continue
               </PrimaryButton>
             </div>
@@ -433,9 +433,7 @@ function BookingSheet({
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <button
-                  onClick={() =>
-                    setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))
-                  }
+                  onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
                   className="rounded-full p-1.5 text-eve-muted hover:bg-eve-cream"
                   aria-label="Previous month"
                 >
@@ -448,9 +446,7 @@ function BookingSheet({
                   })}
                 </p>
                 <button
-                  onClick={() =>
-                    setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))
-                  }
+                  onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
                   className="rounded-full p-1.5 text-eve-muted hover:bg-eve-cream"
                   aria-label="Next month"
                 >
@@ -467,8 +463,7 @@ function BookingSheet({
                 {days.map((d, i) => {
                   if (!d) return <span key={i} />;
                   const past = d < today;
-                  const selected =
-                    date?.toDateString() === d.toDateString();
+                  const selected = date?.toDateString() === d.toDateString();
                   const available = !past;
                   return (
                     <button
@@ -503,7 +498,8 @@ function BookingSheet({
               {/* Real availability is not wired yet — show a clearly labeled state instead of fake slots. */}
               <div className="mt-2 rounded-xl border border-dashed border-eve-muted/30 bg-white p-3">
                 <p className="font-sans text-xs text-eve-muted">
-                  Live availability coming soon. For now, share a preferred time below and we'll confirm with the provider.
+                  Live availability coming soon. For now, share a preferred time below and we'll
+                  confirm with the provider.
                 </p>
               </div>
               <div className="mt-3">
@@ -564,9 +560,7 @@ function BookingSheet({
 
               <div className="mt-4 flex items-center justify-between rounded-2xl bg-white p-3">
                 <div>
-                  <p className="font-sans text-sm font-medium text-eve-forest">
-                    WhatsApp reminder
-                  </p>
+                  <p className="font-sans text-sm font-medium text-eve-forest">WhatsApp reminder</p>
                   <p className="font-sans text-xs text-eve-muted">
                     We'll message you the day before.
                   </p>
@@ -578,11 +572,7 @@ function BookingSheet({
                 <SecondaryButton onClick={() => setStep(2)} className="flex-1">
                   Back
                 </SecondaryButton>
-                <PrimaryButton
-                  disabled={saving}
-                  onClick={confirm}
-                  className="flex-1"
-                >
+                <PrimaryButton disabled={saving} onClick={confirm} className="flex-1">
                   {saving ? "Saving…" : "Confirm booking"}
                 </PrimaryButton>
               </div>
@@ -594,9 +584,7 @@ function BookingSheet({
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-eve-teal text-white">
                 <Check className="h-8 w-8" strokeWidth={3} />
               </div>
-              <h3 className="mt-4 font-serif text-2xl text-eve-forest">
-                Appointment confirmed!
-              </h3>
+              <h3 className="mt-4 font-serif text-2xl text-eve-forest">Appointment confirmed!</h3>
               <p className="mt-1 font-sans text-sm text-eve-muted">
                 We've sent the details to your inbox.
               </p>
@@ -626,10 +614,7 @@ function BookingSheet({
                   Add to calendar
                 </SecondaryButton>
                 <Link to="/eve/home" className="flex-1">
-                  <PrimaryButton
-                    onClick={() => onOpenChange(false)}
-                    className="w-full"
-                  >
+                  <PrimaryButton onClick={() => onOpenChange(false)} className="w-full">
                     Back to home
                   </PrimaryButton>
                 </Link>
@@ -642,15 +627,7 @@ function BookingSheet({
   );
 }
 
-function SummaryRow({
-  label,
-  value,
-  last,
-}: {
-  label: string;
-  value: string;
-  last?: boolean;
-}) {
+function SummaryRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
   return (
     <div
       className={cn(
@@ -658,9 +635,7 @@ function SummaryRow({
         !last && "border-b border-eve-muted/10",
       )}
     >
-      <span className="font-sans text-xs uppercase tracking-widest text-eve-muted">
-        {label}
-      </span>
+      <span className="font-sans text-xs uppercase tracking-widest text-eve-muted">{label}</span>
       <span className="font-sans text-sm text-eve-forest">{value}</span>
     </div>
   );
@@ -681,7 +656,10 @@ function buildMonth(month: Date): (Date | null)[] {
 function downloadIcs(p: Provider, type: string, when: Date) {
   const end = new Date(when.getTime() + 30 * 60 * 1000);
   const fmt = (d: Date) =>
-    d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+    d
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace(/\.\d{3}/, "");
   const ics = `BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT

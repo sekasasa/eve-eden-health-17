@@ -33,6 +33,9 @@ export const ANALYTICS_EVENTS = {
   communityFilterSelected: "community_filter_selected",
   careHubOpened: "care_hub_opened",
   providerPreviewOpened: "provider_preview_opened",
+  providerProfileOpened: "provider_profile_opened",
+  providerFollowClicked: "provider_follow_clicked",
+  providerServicesOpened: "provider_services_opened",
   askIntentSelected: "ask_intent_selected",
 } as const;
 
