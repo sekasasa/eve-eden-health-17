@@ -226,6 +226,15 @@
     "noDetails": "Ce prestataire n'a pas encore partagé plus de détails. Demandez-lui directement avant de réserver.",
     "requestAppointment": "Demander un rendez-vous",
     "requestNote": "Les demandes sont envoyées au prestataire. Rien n'est confirmé avant sa réponse.",
-    "unnamed": "Prestataire"
+    "unnamed": "Prestataire",
+    "overview": "Aperçu",
+    "services": "Services",
+    "servicesEmpty": "Les services n'ont pas encore été ajoutés. Demandez à ce prestataire ce qu'il propose lors de votre prise de contact.",
+    "servicesNote": "Les services proviennent de la fiche du prestataire. Confirmez l'étendue et le tarif directement avec lui.",
+    "availability": "Détails du rendez-vous",
+    "availabilityEmpty": "Aucun détail de rendez-vous n'a encore été partagé.",
+    "contact": "Cabinet et localisation",
+    "contactEmpty": "Les coordonnées n'ont pas été partagées ici. Vous pourrez les demander en envoyant une demande.",
+    "aboutEmpty": "Ce prestataire n'a pas encore décrit son approche de soin. Demandez-lui lors de votre prise de contact."
   }
 }

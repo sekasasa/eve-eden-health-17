@@ -12,6 +12,7 @@ import {
   Repeat,
   BookOpen,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { EveShell } from "@/components/shells/EveShell";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
@@ -23,9 +24,11 @@ import {
 import {
   ProviderAbout,
   ProviderProfileTabs,
-  ProviderServices,
   type ProviderTabKey,
 } from "@/components/providers/ProviderProfileTabs";
+import { ProviderServicesSection } from "@/components/providers/ProviderServicesSection";
+import { ProviderAppointmentInfo } from "@/components/providers/ProviderAppointmentInfo";
+import { ProviderContactSection } from "@/components/providers/ProviderContactSection";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
@@ -71,6 +74,7 @@ function initials(name?: string | null) {
 }
 
 function ProviderProfilePage() {
+  const { t } = useTranslation();
   const { id } = useParams({ from: "/eve/providers/$id" });
   const search = Route.useSearch();
   const navigate = useNavigate();
@@ -153,27 +157,19 @@ function ProviderProfilePage() {
             clinicName={p.clinic_name}
             yearsInPractice={p.years_in_practice}
           />
-          <ProviderAbout
-            name={p.full_name}
-            bio={
-              bio ||
-              "This provider has not written a care philosophy yet. Ask what their approach looks like when you get in touch."
-            }
+          <ProviderAbout name={p.full_name} bio={bio || t("providerProfile.aboutEmpty")} />
+          <ProviderAppointmentInfo
+            acceptingPatients={p.accepting_patients}
+            consultationFee={p.consultation_fee_mad}
+            city={p.city}
+            country={p.country}
           />
+          <ProviderContactSection clinicName={p.clinic_name} city={p.city} country={p.country} />
           <ProviderReviewsNotice avgRating={p.avg_rating} reviewCount={p.review_count} />
         </>
       )}
 
-      {tab === "services" && (
-        <section className="mt-2 rtl:text-right">
-          <h2 className="mt-4 font-serif text-lg text-eve-forest">Services</h2>
-          <ProviderServices services={p.services} />
-          <p className="mt-3 font-sans text-[13px] leading-relaxed text-eve-teal-dark/70">
-            Services come from the provider's own listing. Confirm scope and price with them
-            directly — we do not verify availability.
-          </p>
-        </section>
-      )}
+      {tab === "services" && <ProviderServicesSection services={p.services} />}
 
       {tab === "community" && (
         <section className="mt-4 rtl:text-right">
