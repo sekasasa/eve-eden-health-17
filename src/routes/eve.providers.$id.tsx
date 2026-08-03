@@ -146,7 +146,6 @@ function ProviderProfilePage() {
         }
       />
 
-
       <ProviderProfileTabs value={tab} onChange={setTab} />
 
       {tab === "overview" && (
