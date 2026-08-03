@@ -43,7 +43,12 @@ type AccountState = {
 
 function initials(n?: string | null) {
   if (!n) return "·";
-  return n.split(" ").filter(Boolean).slice(0, 2).map((s) => s[0]?.toUpperCase()).join("");
+  return n
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((s) => s[0]?.toUpperCase())
+    .join("");
 }
 
 function fmtTime(iso: string) {
@@ -169,7 +174,6 @@ function EdenDashboard() {
         })),
       );
 
-
       setToday(
         list.filter((a) => {
           const d = new Date(a.scheduled_at);
@@ -249,18 +253,13 @@ function EdenDashboard() {
       <ProviderOpportunityList items={opportunities} loading={loading} />
 
       <ProviderPracticeLinks
-        onSelect={(action) =>
-          track(ANALYTICS_EVENTS.providerDashboardActionSelected, { action })
-        }
+        onSelect={(action) => track(ANALYTICS_EVENTS.providerDashboardActionSelected, { action })}
       />
 
       {/* Profile strength */}
       {strength && <ProfileStrengthCard strength={strength} />}
 
       <CoordinationPanels />
-
-
-
 
       {/* Today's schedule */}
       <section className="mt-8 rounded-xl border border-gray-200 bg-white">
@@ -296,9 +295,7 @@ function EdenDashboard() {
                     <td className="px-5 py-3 font-medium text-gray-900">
                       {fmtTime(a.scheduled_at)}
                     </td>
-                    <td className="px-5 py-3 text-gray-700">
-                      {a.mother?.full_name ?? "—"}
-                    </td>
+                    <td className="px-5 py-3 text-gray-700">{a.mother?.full_name ?? "—"}</td>
                     <td className="px-5 py-3 text-gray-600">{a.type ?? "Visit"}</td>
                     <td className="px-5 py-3">
                       <StatusPill status={a.status} />
@@ -347,10 +344,7 @@ function EdenDashboard() {
         ) : (
           <ul className="divide-y divide-gray-100">
             {recent.map((r) => (
-              <li
-                key={r.id}
-                className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50"
-              >
+              <li key={r.id} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-teal/10 font-sans text-sm font-medium text-eve-teal-dark">
                   {initials(r.full_name)}
                 </div>
@@ -427,7 +421,10 @@ function ProfileStrengthCard({ strength }: { strength: ProfileStrength }) {
         <span className="font-sans text-sm font-medium text-eve-teal-dark">{pct}%</span>
       </div>
       <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-        <div className="h-full rounded-full bg-eve-teal transition-all" style={{ width: `${pct}%` }} />
+        <div
+          className="h-full rounded-full bg-eve-teal transition-all"
+          style={{ width: `${pct}%` }}
+        />
       </div>
       <ul className="mt-4 space-y-2">
         {items.map((i) => (
