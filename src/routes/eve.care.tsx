@@ -61,7 +61,11 @@ const COPY = {
     fr: "Parcourez les praticiens que nous avons vérifiés. Filtrez par ville, langue et préférences de soins.",
     ar: "تصفحي مقدمي الرعاية الذين تحققنا منهم. يمكنك التصفية حسب المدينة واللغة وتفضيلات الرعاية.",
   } as L10n,
-  findCta: { en: "Search providers", fr: "Rechercher des praticiens", ar: "ابحثي عن مقدمي الرعاية" } as L10n,
+  findCta: {
+    en: "Search providers",
+    fr: "Rechercher des praticiens",
+    ar: "ابحثي عن مقدمي الرعاية",
+  } as L10n,
   matchCta: {
     en: "Not sure where to start? Answer a few questions",
     fr: "Vous ne savez pas par où commencer ? Répondez à quelques questions",
@@ -245,7 +249,9 @@ function CareHub() {
               muted
               to="/eve/vendors"
               icon={ShoppingBag}
-              label={{ en: "Shops & services", fr: "Boutiques et services", ar: "المتاجر والخدمات" }[l]}
+              label={
+                { en: "Shops & services", fr: "Boutiques et services", ar: "المتاجر والخدمات" }[l]
+              }
               sub={
                 {
                   en: "Products and care services from listed partners",
