@@ -16,7 +16,16 @@ import {
   submitReport,
   type ReportStore,
 } from "@/lib/moderation";
-import { postById, relatedPosts } from "@/lib/community-seed";
+import { postById, relatedPosts, type Post } from "@/lib/community-seed";
+import {
+  getPublishedPostById,
+  getPublishedReplies,
+} from "@/features/community/services/communityService";
+import {
+  adaptPost,
+  adaptReplies,
+  type CommunityReplyView,
+} from "@/features/community/adapters/communityAdapter";
 
 export const Route = createFileRoute("/eve/community/post/$postId")({
   head: () => ({
@@ -56,7 +65,43 @@ function BackLink() {
 function CommunityPostDetailPage() {
   const { postId } = Route.useParams();
   const { t } = useTranslation();
-  const post = useMemo(() => postById(postId), [postId]);
+  const seededPost = useMemo(() => postById(postId), [postId]);
+
+  // A persisted published post wins over a seeded sample with the same id.
+  const [persistedPost, setPersistedPost] = useState<Post | null>(null);
+  const [replies, setReplies] = useState<CommunityReplyView[]>([]);
+  const [loadingPersisted, setLoadingPersisted] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingPersisted(true);
+    (async () => {
+      const result = await getPublishedPostById(postId);
+      if (cancelled) return;
+      if (!result.ok || !result.data) {
+        setPersistedPost(null);
+        setReplies([]);
+        setLoadingPersisted(false);
+        return;
+      }
+      const adapted = adaptPost(result.data);
+      setPersistedPost(adapted);
+      track(ANALYTICS_EVENTS.communityPersistedPostViewed, {
+        post_id: adapted.id,
+        category: adapted.category,
+      });
+      const replyResult = await getPublishedReplies(postId);
+      if (cancelled) return;
+      setReplies(replyResult.ok ? adaptReplies(replyResult.data) : []);
+      setLoadingPersisted(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [postId]);
+
+  const post = persistedPost ?? seededPost;
+  const isPersisted = Boolean(persistedPost);
 
   const [reports, setReports] = useState<ReportStore>({});
   const [hearted, setHearted] = useState(false);
@@ -73,6 +118,16 @@ function CommunityPostDetailPage() {
   }, [post]);
 
   if (!post) {
+    if (loadingPersisted) {
+      return (
+        <EveShell>
+          <BackLink />
+          <p role="status" className="mt-6 text-[14px] text-eve-teal-dark/70">
+            {t("common.loading", { defaultValue: "Loading…" })}
+          </p>
+        </EveShell>
+      );
+    }
     return (
       <EveShell>
         <BackLink />
@@ -97,24 +152,26 @@ function CommunityPostDetailPage() {
     );
   }
 
-  const related = relatedPosts(post);
+  const related = isPersisted ? [] : relatedPosts(post);
   const hidden = isReported(post.id, reports);
 
   return (
     <EveShell>
       <BackLink />
 
-      <div
-        role="note"
-        className="mt-2 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3 rtl:text-right"
-      >
-        <p className="text-[13px] leading-relaxed text-eve-teal-dark/75">
-          <span className="font-semibold text-eve-teal-dark">
-            {t("community.sampleDisclosureTitle")}
-          </span>{" "}
-          {t("community.detail.disclosure")}
-        </p>
-      </div>
+      {!isPersisted && (
+        <div
+          role="note"
+          className="mt-2 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3 rtl:text-right"
+        >
+          <p className="text-[13px] leading-relaxed text-eve-teal-dark/75">
+            <span className="font-semibold text-eve-teal-dark">
+              {t("community.sampleDisclosureTitle")}
+            </span>{" "}
+            {t("community.detail.disclosure")}
+          </p>
+        </div>
+      )}
 
       {hidden ? (
         <p className="mt-4 rounded-2xl border border-eve-sand bg-white p-4 text-[13px] text-eve-teal-dark/70">
@@ -142,9 +199,41 @@ function CommunityPostDetailPage() {
         </article>
       )}
 
-      {!hidden && post.topAnswer && <CommunityThreadReply answer={post.topAnswer} />}
+      {!hidden && !isPersisted && post.topAnswer && (
+        <CommunityThreadReply answer={post.topAnswer} />
+      )}
 
-      {!hidden && (
+      {!hidden && isPersisted && (
+        <section
+          aria-labelledby="persisted-replies"
+          className="mt-5 rounded-2xl border border-eve-sand bg-white px-4 py-4 rtl:text-right"
+        >
+          <h2
+            id="persisted-replies"
+            className="text-[13px] font-semibold text-eve-teal-dark"
+          >
+            {t("community.detail.repliesTitle")}
+          </h2>
+          {replies.length === 0 ? (
+            <p className="mt-1 text-[13px] leading-relaxed text-eve-teal-dark/75">
+              {t("community.detail.noReplies")}
+            </p>
+          ) : (
+            <ul className="mt-2 space-y-3">
+              {replies.map((r) => (
+                <li key={r.id} className="border-t border-eve-sand pt-3 first:border-0 first:pt-0">
+                  <p className="text-[12px] text-eve-teal-dark/60">{r.timeAgo}</p>
+                  <p className="mt-1 text-[14px] leading-relaxed text-eve-teal-dark/85">
+                    {r.body}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {!hidden && !isPersisted && (
         <section
           aria-labelledby="replies-status"
           className="mt-5 rounded-2xl border border-dashed border-eve-teal/30 bg-white px-4 py-4 rtl:text-right"
