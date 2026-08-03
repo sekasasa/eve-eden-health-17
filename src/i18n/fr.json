@@ -275,5 +275,34 @@
       "profile": "Profil et paramètres",
       "contentStudio": "Studio de contenu"
     }
+  },
+  "communityCare": {
+    "action": {
+      "provider": "Trouver des prestataires",
+      "nutrition": "Trouver un soutien nutritionnel",
+      "emotional": "Trouver un soutien en santé mentale",
+      "ivf": "Trouver des soins de fertilité",
+      "ttc": "Trouver des soins de fertilité",
+      "pregnancy": "Explorer les prestataires concernés",
+      "postpartum": "Explorer les prestataires concernés",
+      "newborn": "Explorer les prestataires concernés",
+      "symptoms": "Trouver des soins",
+      "birth": "Explorer le soutien à l'accouchement"
+    },
+    "actionNote": "Options d'annuaire uniquement — pas un avis médical.",
+    "banner": {
+      "provider": "Explorer les prestataires pouvant accompagner ce sujet",
+      "nutrition": "Trouver des soins liés au soutien nutritionnel",
+      "emotional": "Trouver des soins liés au soutien émotionnel et à la santé mentale",
+      "ivf": "Trouver des soins liés à la fertilité",
+      "ttc": "Trouver des soins liés à la fertilité",
+      "pregnancy": "Explorer les prestataires pouvant accompagner la grossesse",
+      "postpartum": "Explorer les prestataires pouvant accompagner le post-partum",
+      "newborn": "Explorer les prestataires pouvant accompagner les soins du nouveau-né",
+      "symptoms": "Trouver des soins liés à ce sujet",
+      "birth": "Explorer les prestataires pouvant accompagner vos préférences d'accouchement",
+      "disclaimer": "Ce sont des options d'annuaire, non des recommandations cliniques ni des correspondances garanties. En cas d'urgence, consultez les services d'urgence locaux.",
+      "dismiss": "Fermer"
+    }
   }
 }
