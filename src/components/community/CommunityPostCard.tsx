@@ -42,9 +42,11 @@ export function CommunityPostCard({
           <p className="truncate text-[14px] font-medium text-eve-teal-dark">{post.anonName}</p>
           <p className="text-[12px] text-eve-teal-dark/70">{post.timeAgo}</p>
         </div>
-        <span className="shrink-0 rounded-full border border-eve-sand bg-white px-2 py-0.5 text-[12px] font-semibold uppercase tracking-wide text-eve-teal-dark/70">
-          {t("community.sample")}
-        </span>
+        {!post.persisted && (
+          <span className="shrink-0 rounded-full border border-eve-sand bg-white px-2 py-0.5 text-[12px] font-semibold uppercase tracking-wide text-eve-teal-dark/70">
+            {t("community.sample")}
+          </span>
+        )}
         {post.trending && (
           <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[12px] font-semibold text-eve-terra">
             <Flame className="h-3 w-3" /> {t("community.trending")}
@@ -98,6 +100,10 @@ export function CommunityPostCard({
       </Link>
 
 
+      {/* Hearts/saves/reports are local-only and only meaningful for seeded
+          samples. Persisted posts have no such backend yet, so we show nothing
+          rather than fake counts or a fake moderation queue. */}
+      {!post.persisted && (
       <div className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[13px] text-eve-teal-dark/75 rtl:flex-row-reverse">
         <button
           type="button"
@@ -138,6 +144,7 @@ export function CommunityPostCard({
           <span className="text-[13px]">{t("community.report")}</span>
         </button>
       </div>
+      )}
 
       {post.topAnswer && (
         <div className="mt-3 border-t border-eve-sand pt-3">
