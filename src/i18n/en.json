@@ -121,7 +121,18 @@
     "askEve": "Ask Eve",
     "askEveSub": "Your care guide",
     "findCare": "Find care",
-    "findCareSub": "Verified providers near you"
+    "findCareSub": "Verified providers near you",
+    "nextStep": "Your next step",
+    "nextStepGoPlan": "See your next steps and recommended care.",
+    "nextStepSetup": "Complete your care preferences",
+    "nextStepSetupSub": "Tell us your stage, language and needs so we can match you.",
+    "carePlanLabel": "Your care plan",
+    "whereYouAre": "Where you are",
+    "viewPlan": "View plan",
+    "forYou": "For you",
+    "updateCareProfile": "Update my care profile",
+    "personalizeBanner": "Personalize your care to get better matches.",
+    "personalizeCta": "Complete profile"
   },
   "care": {
     "title": "Care",

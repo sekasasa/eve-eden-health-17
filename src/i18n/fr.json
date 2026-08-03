@@ -121,7 +121,18 @@
     "askEve": "Demander à Eve",
     "askEveSub": "Votre guide de soins",
     "findCare": "Trouver des soins",
-    "findCareSub": "Praticiens vérifiés près de vous"
+    "findCareSub": "Praticiens vérifiés près de vous",
+    "nextStep": "Votre prochaine étape",
+    "nextStepGoPlan": "Voir vos prochaines étapes et soins recommandés.",
+    "nextStepSetup": "Complétez vos préférences de soins",
+    "nextStepSetupSub": "Indiquez votre étape, votre langue et vos besoins pour un meilleur accompagnement.",
+    "carePlanLabel": "Votre plan de soins",
+    "whereYouAre": "Où vous en êtes",
+    "viewPlan": "Voir le plan",
+    "forYou": "Pour vous",
+    "updateCareProfile": "Mettre à jour mon profil de soins",
+    "personalizeBanner": "Personnalisez vos soins pour de meilleures recommandations.",
+    "personalizeCta": "Compléter"
   },
   "care": {
     "title": "Soins",
