@@ -64,9 +64,39 @@ export function CommunityPostCard({
       )}
 
       <h2 className="mt-2 font-serif text-[18px] font-semibold leading-snug text-eve-teal-dark">
-        {post.title}
+        <Link
+          to="/eve/community/post/$postId"
+          params={{ postId: post.id }}
+          onClick={() =>
+            track(ANALYTICS_EVENTS.communityPostOpened, {
+              post_id: post.id,
+              category: post.category,
+              source: "community_feed",
+            })
+          }
+          className="rounded-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eve-teal focus-visible:ring-offset-2"
+        >
+          {post.title}
+        </Link>
       </h2>
       <p className="mt-1 text-[14px] leading-relaxed text-eve-teal-dark/80">{post.body}</p>
+
+      <Link
+        to="/eve/community/post/$postId"
+        params={{ postId: post.id }}
+        onClick={() =>
+          track(ANALYTICS_EVENTS.communityPostOpened, {
+            post_id: post.id,
+            category: post.category,
+            source: "community_feed",
+          })
+        }
+        className="mt-2 inline-flex min-h-11 items-center gap-1 text-[13px] font-medium text-eve-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eve-teal focus-visible:ring-offset-2"
+      >
+        {t("community.detail.open")}
+        <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden="true" />
+      </Link>
+
 
       <div className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[13px] text-eve-teal-dark/75 rtl:flex-row-reverse">
         <button
