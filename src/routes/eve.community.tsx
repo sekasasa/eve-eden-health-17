@@ -136,9 +136,10 @@ function CommunityPage() {
           <ArrowLeft className="h-3 w-3" /> Back to dashboard
         </button>
         <h1 className="font-serif text-3xl text-eve-teal-dark">Community & support</h1>
-        <p className="mt-1 italic font-sans text-sm text-eve-muted">
-          Navigator, family support, emotional support, and women like you.
+        <p className="mt-1 font-sans text-sm text-eve-muted">
+          Questions and answers from women at every stage. Support tools are below the feed.
         </p>
+
       </div>
 
       {/* Feed tabs — only tabs backed by real data are enabled. */}
