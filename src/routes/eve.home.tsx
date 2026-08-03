@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Check, ChevronDown, Sparkles } from "lucide-react";
+import { Check, ChevronDown, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { EveShell } from "@/components/shells/EveShell";
 import { PullToRefresh } from "@/components/ui/PullToRefresh";
-import { StageRing } from "@/components/ui/StageRing";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { GuidanceCard } from "@/components/ui/GuidanceCard";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
@@ -17,7 +16,6 @@ import { ProvidersPreview } from "@/components/home/ProvidersPreview";
 import { NextStep } from "@/components/home/NextStep";
 import { CarePlanSummary } from "@/components/home/CarePlanSummary";
 import { supabase } from "@/integrations/supabase/client";
-import { babySizeFor } from "@/lib/babySize";
 import { cn } from "@/lib/utils";
 import { hydrateIntakeFromCloud, type MatchIntake } from "@/lib/match-store";
 import type { LifeStage } from "@/lib/match-data";
@@ -184,7 +182,6 @@ function EveHome() {
       : hour < 18
         ? t("home.greeting_afternoon")
         : t("home.greeting_evening");
-  const progressPct = Math.min(100, Math.round((week / 40) * 100));
   const dueDate = mother?.due_date
     ? new Date(mother.due_date).toLocaleDateString(undefined, {
         day: "numeric",
