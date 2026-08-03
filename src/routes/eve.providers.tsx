@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
 import { TrustBadge } from "@/components/ui/TrustBadge";
+import { ProviderListCard } from "@/components/providers/ProviderListCard";
 import { NavigatorHelp } from "@/components/ui/NavigatorHelp";
 import { LanguageFallbackNotice } from "@/components/LanguageFallbackNotice";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
