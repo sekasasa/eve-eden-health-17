@@ -31,6 +31,9 @@ import {
 } from "@/lib/provider-matching";
 
 import type { LifeStage } from "@/lib/match-data";
+import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
+import { CommunityContextBanner } from "@/components/providers/CommunityContextBanner";
+import { isCareTopic, specialtyForTopic, type CareTopic } from "@/lib/community-care-actions";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/providers")({
