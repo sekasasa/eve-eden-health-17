@@ -214,7 +214,13 @@
       "repliesClosedBody": "Replies open during the moderated community pilot. Until then you can read, save, and report example conversations.",
       "related": "Related conversations",
       "notFoundTitle": "Conversation not found",
-      "notFoundBody": "This conversation does not exist or is no longer available."
+      "notFoundBody": "This conversation does not exist or is no longer available.",
+      "noPublished": "No published conversations yet. Here are examples written by our team.",
+      "noReplies": "No replies yet.",
+      "pendingModeration": "Waiting for moderator review.",
+      "postingUnavailable": "Posting is unavailable during the pilot.",
+      "liveUnavailable": "We couldn't load live community conversations right now — showing examples instead.",
+      "repliesTitle": "Replies"
     }
   },
   "providerCard": {

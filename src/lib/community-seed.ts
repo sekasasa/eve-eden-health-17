@@ -145,6 +145,11 @@ export type Post = {
   replies: number;
   topAnswer?: string;
   trending?: boolean;
+  /**
+   * True when the post comes from the persisted `community_posts` table.
+   * Persisted posts have no social metrics yet and carry no sample label.
+   */
+  persisted?: boolean;
 };
 
 export const SEED_POSTS: Post[] = [

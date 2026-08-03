@@ -37,7 +37,10 @@ import {
   postsForTab,
   type CategoryKey,
   type FeedTabKey,
+  type Post,
 } from "@/lib/community-seed";
+import { getPublishedPosts } from "@/features/community/services/communityService";
+import { adaptPosts } from "@/features/community/adapters/communityAdapter";
 
 export const Route = createFileRoute("/eve/community")({
   head: () => ({
@@ -121,14 +124,42 @@ function CommunityPage() {
     [partnerContent, profile],
   );
 
+  // Persisted community conversations. Nothing is published yet in the pilot,
+  // so the seeded sample feed remains the truthful fallback.
+  const [persistedPosts, setPersistedPosts] = useState<Post[]>([]);
+  const [liveLoadFailed, setLiveLoadFailed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const result = await getPublishedPosts({ limit: 30 });
+      if (cancelled) return;
+      if (!result.ok) {
+        setLiveLoadFailed(true);
+        return;
+      }
+      const posts = adaptPosts(result.data);
+      setPersistedPosts(posts);
+      track(ANALYTICS_EVENTS.communityPersistedFeedLoaded, { count: posts.length });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const usingSeeded = persistedPosts.length === 0;
+
+
   const tabBacked = FEED_TABS.find((x) => x.key === tab)?.backed ?? false;
 
   const filtered = useMemo(() => {
     if (!tabBacked) return [];
+    const source = usingSeeded ? SEED_POSTS : persistedPosts;
     const byCategory =
-      active === "all" ? SEED_POSTS : SEED_POSTS.filter((p) => p.category === active);
+      active === "all" ? source : source.filter((p) => p.category === active);
     return postsForTab(byCategory, tab);
-  }, [active, tab, tabBacked]);
+  }, [active, tab, tabBacked, usingSeeded, persistedPosts]);
+
 
   return (
     <EveShell>
@@ -195,7 +226,16 @@ function CommunityPage() {
         </p>
       )}
 
-      {tabBacked && (
+      {tabBacked && liveLoadFailed && (
+        <p
+          role="status"
+          className="mt-4 rounded-2xl border border-eve-sand bg-white px-4 py-3 text-[13px] leading-relaxed text-eve-teal-dark/75 rtl:text-right"
+        >
+          {t("community.detail.liveUnavailable")}
+        </p>
+      )}
+
+      {tabBacked && usingSeeded && (
         <div
           role="note"
           className="mt-4 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3 rtl:text-right"

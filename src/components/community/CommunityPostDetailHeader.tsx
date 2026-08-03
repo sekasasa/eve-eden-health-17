@@ -40,9 +40,11 @@ export function CommunityPostDetailHeader({
           <p className="truncate text-[14px] font-medium text-eve-teal-dark">{post.anonName}</p>
           <p className="text-[12px] text-eve-teal-dark/70">{post.timeAgo}</p>
         </div>
-        <span className="shrink-0 rounded-full border border-eve-sand bg-white px-2 py-0.5 text-[12px] font-semibold uppercase tracking-wide text-eve-teal-dark/70">
-          {t("community.sample")}
-        </span>
+        {!post.persisted && (
+          <span className="shrink-0 rounded-full border border-eve-sand bg-white px-2 py-0.5 text-[12px] font-semibold uppercase tracking-wide text-eve-teal-dark/70">
+            {t("community.sample")}
+          </span>
+        )}
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -67,6 +69,8 @@ export function CommunityPostDetailHeader({
         {post.title}
       </h1>
 
+      {/* Local-only hearts/saves/report apply to seeded samples only. */}
+      {!post.persisted && (
       <div className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[13px] text-eve-teal-dark/75 rtl:flex-row-reverse">
         <button
           type="button"
@@ -107,6 +111,7 @@ export function CommunityPostDetailHeader({
           <span className="text-[13px]">{t("community.report")}</span>
         </button>
       </div>
+      )}
     </header>
   );
 }
