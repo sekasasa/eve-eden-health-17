@@ -14,6 +14,8 @@ import { ActivityCard } from "@/components/home/ActivityCard";
 import { UpcomingSection } from "@/components/home/UpcomingSection";
 import { CommunityPreview } from "@/components/home/CommunityPreview";
 import { ProvidersPreview } from "@/components/home/ProvidersPreview";
+import { NextStep } from "@/components/home/NextStep";
+import { CarePlanSummary } from "@/components/home/CarePlanSummary";
 import { supabase } from "@/integrations/supabase/client";
 import { babySizeFor } from "@/lib/babySize";
 import { cn } from "@/lib/utils";
@@ -346,7 +348,7 @@ function EveHome() {
         {callouts.length > 0 && (
           <div className="mt-5 px-3 rtl:text-right">
             <SectionLabel>
-              {lang === "fr" ? "Pour vous" : lang === "ar" ? "لأجلك" : "For you"}
+              {t("homev2.forYou")}
             </SectionLabel>
             <div className="mt-2 space-y-2">
               {callouts.map((c) => (
@@ -371,7 +373,7 @@ function EveHome() {
             className="inline-flex min-h-11 items-center gap-1 font-sans text-[13px] text-eve-teal underline-offset-2 hover:underline"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            {lang === "fr" ? "Mettre à jour mon profil de soins" : "Update my care profile"}
+            {t("homev2.updateCareProfile")}
           </button>
         </div>
       </PullToRefresh>
