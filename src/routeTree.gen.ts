@@ -80,6 +80,7 @@ import { Route as EdenVendorDashboardRouteImport } from './routes/eden.vendor.da
 import { Route as EdenVendorContentRouteImport } from './routes/eden.vendor.content'
 import { Route as EdenPatientsIdRouteImport } from './routes/eden.patients.$id'
 import { Route as EveProvidersIdBookRouteImport } from './routes/eve.providers.$id.book'
+import { Route as EveCommunityPostPostIdRouteImport } from './routes/eve.community.post.$postId'
 import { Route as EdenVendorContentNewRouteImport } from './routes/eden.vendor.content.new'
 import { Route as ChwMothersIdVisitRouteImport } from './routes/chw.mothers.$id.visit'
 import { Route as EdenVendorContentIdEditRouteImport } from './routes/eden.vendor.content.$id.edit'
@@ -441,6 +442,11 @@ const EveProvidersIdBookRoute = EveProvidersIdBookRouteImport.update({
   path: '/book',
   getParentRoute: () => EveProvidersIdRoute,
 } as any)
+const EveCommunityPostPostIdRoute = EveCommunityPostPostIdRouteImport.update({
+  id: '/post/$postId',
+  path: '/post/$postId',
+  getParentRoute: () => EveCommunityRoute,
+} as any)
 const EdenVendorContentNewRoute = EdenVendorContentNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -492,7 +498,7 @@ export interface FileRoutesByFullPath {
   '/eve/care': typeof EveCareRoute
   '/eve/care-support': typeof EveCareSupportRoute
   '/eve/coming-soon': typeof EveComingSoonRoute
-  '/eve/community': typeof EveCommunityRoute
+  '/eve/community': typeof EveCommunityRouteWithChildren
   '/eve/events': typeof EveEventsRouteWithChildren
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
@@ -530,6 +536,7 @@ export interface FileRoutesByFullPath {
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
   '/eden/vendor/content/new': typeof EdenVendorContentNewRoute
+  '/eve/community/post/$postId': typeof EveCommunityPostPostIdRoute
   '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
   '/eden/vendor/content/$id/edit': typeof EdenVendorContentIdEditRoute
 }
@@ -568,7 +575,7 @@ export interface FileRoutesByTo {
   '/eve/care': typeof EveCareRoute
   '/eve/care-support': typeof EveCareSupportRoute
   '/eve/coming-soon': typeof EveComingSoonRoute
-  '/eve/community': typeof EveCommunityRoute
+  '/eve/community': typeof EveCommunityRouteWithChildren
   '/eve/events': typeof EveEventsRouteWithChildren
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
@@ -606,6 +613,7 @@ export interface FileRoutesByTo {
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
   '/eden/vendor/content/new': typeof EdenVendorContentNewRoute
+  '/eve/community/post/$postId': typeof EveCommunityPostPostIdRoute
   '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
   '/eden/vendor/content/$id/edit': typeof EdenVendorContentIdEditRoute
 }
@@ -645,7 +653,7 @@ export interface FileRoutesById {
   '/eve/care': typeof EveCareRoute
   '/eve/care-support': typeof EveCareSupportRoute
   '/eve/coming-soon': typeof EveComingSoonRoute
-  '/eve/community': typeof EveCommunityRoute
+  '/eve/community': typeof EveCommunityRouteWithChildren
   '/eve/events': typeof EveEventsRouteWithChildren
   '/eve/guidance': typeof EveGuidanceRoute
   '/eve/home': typeof EveHomeRoute
@@ -683,6 +691,7 @@ export interface FileRoutesById {
   '/eve/vendors/$id': typeof EveVendorsIdRoute
   '/chw/mothers/$id/visit': typeof ChwMothersIdVisitRoute
   '/eden/vendor/content/new': typeof EdenVendorContentNewRoute
+  '/eve/community/post/$postId': typeof EveCommunityPostPostIdRoute
   '/eve/providers/$id/book': typeof EveProvidersIdBookRoute
   '/eden/vendor/content/$id/edit': typeof EdenVendorContentIdEditRoute
 }
@@ -761,6 +770,7 @@ export interface FileRouteTypes {
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
     | '/eden/vendor/content/new'
+    | '/eve/community/post/$postId'
     | '/eve/providers/$id/book'
     | '/eden/vendor/content/$id/edit'
   fileRoutesByTo: FileRoutesByTo
@@ -837,6 +847,7 @@ export interface FileRouteTypes {
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
     | '/eden/vendor/content/new'
+    | '/eve/community/post/$postId'
     | '/eve/providers/$id/book'
     | '/eden/vendor/content/$id/edit'
   id:
@@ -913,6 +924,7 @@ export interface FileRouteTypes {
     | '/eve/vendors/$id'
     | '/chw/mothers/$id/visit'
     | '/eden/vendor/content/new'
+    | '/eve/community/post/$postId'
     | '/eve/providers/$id/book'
     | '/eden/vendor/content/$id/edit'
   fileRoutesById: FileRoutesById
@@ -952,7 +964,7 @@ export interface RootRouteChildren {
   EveCareRoute: typeof EveCareRoute
   EveCareSupportRoute: typeof EveCareSupportRoute
   EveComingSoonRoute: typeof EveComingSoonRoute
-  EveCommunityRoute: typeof EveCommunityRoute
+  EveCommunityRoute: typeof EveCommunityRouteWithChildren
   EveEventsRoute: typeof EveEventsRouteWithChildren
   EveGuidanceRoute: typeof EveGuidanceRoute
   EveHomeRoute: typeof EveHomeRoute
@@ -1477,6 +1489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EveProvidersIdBookRouteImport
       parentRoute: typeof EveProvidersIdRoute
     }
+    '/eve/community/post/$postId': {
+      id: '/eve/community/post/$postId'
+      path: '/post/$postId'
+      fullPath: '/eve/community/post/$postId'
+      preLoaderRoute: typeof EveCommunityPostPostIdRouteImport
+      parentRoute: typeof EveCommunityRoute
+    }
     '/eden/vendor/content/new': {
       id: '/eden/vendor/content/new'
       path: '/new'
@@ -1523,6 +1542,18 @@ const EdenPatientsRouteChildren: EdenPatientsRouteChildren = {
 
 const EdenPatientsRouteWithChildren = EdenPatientsRoute._addFileChildren(
   EdenPatientsRouteChildren,
+)
+
+interface EveCommunityRouteChildren {
+  EveCommunityPostPostIdRoute: typeof EveCommunityPostPostIdRoute
+}
+
+const EveCommunityRouteChildren: EveCommunityRouteChildren = {
+  EveCommunityPostPostIdRoute: EveCommunityPostPostIdRoute,
+}
+
+const EveCommunityRouteWithChildren = EveCommunityRoute._addFileChildren(
+  EveCommunityRouteChildren,
 )
 
 interface EveEventsRouteChildren {
@@ -1657,7 +1688,7 @@ const rootRouteChildren: RootRouteChildren = {
   EveCareRoute: EveCareRoute,
   EveCareSupportRoute: EveCareSupportRoute,
   EveComingSoonRoute: EveComingSoonRoute,
-  EveCommunityRoute: EveCommunityRoute,
+  EveCommunityRoute: EveCommunityRouteWithChildren,
   EveEventsRoute: EveEventsRouteWithChildren,
   EveGuidanceRoute: EveGuidanceRoute,
   EveHomeRoute: EveHomeRoute,

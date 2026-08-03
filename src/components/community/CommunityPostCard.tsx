@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { Bookmark, Flag, Flame, Heart, MessageCircle } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Bookmark, Flag, Flame, Heart, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
 import { CommunityCareAction } from "@/components/community/CommunityCareAction";
 import { CATEGORIES, toneBadge, type Post } from "@/lib/community-seed";
 
