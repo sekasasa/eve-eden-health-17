@@ -292,7 +292,7 @@ function EveProviders() {
     if (preset) setSpecialty(preset);
     setAutoApplied(true);
 
-  }, [hydrated, profile.stage, autoApplied]);
+  }, [hydrated, profile.stage, autoApplied, communityTopic]);
 
   // Seed filters from saved care preferences once they load
   useEffect(() => {
