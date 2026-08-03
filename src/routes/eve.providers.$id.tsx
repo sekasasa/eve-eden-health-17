@@ -12,6 +12,7 @@ import {
   Repeat,
   BookOpen,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { EveShell } from "@/components/shells/EveShell";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
@@ -23,9 +24,11 @@ import {
 import {
   ProviderAbout,
   ProviderProfileTabs,
-  ProviderServices,
   type ProviderTabKey,
 } from "@/components/providers/ProviderProfileTabs";
+import { ProviderServicesSection } from "@/components/providers/ProviderServicesSection";
+import { ProviderAppointmentInfo } from "@/components/providers/ProviderAppointmentInfo";
+import { ProviderContactSection } from "@/components/providers/ProviderContactSection";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
@@ -71,6 +74,7 @@ function initials(name?: string | null) {
 }
 
 function ProviderProfilePage() {
+  const { t } = useTranslation();
   const { id } = useParams({ from: "/eve/providers/$id" });
   const search = Route.useSearch();
   const navigate = useNavigate();
