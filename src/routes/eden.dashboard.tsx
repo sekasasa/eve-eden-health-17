@@ -1,10 +1,25 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDownRight, ArrowUpRight, PenLine } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { EdenShell } from "@/components/shells/EdenShell";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { CoordinationPanels } from "@/components/CoordinationPanels";
+import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
+import {
+  ProviderGrowthOverview,
+  type GrowthMetric,
+} from "@/components/provider-dashboard/ProviderGrowthOverview";
+import {
+  ProviderPriorityActions,
+  type PriorityAction,
+  type PriorityActionKey,
+} from "@/components/provider-dashboard/ProviderPriorityActions";
+import {
+  ProviderOpportunityList,
+  type OpportunityItem,
+} from "@/components/provider-dashboard/ProviderOpportunityList";
+import { ProviderPracticeLinks } from "@/components/provider-dashboard/ProviderPracticeLinks";
 
 export const Route = createFileRoute("/eden/dashboard")({
   component: EdenDashboard,
@@ -20,11 +35,20 @@ type Appt = {
   mother: { id: string; full_name: string | null; pregnancy_week: number | null } | null;
 };
 
-type KPI = { label: string; value: number; delta: number };
+type AccountState = {
+  isVerified: boolean;
+  hasServices: boolean;
+  profileComplete: boolean;
+};
 
 function initials(n?: string | null) {
   if (!n) return "·";
-  return n.split(" ").filter(Boolean).slice(0, 2).map((s) => s[0]?.toUpperCase()).join("");
+  return n
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((s) => s[0]?.toUpperCase())
+    .join("");
 }
 
 function fmtTime(iso: string) {
@@ -46,12 +70,14 @@ type ProfileStrength = {
 
 function EdenDashboard() {
   const [name, setName] = useState<string>("");
-  const [kpis, setKpis] = useState<KPI[]>([
-    { label: "Active patients", value: 0, delta: 0 },
-    { label: "Appointments this week", value: 0, delta: 0 },
-    { label: "Pending confirmations", value: 0, delta: 0 },
-    { label: "No-shows this month", value: 0, delta: 0 },
+  const { t } = useTranslation();
+  const [metrics, setMetrics] = useState<GrowthMetric[]>([
+    { key: "pendingRequests", value: 0 },
+    { key: "upcomingConfirmed", value: 0 },
+    { key: "peopleSeen30d", value: 0 },
   ]);
+  const [opportunities, setOpportunities] = useState<OpportunityItem[]>([]);
+  const [account, setAccount] = useState<AccountState | null>(null);
   const [today, setToday] = useState<Appt[]>([]);
   const [recent, setRecent] = useState<
     { id: string; full_name: string | null; pregnancy_week: number | null; last_visit: string }[]
@@ -60,12 +86,18 @@ function EdenDashboard() {
   const [strength, setStrength] = useState<ProfileStrength | null>(null);
 
   useEffect(() => {
+    track(ANALYTICS_EVENTS.providerDashboardOpened);
+  }, []);
+
+  useEffect(() => {
     (async () => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) return;
       const { data: p } = await supabase
         .from("providers")
-        .select("id,full_name,specialty,clinic_name,bio,languages,consultation_fee_mad,phone,accepting_patients")
+        .select(
+          "id,full_name,specialty,clinic_name,bio,languages,consultation_fee_mad,phone,accepting_patients,is_verified,services",
+        )
         .eq("user_id", auth.user.id)
         .maybeSingle();
       if (!p) {
@@ -73,6 +105,18 @@ function EdenDashboard() {
         return;
       }
       setName(p.full_name ?? "");
+      setAccount({
+        isVerified: p.is_verified === true,
+        hasServices: !!(p.services && p.services.trim()),
+        profileComplete: !!(
+          p.specialty &&
+          p.clinic_name &&
+          p.bio &&
+          p.bio.trim().length > 30 &&
+          p.languages &&
+          p.languages.length
+        ),
+      });
       setStrength({
         hasLanguages: !!(p.languages && p.languages.length),
         hasBio: !!(p.bio && p.bio.trim().length > 30),
@@ -92,10 +136,7 @@ function EdenDashboard() {
       weekStart.setDate(weekStart.getDate() - weekStart.getDay());
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekEnd.getDate() + 7);
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
       const last30 = new Date(now.getTime() - 30 * 86400000);
-      const prev30 = new Date(now.getTime() - 60 * 86400000);
 
       const { data: all } = await supabase
         .from("appointments")
@@ -107,55 +148,31 @@ function EdenDashboard() {
 
       const list = (all as unknown as Appt[]) ?? [];
 
-      const active30 = new Set(
-        list
-          .filter((a) => new Date(a.scheduled_at) >= last30)
-          .map((a) => a.mother_id),
-      ).size;
-      const activePrev = new Set(
-        list
-          .filter((a) => {
-            const d = new Date(a.scheduled_at);
-            return d >= prev30 && d < last30;
-          })
-          .map((a) => a.mother_id),
+      const peopleSeen30d = new Set(
+        list.filter((a) => new Date(a.scheduled_at) >= last30).map((a) => a.mother_id),
       ).size;
 
-      const week = list.filter((a) => {
-        const d = new Date(a.scheduled_at);
-        return d >= weekStart && d < weekEnd;
-      }).length;
-      const weekPrev = list.filter((a) => {
-        const d = new Date(a.scheduled_at);
-        const ws = new Date(weekStart);
-        ws.setDate(ws.getDate() - 7);
-        return d >= ws && d < weekStart;
-      }).length;
-
-      const pending = list.filter(
+      const pendingList = list.filter(
         (a) => a.status === "pending" && new Date(a.scheduled_at) >= now,
+      );
+      const upcomingConfirmed = list.filter(
+        (a) => a.status === "confirmed" && new Date(a.scheduled_at) >= now,
       ).length;
 
-      const noShows = list.filter((a) => {
-        const d = new Date(a.scheduled_at);
-        return a.status === "cancelled" && d >= monthStart && d < monthEnd;
-      }).length;
-      const noShowsPrev = list.filter((a) => {
-        const d = new Date(a.scheduled_at);
-        const ps = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const pe = monthStart;
-        return a.status === "cancelled" && d >= ps && d < pe;
-      }).length;
-
-      const pct = (cur: number, prev: number) =>
-        prev === 0 ? (cur > 0 ? 100 : 0) : Math.round(((cur - prev) / prev) * 100);
-
-      setKpis([
-        { label: "Active patients", value: active30, delta: pct(active30, activePrev) },
-        { label: "Appointments this week", value: week, delta: pct(week, weekPrev) },
-        { label: "Pending confirmations", value: pending, delta: 0 },
-        { label: "No-shows this month", value: noShows, delta: pct(noShows, noShowsPrev) },
+      setMetrics([
+        { key: "pendingRequests", value: pendingList.length },
+        { key: "upcomingConfirmed", value: upcomingConfirmed },
+        { key: "peopleSeen30d", value: peopleSeen30d },
       ]);
+
+      setOpportunities(
+        pendingList.slice(0, 5).map((a) => ({
+          id: a.id,
+          scheduledAt: a.scheduled_at,
+          status: a.status,
+          type: a.type,
+        })),
+      );
 
       setToday(
         list.filter((a) => {
@@ -199,45 +216,50 @@ function EdenDashboard() {
     setToday((xs) => xs.map((a) => (a.id === id ? { ...a, status: "completed" } : a)));
   }
 
+  const priorityActions: PriorityAction[] = account
+    ? [
+        { key: "getVerified" as const, to: "/eden/profile", done: account.isVerified },
+        { key: "completeProfile" as const, to: "/eden/onboarding", done: account.profileComplete },
+        { key: "addServices" as const, to: "/eden/profile", done: account.hasServices },
+        {
+          key: "respondRequests" as const,
+          to: "/eden/appointments",
+          done: opportunities.length === 0,
+        },
+        { key: "publishContent" as const, to: "/eden/vendor/content", done: false },
+      ].filter((a) => !a.done || a.key === "getVerified")
+    : [];
+
   return (
     <EdenShell>
-      <div>
+      <div className="rtl:text-right">
         <h1 className="font-sans text-2xl font-medium text-gray-900">
           {greet}, {name ? `Dr. ${name.split(" ").slice(-1)[0]}` : "Doctor"}
         </h1>
-        <p className="mt-1 font-sans text-sm text-gray-500">
-          Here is your practice at a glance — {todayStr}
+        <p className="mt-1 font-sans text-[14px] text-gray-500">
+          {t("providerDashboard.headerSubtitle")} — {todayStr}
         </p>
       </div>
 
-      {/* KPIs */}
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {kpis.map((k) => (
-          <KpiCard key={k.label} kpi={k} loading={loading} />
-        ))}
-      </div>
+      <ProviderGrowthOverview metrics={metrics} loading={loading} />
 
-      <Link
-        to="/eden/vendor/content"
-        className="mt-6 flex items-start gap-4 rounded-xl border border-eve-teal/30 bg-eve-teal-light/30 p-5 transition hover:bg-eve-teal-light/50"
-      >
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-eve-teal text-white">
-          <PenLine className="h-5 w-5" />
-        </div>
-        <div className="flex-1">
-          <p className="font-sans text-sm font-semibold text-eve-teal-dark">Content Studio</p>
-          <p className="mt-0.5 font-sans text-xs text-gray-600">
-            Publish articles, videos, tips, and events to educate patients and grow your practice.
-          </p>
-        </div>
-        <span className="font-sans text-xs font-medium text-eve-teal">Open →</span>
-      </Link>
+      <ProviderPriorityActions
+        actions={priorityActions}
+        onSelect={(action: PriorityActionKey) =>
+          track(ANALYTICS_EVENTS.providerDashboardActionSelected, { action })
+        }
+      />
+
+      <ProviderOpportunityList items={opportunities} loading={loading} />
+
+      <ProviderPracticeLinks
+        onSelect={(action) => track(ANALYTICS_EVENTS.providerDashboardActionSelected, { action })}
+      />
 
       {/* Profile strength */}
       {strength && <ProfileStrengthCard strength={strength} />}
 
       <CoordinationPanels />
-
 
       {/* Today's schedule */}
       <section className="mt-8 rounded-xl border border-gray-200 bg-white">
@@ -273,9 +295,7 @@ function EdenDashboard() {
                     <td className="px-5 py-3 font-medium text-gray-900">
                       {fmtTime(a.scheduled_at)}
                     </td>
-                    <td className="px-5 py-3 text-gray-700">
-                      {a.mother?.full_name ?? "—"}
-                    </td>
+                    <td className="px-5 py-3 text-gray-700">{a.mother?.full_name ?? "—"}</td>
                     <td className="px-5 py-3 text-gray-600">{a.type ?? "Visit"}</td>
                     <td className="px-5 py-3">
                       <StatusPill status={a.status} />
@@ -324,10 +344,7 @@ function EdenDashboard() {
         ) : (
           <ul className="divide-y divide-gray-100">
             {recent.map((r) => (
-              <li
-                key={r.id}
-                className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50"
-              >
+              <li key={r.id} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-teal/10 font-sans text-sm font-medium text-eve-teal-dark">
                   {initials(r.full_name)}
                 </div>
@@ -357,41 +374,6 @@ function EdenDashboard() {
         )}
       </section>
     </EdenShell>
-  );
-}
-
-function KpiCard({ kpi, loading }: { kpi: KPI; loading: boolean }) {
-  const up = kpi.delta >= 0;
-  return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <p className="font-sans text-xs uppercase tracking-wide text-gray-500">
-        {kpi.label}
-      </p>
-      {loading ? (
-        <div className="mt-3 h-8 w-16 animate-pulse rounded bg-gray-100" />
-      ) : (
-        <div className="mt-2 flex items-end justify-between">
-          <span className="font-sans text-[32px] font-bold leading-none text-eve-forest">
-            {kpi.value}
-          </span>
-          {kpi.delta !== 0 && (
-            <span
-              className={cn(
-                "inline-flex items-center gap-0.5 font-sans text-xs",
-                up ? "text-green-600" : "text-red-600",
-              )}
-            >
-              {up ? (
-                <ArrowUpRight className="h-3 w-3" />
-              ) : (
-                <ArrowDownRight className="h-3 w-3" />
-              )}
-              {Math.abs(kpi.delta)}%
-            </span>
-          )}
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -439,7 +421,10 @@ function ProfileStrengthCard({ strength }: { strength: ProfileStrength }) {
         <span className="font-sans text-sm font-medium text-eve-teal-dark">{pct}%</span>
       </div>
       <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-        <div className="h-full rounded-full bg-eve-teal transition-all" style={{ width: `${pct}%` }} />
+        <div
+          className="h-full rounded-full bg-eve-teal transition-all"
+          style={{ width: `${pct}%` }}
+        />
       </div>
       <ul className="mt-4 space-y-2">
         {items.map((i) => (
