@@ -522,6 +522,11 @@ function EveProviders() {
         preferences.
       </p>
 
+      {communityTopic && !bannerDismissed && (
+        <CommunityContextBanner topic={communityTopic} onDismiss={() => setBannerDismissed(true)} />
+      )}
+
+
       {(profile.stage || profile.city || profile.language || prefs.region) && (
         <div className="mt-3 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 text-[12px] text-eve-teal-dark">
           Personalized for your stated preferences
