@@ -59,12 +59,12 @@ export const FILTER_GROUPS: { id: string; label: string; keys: CategoryKey[] }[]
   {
     id: "needs",
     label: "Needs",
-    keys: ["symptoms", "provider", "nutrition", "labs", "insurance"],
+    keys: ["symptoms", "provider", "nutrition", "labs", "insurance", "emotional"],
   },
   {
     id: "culture",
     label: "Community & Culture",
-    keys: ["fasting", "culture", "birth", "emotional"],
+    keys: ["fasting", "culture", "birth"],
   },
 ];
 
