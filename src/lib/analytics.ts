@@ -42,6 +42,8 @@ export const ANALYTICS_EVENTS = {
   providerDashboardActionSelected: "provider_dashboard_action_selected",
   communityCareActionSelected: "community_care_action_selected",
   providerDirectoryOpenedFromCommunity: "provider_directory_opened_from_community",
+  communityPostOpened: "community_post_opened",
+  communityPostDetailViewed: "community_post_detail_viewed",
 } as const;
 
 export type AnalyticsEvent = (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS];
