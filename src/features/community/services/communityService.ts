@@ -1,281 +1,266 @@
 /**
- * Community persistence service.
+ * Community persistence service — the only module allowed to talk to the
+ * community tables.
  *
  * The product is READ-ONLY by default: `createPost` / `createReply` refuse to
  * run unless BOTH `communityPosting` and `communityModeration` are enabled
- * (see `isCommunityReadOnly`). This module is the only place allowed to talk
- * to Supabase for community conversations — presentational components must
- * not query directly.
+ * (see `isCommunityReadOnly`). Read-only rejection happens BEFORE any Supabase
+ * call.
  *
- * Callers can never set `status`, `author_id`, `provider_id`, `is_seeded` or
- * any other moderation field. Everything is submitted as `pending_review`.
+ * Callers can never set `status`, `author_id`, `provider_id`, `reply_type`,
+ * `visibility` or `is_seeded`. Everything is submitted as pending review via
+ * database defaults and RLS.
+ *
+ * Never log post/reply text.
  */
 
 import { supabase } from "@/integrations/supabase/client";
 import { isCommunityReadOnly } from "@/lib/moderation";
 import { assessRisk } from "@/lib/urgent-safety";
-import type { CategoryKey } from "@/lib/community-seed";
+import { CATEGORIES, type CategoryKey } from "@/lib/community-seed";
+import {
+  PUBLIC_POST_SELECT,
+  PUBLIC_REPLY_SELECT,
+  CREATED_POST_SELECT,
+  CREATED_REPLY_SELECT,
+} from "../columns";
+import {
+  fail,
+  ok,
+  type CommunityFeedFilters,
+  type CommunityResult,
+  type CreateCommunityPostInput,
+  type CreateCommunityReplyInput,
+  type PersistedCommunityPost,
+  type PersistedCommunityReply,
+} from "../types";
 
-export type CommunityPostRow = {
-  id: string;
-  anonymous_alias: string | null;
-  title: string;
-  body: string;
-  category: string;
-  life_stage: string | null;
-  city: string | null;
-  country_code: string | null;
-  language_code: string | null;
-  visibility: string;
-  status: string;
-  is_anonymous: boolean;
-  is_seeded: boolean;
-  created_at: string;
-  updated_at: string;
-};
+/** Legacy row aliases kept so existing imports stay valid. */
+export type CommunityPostRow = PersistedCommunityPost;
+export type CommunityReplyRow = PersistedCommunityReply;
+export type PostFilters = CommunityFeedFilters;
+export type CreatePostInput = CreateCommunityPostInput;
+export type CreateReplyInput = CreateCommunityReplyInput;
 
-export type CommunityReplyRow = {
-  id: string;
-  post_id: string;
-  provider_id: string | null;
-  body: string;
-  reply_type: string;
-  status: string;
-  is_seeded: boolean;
-  created_at: string;
-  updated_at: string;
-};
+export const DEFAULT_FEED_LIMIT = 20;
+export const MAX_FEED_LIMIT = 50;
+export const MAX_TITLE = 200;
+export const MAX_BODY = 8000;
 
-/**
- * Columns selected for public reads. `author_id` is deliberately excluded so
- * an anonymous author can never be de-anonymised through the UI layer.
- */
-const POST_COLUMNS =
-  "id,anonymous_alias,title,body,category,life_stage,city,country_code,language_code,visibility,status,is_anonymous,is_seeded,created_at,updated_at";
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const VALID_CATEGORIES = new Set<string>(
+  CATEGORIES.map((c) => c.key).filter((k) => k !== "all"),
+);
 
-const REPLY_COLUMNS =
-  "id,post_id,provider_id,body,reply_type,status,is_seeded,created_at,updated_at";
-
-export type CommunityErrorCode =
-  | "read_only"
-  | "not_authenticated"
-  | "invalid_input"
-  | "safety_blocked"
-  | "request_failed";
-
-export type CommunityError = {
-  code: CommunityErrorCode;
-  message: string;
-};
-
-export type CommunityResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: CommunityError };
-
-function fail<T>(code: CommunityErrorCode, message: string): CommunityResult<T> {
-  return { ok: false, error: { code, message } };
+export function isValidCategory(value: string): value is CategoryKey {
+  return VALID_CATEGORIES.has(value);
 }
 
-export type PostFilters = {
-  category?: CategoryKey | string;
-  limit?: number;
-};
+function clampLimit(limit?: number): number {
+  if (!limit || Number.isNaN(limit) || limit < 1) return DEFAULT_FEED_LIMIT;
+  return Math.min(Math.floor(limit), MAX_FEED_LIMIT);
+}
 
-export type CreatePostInput = {
-  title: string;
-  body: string;
-  category: string;
-  lifeStage?: string | null;
-  city?: string | null;
-  countryCode?: string | null;
-  languageCode?: string | null;
-  isAnonymous?: boolean;
-  anonymousAlias?: string | null;
-};
-
-export type CreateReplyInput = {
-  postId: string;
-  body: string;
-};
-
-const MAX_TITLE = 200;
-const MAX_BODY = 8000;
-
-function validatePost(input: CreatePostInput): CommunityError | null {
-  const title = input.title?.trim() ?? "";
-  const body = input.body?.trim() ?? "";
-  if (!title || title.length > MAX_TITLE) {
-    return { code: "invalid_input", message: "A title between 1 and 200 characters is required." };
+/** Maps a Supabase/postgrest error onto a typed code without leaking details. */
+function normalizeError<T>(error: { code?: string; message?: string }): CommunityResult<T> {
+  const code = error.code ?? "";
+  if (code === "PGRST301" || code === "42501") {
+    return fail("PERMISSION_DENIED", "You do not have access to this content.");
   }
-  if (!body || body.length > MAX_BODY) {
-    return { code: "invalid_input", message: "A message between 1 and 8000 characters is required." };
+  if (code === "PGRST116") return fail("NOT_FOUND", "This conversation is not available.");
+  if (/fetch|network|timeout/i.test(error.message ?? "")) {
+    return fail("NETWORK", "We could not reach the community right now.");
   }
-  if (!input.category?.trim()) {
-    return { code: "invalid_input", message: "A category is required." };
+  return fail("UNKNOWN", "Something went wrong loading the community.");
+}
+
+function unexpected<T>(e: unknown): CommunityResult<T> {
+  if (e instanceof Error && /fetch|network|timeout/i.test(e.message)) {
+    return fail("NETWORK", "We could not reach the community right now.");
   }
-  return null;
+  return fail("UNKNOWN", "Something went wrong loading the community.");
 }
 
 /** Crisis-level content is never queued into a peer feed. */
-function safetyPrecheck(text: string): CommunityError | null {
+function safetyPrecheck<T>(text: string): CommunityResult<T> | null {
   const risk = assessRisk(text);
   if (risk.crisis) {
-    return {
-      code: "safety_blocked",
-      message:
-        "This sounds urgent. Please contact emergency services or a clinician now — the community is not the right place for this.",
-    };
+    return fail(
+      "SAFETY_BLOCKED",
+      "This sounds urgent. Please contact emergency services or a clinician now — the community is not the right place for this.",
+    );
   }
   return null;
 }
 
-/** Published, community-visible posts. Returns [] when nothing is published. */
+/* ------------------------------- reads ---------------------------------- */
+
+/** Published, community-visible posts, newest first. */
 export async function getPublishedPosts(
-  filters: PostFilters = {},
-): Promise<CommunityResult<CommunityPostRow[]>> {
+  filters: CommunityFeedFilters = {},
+): Promise<CommunityResult<PersistedCommunityPost[]>> {
   try {
     let query = supabase
       .from("community_posts")
-      .select(POST_COLUMNS)
+      .select(PUBLIC_POST_SELECT)
       .eq("status", "published")
       .eq("visibility", "community")
       .order("created_at", { ascending: false })
-      .limit(filters.limit ?? 30);
+      .limit(clampLimit(filters.limit));
 
     if (filters.category && filters.category !== "all") {
+      if (!isValidCategory(String(filters.category))) {
+        return fail("INVALID_INPUT", "Unknown category.");
+      }
       query = query.eq("category", filters.category);
     }
+    if (filters.lifeStage) query = query.eq("life_stage", filters.lifeStage);
+    if (filters.countryCode) query = query.eq("country_code", filters.countryCode);
+    if (filters.languageCode) query = query.eq("language_code", filters.languageCode);
+    if (filters.createdBefore) query = query.lt("created_at", filters.createdBefore);
 
     const { data, error } = await query;
-    if (error) return fail("request_failed", error.message);
-    return { ok: true, data: (data ?? []) as CommunityPostRow[] };
+    if (error) return normalizeError(error);
+    return ok((data ?? []) as unknown as PersistedCommunityPost[]);
   } catch (e) {
-    return fail("request_failed", e instanceof Error ? e.message : "Request failed");
+    return unexpected(e);
   }
 }
 
 /** One published post, or null when it does not exist / is not published. */
 export async function getPublishedPostById(
   id: string,
-): Promise<CommunityResult<CommunityPostRow | null>> {
-  if (!id) return fail("invalid_input", "A post id is required.");
+): Promise<CommunityResult<PersistedCommunityPost | null>> {
+  if (!id || !UUID_RE.test(id)) return fail("INVALID_INPUT", "A valid post id is required.");
   try {
     const { data, error } = await supabase
       .from("community_posts")
-      .select(POST_COLUMNS)
+      .select(PUBLIC_POST_SELECT)
       .eq("id", id)
       .eq("status", "published")
       .eq("visibility", "community")
       .maybeSingle();
-    if (error) return fail("request_failed", error.message);
-    return { ok: true, data: (data ?? null) as CommunityPostRow | null };
+    if (error) return normalizeError(error);
+    return ok((data ?? null) as unknown as PersistedCommunityPost | null);
   } catch (e) {
-    return fail("request_failed", e instanceof Error ? e.message : "Request failed");
+    return unexpected(e);
   }
 }
 
 /** Published replies for a post, oldest first. */
 export async function getPublishedReplies(
   postId: string,
-): Promise<CommunityResult<CommunityReplyRow[]>> {
-  if (!postId) return fail("invalid_input", "A post id is required.");
+): Promise<CommunityResult<PersistedCommunityReply[]>> {
+  if (!postId || !UUID_RE.test(postId)) {
+    return fail("INVALID_INPUT", "A valid post id is required.");
+  }
   try {
     const { data, error } = await supabase
       .from("community_replies")
-      .select(REPLY_COLUMNS)
+      .select(PUBLIC_REPLY_SELECT)
       .eq("post_id", postId)
       .eq("status", "published")
       .order("created_at", { ascending: true });
-    if (error) return fail("request_failed", error.message);
-    return { ok: true, data: (data ?? []) as CommunityReplyRow[] };
+    if (error) return normalizeError(error);
+    return ok((data ?? []) as unknown as PersistedCommunityReply[]);
   } catch (e) {
-    return fail("request_failed", e instanceof Error ? e.message : "Request failed");
+    return unexpected(e);
   }
 }
 
+/* ------------------------------ creates --------------------------------- */
+
 export async function createPost(
-  input: CreatePostInput,
+  input: CreateCommunityPostInput,
 ): Promise<CommunityResult<{ id: string; status: string }>> {
   if (isCommunityReadOnly()) {
     return fail(
-      "read_only",
+      "READ_ONLY",
       "Posting is unavailable during the pilot. Reading is open; posting opens once moderation is staffed.",
     );
   }
 
-  const invalid = validatePost(input);
-  if (invalid) return { ok: false, error: invalid };
+  const title = input.title?.trim() ?? "";
+  const body = input.body?.trim() ?? "";
+  const category = String(input.category ?? "").trim();
 
-  const unsafe = safetyPrecheck(`${input.title} ${input.body}`);
-  if (unsafe) return { ok: false, error: unsafe };
+  if (!title || title.length > MAX_TITLE) {
+    return fail("INVALID_INPUT", "A title between 1 and 200 characters is required.");
+  }
+  if (!body || body.length > MAX_BODY) {
+    return fail("INVALID_INPUT", "A message between 1 and 8000 characters is required.");
+  }
+  if (!category || !isValidCategory(category)) {
+    return fail("INVALID_INPUT", "A supported category is required.");
+  }
 
-  const { data: userData } = await supabase.auth.getUser();
-  const userId = userData?.user?.id;
-  if (!userId) return fail("not_authenticated", "Please sign in to post.");
+  const unsafe = safetyPrecheck<{ id: string; status: string }>(`${title} ${body}`);
+  if (unsafe) return unsafe;
 
-  const { data, error } = await supabase
-    .from("community_posts")
-    .insert({
-      author_id: userId,
-      title: input.title.trim(),
-      body: input.body.trim(),
-      category: input.category.trim(),
-      life_stage: input.lifeStage ?? null,
-      city: input.city ?? null,
-      country_code: input.countryCode ?? null,
-      language_code: input.languageCode ?? null,
-      anonymous_alias: input.anonymousAlias ?? null,
-      is_anonymous: input.isAnonymous ?? true,
-      // Never caller-controlled.
-      status: "pending_review",
-      visibility: "community",
-      is_seeded: false,
-    })
-    .select("id,status")
-    .single();
+  try {
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData?.user?.id;
+    if (!userId) return fail("UNAUTHENTICATED", "Please sign in to post.");
 
-  if (error) return fail("request_failed", error.message);
-  return { ok: true, data: data as { id: string; status: string } };
+    const { data, error } = await supabase
+      .from("community_posts")
+      .insert({
+        author_id: userId,
+        title,
+        body,
+        category,
+        life_stage: input.lifeStage?.trim() || null,
+        city: input.city?.trim() || null,
+        country_code: input.countryCode?.trim() || null,
+        language_code: input.languageCode?.trim() || null,
+        anonymous_alias: input.anonymousAlias?.trim() || null,
+        is_anonymous: input.isAnonymous ?? true,
+      })
+      .select(CREATED_POST_SELECT)
+      .single();
+
+    if (error) return normalizeError(error);
+    return ok(data as { id: string; status: string });
+  } catch (e) {
+    return unexpected(e);
+  }
 }
 
 export async function createReply(
-  input: CreateReplyInput,
+  input: CreateCommunityReplyInput,
 ): Promise<CommunityResult<{ id: string; status: string }>> {
   if (isCommunityReadOnly()) {
     return fail(
-      "read_only",
+      "READ_ONLY",
       "Replies are unavailable during the pilot. Reading is open; replying opens once moderation is staffed.",
     );
   }
 
   const body = input.body?.trim() ?? "";
-  if (!input.postId) return fail("invalid_input", "A post id is required.");
+  if (!input.postId || !UUID_RE.test(input.postId)) {
+    return fail("INVALID_INPUT", "A valid post id is required.");
+  }
   if (!body || body.length > MAX_BODY) {
-    return fail("invalid_input", "A reply between 1 and 8000 characters is required.");
+    return fail("INVALID_INPUT", "A reply between 1 and 8000 characters is required.");
   }
 
-  const unsafe = safetyPrecheck(body);
-  if (unsafe) return { ok: false, error: unsafe };
+  const unsafe = safetyPrecheck<{ id: string; status: string }>(body);
+  if (unsafe) return unsafe;
 
-  const { data: userData } = await supabase.auth.getUser();
-  const userId = userData?.user?.id;
-  if (!userId) return fail("not_authenticated", "Please sign in to reply.");
+  try {
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData?.user?.id;
+    if (!userId) return fail("UNAUTHENTICATED", "Please sign in to reply.");
 
-  const { data, error } = await supabase
-    .from("community_replies")
-    .insert({
-      post_id: input.postId,
-      author_id: userId,
-      body,
-      // Never caller-controlled: provider attribution and moderation state.
-      provider_id: null,
-      reply_type: "community",
-      status: "pending_review",
-      is_seeded: false,
-    })
-    .select("id,status")
-    .single();
+    const { data, error } = await supabase
+      .from("community_replies")
+      .insert({ post_id: input.postId, author_id: userId, body })
+      .select(CREATED_REPLY_SELECT)
+      .single();
 
-  if (error) return fail("request_failed", error.message);
-  return { ok: true, data: data as { id: string; status: string } };
+    if (error) return normalizeError(error);
+    return ok(data as { id: string; status: string });
+  } catch (e) {
+    return unexpected(e);
+  }
 }
