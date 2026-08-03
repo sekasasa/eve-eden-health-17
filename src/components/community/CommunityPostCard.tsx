@@ -120,6 +120,8 @@ export function CommunityPostCard({
           </p>
         </div>
       )}
+
+      <CommunityCareAction category={post.category} />
     </article>
   );
 }
