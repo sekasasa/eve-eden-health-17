@@ -88,7 +88,7 @@ function EveProfile() {
             {m?.full_name ?? (loading ? "…" : "Mother")}
           </h1>
           <p className="font-sans text-xs text-eve-muted">{m?.city ?? ""}</p>
-          <span className="mt-1 inline-flex rounded-full bg-eve-cream px-2 py-0.5 font-sans text-[10px] uppercase tracking-wide text-eve-teal">
+          <span className="mt-1 inline-flex rounded-full bg-eve-cream px-2 py-0.5 font-sans text-[12px] uppercase tracking-wide text-eve-teal">
             Week {m?.pregnancy_week ?? "—"}
           </span>
         </div>
@@ -109,7 +109,7 @@ function EveProfile() {
           <p className="font-sans text-sm font-medium text-eve-teal-dark">
             Care Preferences
           </p>
-          <p className="font-sans text-[11px] text-eve-muted">
+          <p className="font-sans text-[12px] text-eve-muted">
             Region, language, cultural, diet, and birth preferences
           </p>
         </div>
@@ -186,7 +186,7 @@ function EveProfile() {
         >
           Sign out
         </button>
-        <span className="font-sans text-[10px] text-eve-muted">v0.1.0</span>
+        <span className="font-sans text-[12px] text-eve-muted">v0.1.0</span>
       </div>
 
       <div className="mt-6">

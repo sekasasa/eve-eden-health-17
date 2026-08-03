@@ -493,7 +493,7 @@ function EveProviders() {
       </p>
 
       {(profile.stage || profile.city || profile.language || prefs.region) && (
-        <div className="mt-3 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 text-[11px] text-eve-teal-dark">
+        <div className="mt-3 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 text-[12px] text-eve-teal-dark">
           Personalized for your stated preferences
           {prefs.region ? ` · ${prefs.region}` : ""}
           {(prefs.city ?? profile.city) ? ` · ${prefs.city ?? profile.city}` : ""}
@@ -503,7 +503,7 @@ function EveProviders() {
       )}
 
       {femalePreferred && !verifiedFemaleConfirmable && (
-        <div className="mt-2 rounded-xl border border-eve-rose/30 bg-eve-rose-light px-3 py-2 text-[11px] text-eve-rose">
+        <div className="mt-2 rounded-xl border border-eve-rose/30 bg-eve-rose-light px-3 py-2 text-[12px] text-eve-rose">
           You asked for a female provider. We can't yet confirm a verified female-provider match in
           our directory.{" "}
           <Link to="/eve/ask" className="font-medium underline">
@@ -535,7 +535,7 @@ function EveProviders() {
         >
           <SlidersHorizontal className="h-4 w-4" />
           {activeFilterCount > 0 && (
-            <span className="ml-1 text-[11px] font-medium">{activeFilterCount}</span>
+            <span className="ml-1 text-[12px] font-medium">{activeFilterCount}</span>
           )}
         </button>
       </div>
@@ -597,7 +597,7 @@ function EveProviders() {
           Only my care preferences
         </Chip>
       </div>
-      <p className="mt-1 font-sans text-[10px] text-eve-muted">
+      <p className="mt-1 font-sans text-[12px] text-eve-muted">
         Off by default: your preferences rank results instead of hiding providers.
       </p>
 
@@ -607,7 +607,7 @@ function EveProviders() {
           {activeChips.map((c) => (
             <span
               key={c.key}
-              className="inline-flex items-center gap-1 rounded-full bg-eve-cream px-2.5 py-1 font-sans text-[10px] text-eve-teal-dark"
+              className="inline-flex items-center gap-1 rounded-full bg-eve-cream px-2.5 py-1 font-sans text-[12px] text-eve-teal-dark"
             >
               {c.label}
               {c.onRemove && (
@@ -625,14 +625,14 @@ function EveProviders() {
         </div>
       )}
 
-      <p className="mt-3 font-sans text-[11px] text-eve-muted">
+      <p className="mt-3 font-sans text-[12px] text-eve-muted">
         {loading
           ? "Searching…"
           : `${matched} provider${matched === 1 ? "" : "s"} match your preferences`}
       </p>
 
       {!loading && match.broadened && match.broadenedReason && (
-        <div className="mt-2 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 font-sans text-[11px] text-eve-teal-dark">
+        <div className="mt-2 rounded-xl border border-eve-teal/20 bg-white px-3 py-2 font-sans text-[12px] text-eve-teal-dark">
           {match.broadenedReason} Turn on a strict filter above to keep results narrow.
         </div>
       )}
@@ -705,7 +705,7 @@ function ExternalDirectories({ specialty }: { specialty: string }) {
   return (
     <section className="mt-6">
       <h2 className="font-serif text-lg text-eve-teal-dark">Trusted external directories</h2>
-      <p className="mt-1 text-[11px] text-eve-muted">
+      <p className="mt-1 text-[12px] text-eve-muted">
         Link-outs to public directories. These are not Eve &amp; Eden verified providers.
         {specialty === "Doula"
           ? " We are still building our verified doula network — explore DONA below or ask a navigator."
@@ -715,7 +715,7 @@ function ExternalDirectories({ specialty }: { specialty: string }) {
         {rows.map((d) => (
           <li key={d.id} className="rounded-2xl border border-eve-sand bg-eve-cream/40 p-3">
             <p className="text-sm font-medium text-eve-teal-dark">{d.resource_name}</p>
-            {d.notes && <p className="mt-0.5 text-[11px] text-eve-muted">{d.notes}</p>}
+            {d.notes && <p className="mt-0.5 text-[12px] text-eve-muted">{d.notes}</p>}
             {d.source_url && (
               <a
                 href={d.source_url}
@@ -782,7 +782,7 @@ function FilterPanel(props: {
         <h2 className="font-sans text-sm font-semibold text-eve-teal-dark">Filters</h2>
         <div className="flex items-center gap-3">
           {activeCount > 0 && (
-            <button onClick={onReset} className="text-[11px] text-eve-muted underline">
+            <button onClick={onReset} className="text-[12px] text-eve-muted underline">
               Clear all
             </button>
           )}
@@ -890,7 +890,7 @@ function FilterPanel(props: {
         </div>
       </Group>
 
-      <p className="mt-3 text-[10px] text-eve-muted">
+      <p className="mt-3 text-[12px] text-eve-muted">
         These preferences are optional and used only to personalize results. You can change or clear
         them anytime.
       </p>
@@ -901,7 +901,7 @@ function FilterPanel(props: {
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mt-3">
-      <p className="mb-1.5 font-sans text-[11px] font-medium uppercase tracking-wide text-eve-muted">
+      <p className="mb-1.5 font-sans text-[12px] font-medium uppercase tracking-wide text-eve-muted">
         {title}
       </p>
       {children}
@@ -922,7 +922,7 @@ function Chip({
     <button
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1 font-sans text-[11px] transition-colors",
+        "rounded-full border px-3 py-1 font-sans text-[12px] transition-colors",
         active
           ? "border-eve-teal bg-eve-teal text-white"
           : "border-eve-muted/30 bg-white text-eve-teal-dark",
@@ -998,7 +998,7 @@ function EmptyState({
           )}
         </div>
         {notified && (
-          <p className="font-sans text-[11px] text-eve-muted">
+          <p className="font-sans text-[12px] text-eve-muted">
             Saved on this device only — we cannot email or message you yet.
           </p>
         )}
@@ -1172,7 +1172,7 @@ function ProviderCard({
             </h3>
             {p.is_verified && <TrustBadge />}
             {p.accepting_patients && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-sans text-[10px] text-emerald-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-sans text-[12px] text-emerald-700">
                 <CheckCircle2 className="h-2.5 w-2.5" /> Accepting patients
               </span>
             )}
@@ -1182,7 +1182,7 @@ function ProviderCard({
             {p.clinic_name ? ` • ${p.clinic_name}` : ""}
           </p>
 
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-[11px] text-eve-muted">
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-[12px] text-eve-muted">
             {p.city && (
               <span
                 className={cn("inline-flex items-center gap-1", cityMatch && "text-eve-teal-dark")}
@@ -1201,13 +1201,13 @@ function ProviderCard({
           </div>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-0.5 font-sans text-[11px] text-eve-terra">
+            <span className="inline-flex items-center gap-0.5 font-sans text-[12px] text-eve-terra">
               <Star className="h-3 w-3 fill-eve-terra" />
               {p.avg_rating?.toFixed(1) ?? "—"}
               <span className="text-eve-muted">{p.review_count ? ` (${p.review_count})` : ""}</span>
             </span>
             {p.consultation_fee_mad != null && (
-              <span className="rounded-full bg-eve-teal-light px-2 py-0.5 font-sans text-[10px] text-eve-teal-dark">
+              <span className="rounded-full bg-eve-teal-light px-2 py-0.5 font-sans text-[12px] text-eve-teal-dark">
                 {p.consultation_fee_mad} MAD
               </span>
             )}
@@ -1218,7 +1218,7 @@ function ProviderCard({
               {reasons.map((r) => (
                 <span
                   key={r}
-                  className="inline-flex items-center gap-1 rounded-full bg-eve-teal/10 px-2 py-0.5 font-sans text-[10px] text-eve-teal-dark"
+                  className="inline-flex items-center gap-1 rounded-full bg-eve-teal/10 px-2 py-0.5 font-sans text-[12px] text-eve-teal-dark"
                 >
                   <Sparkles className="h-2.5 w-2.5" /> {r}
                 </span>

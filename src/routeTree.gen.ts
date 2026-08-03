@@ -36,6 +36,7 @@ import { Route as EveEventsRouteImport } from './routes/eve.events'
 import { Route as EveCommunityRouteImport } from './routes/eve.community'
 import { Route as EveComingSoonRouteImport } from './routes/eve.coming-soon'
 import { Route as EveCareSupportRouteImport } from './routes/eve.care-support'
+import { Route as EveCareRouteImport } from './routes/eve.care'
 import { Route as EveAskRouteImport } from './routes/eve.ask'
 import { Route as EveAppointmentsRouteImport } from './routes/eve.appointments'
 import { Route as EdenSharedDocsRouteImport } from './routes/eden.shared-docs'
@@ -216,6 +217,11 @@ const EveComingSoonRoute = EveComingSoonRouteImport.update({
 const EveCareSupportRoute = EveCareSupportRouteImport.update({
   id: '/eve/care-support',
   path: '/eve/care-support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EveCareRoute = EveCareRouteImport.update({
+  id: '/eve/care',
+  path: '/eve/care',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EveAskRoute = EveAskRouteImport.update({
@@ -483,6 +489,7 @@ export interface FileRoutesByFullPath {
   '/eden/shared-docs': typeof EdenSharedDocsRoute
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
+  '/eve/care': typeof EveCareRoute
   '/eve/care-support': typeof EveCareSupportRoute
   '/eve/coming-soon': typeof EveComingSoonRoute
   '/eve/community': typeof EveCommunityRoute
@@ -558,6 +565,7 @@ export interface FileRoutesByTo {
   '/eden/shared-docs': typeof EdenSharedDocsRoute
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
+  '/eve/care': typeof EveCareRoute
   '/eve/care-support': typeof EveCareSupportRoute
   '/eve/coming-soon': typeof EveComingSoonRoute
   '/eve/community': typeof EveCommunityRoute
@@ -634,6 +642,7 @@ export interface FileRoutesById {
   '/eden/shared-docs': typeof EdenSharedDocsRoute
   '/eve/appointments': typeof EveAppointmentsRoute
   '/eve/ask': typeof EveAskRoute
+  '/eve/care': typeof EveCareRoute
   '/eve/care-support': typeof EveCareSupportRoute
   '/eve/coming-soon': typeof EveComingSoonRoute
   '/eve/community': typeof EveCommunityRoute
@@ -711,6 +720,7 @@ export interface FileRouteTypes {
     | '/eden/shared-docs'
     | '/eve/appointments'
     | '/eve/ask'
+    | '/eve/care'
     | '/eve/care-support'
     | '/eve/coming-soon'
     | '/eve/community'
@@ -786,6 +796,7 @@ export interface FileRouteTypes {
     | '/eden/shared-docs'
     | '/eve/appointments'
     | '/eve/ask'
+    | '/eve/care'
     | '/eve/care-support'
     | '/eve/coming-soon'
     | '/eve/community'
@@ -861,6 +872,7 @@ export interface FileRouteTypes {
     | '/eden/shared-docs'
     | '/eve/appointments'
     | '/eve/ask'
+    | '/eve/care'
     | '/eve/care-support'
     | '/eve/coming-soon'
     | '/eve/community'
@@ -937,6 +949,7 @@ export interface RootRouteChildren {
   EdenSharedDocsRoute: typeof EdenSharedDocsRoute
   EveAppointmentsRoute: typeof EveAppointmentsRoute
   EveAskRoute: typeof EveAskRoute
+  EveCareRoute: typeof EveCareRoute
   EveCareSupportRoute: typeof EveCareSupportRoute
   EveComingSoonRoute: typeof EveComingSoonRoute
   EveCommunityRoute: typeof EveCommunityRoute
@@ -1154,6 +1167,13 @@ declare module '@tanstack/react-router' {
       path: '/eve/care-support'
       fullPath: '/eve/care-support'
       preLoaderRoute: typeof EveCareSupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eve/care': {
+      id: '/eve/care'
+      path: '/eve/care'
+      fullPath: '/eve/care'
+      preLoaderRoute: typeof EveCareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eve/ask': {
@@ -1634,6 +1654,7 @@ const rootRouteChildren: RootRouteChildren = {
   EdenSharedDocsRoute: EdenSharedDocsRoute,
   EveAppointmentsRoute: EveAppointmentsRoute,
   EveAskRoute: EveAskRoute,
+  EveCareRoute: EveCareRoute,
   EveCareSupportRoute: EveCareSupportRoute,
   EveComingSoonRoute: EveComingSoonRoute,
   EveCommunityRoute: EveCommunityRoute,
@@ -1664,13 +1685,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

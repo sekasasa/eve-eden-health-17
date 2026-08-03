@@ -21,186 +21,44 @@ import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
 import { rankForProfile, type ContentRow } from "@/lib/content-filter";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import {
+  CATEGORIES,
+  FEED_TABS,
+  LIFE_STAGES,
+  POST_TAGS,
+  SEED_POSTS,
+  UNBACKED_TAB_COPY,
+  categoryForStage,
+  postsForTab,
+  toneBadge,
+  toneBg,
+  type CategoryKey,
+  type FeedTabKey,
+} from "@/lib/community-seed";
 
 export const Route = createFileRoute("/eve/community")({
+  head: () => ({
+    meta: [
+      { title: "Community & support — Eve & Eden Health" },
+      {
+        name: "description",
+        content:
+          "Read questions and answers from mothers on fertility, pregnancy, postpartum and finding care.",
+      },
+      { property: "og:title", content: "Community & support — Eve & Eden Health" },
+      {
+        property: "og:description",
+        content:
+          "Read questions and answers from mothers on fertility, pregnancy, postpartum and finding care.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: CommunityPage,
 });
 
-type CategoryKey =
-  | "all"
-  | "ttc"
-  | "ivf"
-  | "pregnancy"
-  | "postpartum"
-  | "newborn"
-  | "symptoms"
-  | "provider"
-  | "nutrition"
-  | "labs"
-  | "insurance"
-  | "fasting"
-  | "culture"
-  | "birth"
-  | "emotional";
 
-const CATEGORIES: { key: CategoryKey; label: string; tone: "teal" | "rose" | "gold" | "muted" }[] = [
-  { key: "all", label: "🌟 All", tone: "teal" },
-  { key: "ttc", label: "🌱 Trying to Conceive", tone: "rose" },
-  { key: "ivf", label: "🧬 IVF / Fertility", tone: "teal" },
-  { key: "pregnancy", label: "🤰 Pregnancy", tone: "rose" },
-  { key: "postpartum", label: "🍼 Postpartum", tone: "teal" },
-  { key: "newborn", label: "👶 Newborn Care", tone: "gold" },
-  { key: "symptoms", label: "💊 Symptoms & Health", tone: "rose" },
-  { key: "provider", label: "🏥 Finding a Provider", tone: "teal" },
-  { key: "nutrition", label: "🥗 Nutrition", tone: "gold" },
-  { key: "labs", label: "🧪 Labs & Prescriptions", tone: "teal" },
-  { key: "insurance", label: "💳 Insurance & Payment", tone: "muted" },
-  { key: "fasting", label: "🌙 Fasting & Faith", tone: "rose" },
-  { key: "culture", label: "👨‍👩‍👧 Culture & Family", tone: "gold" },
-  { key: "birth", label: "🌸 Birth Preferences", tone: "teal" },
-  { key: "emotional", label: "💛 Emotional Support", tone: "rose" },
-];
-
-const POST_TAGS = [
-  "Ramadan",
-  "Lent/Fasting",
-  "Halal",
-  "Kosher",
-  "Vegan",
-  "Vegetarian",
-  "Female provider",
-  "Modesty",
-  "Family support",
-  "C-section questions",
-  "VBAC",
-  "Midwife",
-  "Doula",
-  "Postpartum traditions",
-];
-
-const LIFE_STAGES = ["trying", "fertility", "pregnant", "postpartum", "newborn", "family"];
-
-const toneBg: Record<string, string> = {
-  teal: "bg-eve-teal text-white",
-  rose: "bg-eve-rose text-white",
-  gold: "bg-eve-terra text-white",
-  muted: "bg-eve-muted text-white",
-};
-const toneBadge: Record<string, string> = {
-  teal: "bg-eve-teal-light text-eve-teal",
-  rose: "bg-eve-rose-light text-eve-rose",
-  gold: "bg-eve-terra-light text-eve-terra",
-  muted: "bg-eve-sand text-eve-muted",
-};
-
-type Post = {
-  id: string;
-  category: CategoryKey;
-  anonName: string;
-  avatarLetter: string;
-  avatarColor: string;
-  timeAgo: string;
-  title: string;
-  body: string;
-  hearts: number;
-  replies: number;
-  topAnswer?: string;
-  trending?: boolean;
-};
-
-const SEED_POSTS: Post[] = [
-  {
-    id: "1",
-    category: "pregnancy",
-    anonName: "First-time Mama",
-    avatarLetter: "A",
-    avatarColor: "bg-eve-rose",
-    timeAgo: "2 hours ago",
-    title: "Is it normal to feel this dizzy in the morning? I can barely stand up.",
-    body: "I'm 9 weeks and every morning the room spins when I get up. I've tried eating crackers before standing but it's not really helping. Did this happen to anyone else? When did it stop?",
-    hearts: 34,
-    replies: 12,
-    topAnswer: "Yes, completely normal in the first trimester. Try sipping water before sitting up and eat something small...",
-  },
-  {
-    id: "2",
-    category: "symptoms",
-    anonName: "Mama Doe",
-    avatarLetter: "M",
-    avatarColor: "bg-eve-teal",
-    timeAgo: "5 hours ago",
-    title: "My OBGYN said my iron is low — what foods helped you?",
-    body: "She gave me supplements but I'd rather get it from food where I can. Looking for things that actually worked for you, especially Moroccan/local options.",
-    hearts: 28,
-    replies: 19,
-    topAnswer: "Lentils, dates, and beef liver if you can handle it. Pair with orange juice for absorption...",
-  },
-  {
-    id: "3",
-    category: "pregnancy",
-    anonName: "Anonymous Mama",
-    avatarLetter: "Z",
-    avatarColor: "bg-eve-terra",
-    timeAgo: "just now",
-    title: "Baby hasn't moved much today, should I go in? I'm scared to bother the doctor.",
-    body: "I'm 34 weeks. Usually very active around now but today barely anything. I don't want to be that mother who panics over nothing.",
-    hearts: 67,
-    replies: 31,
-    topAnswer: "Please go in. You are never bothering them. Drink something cold, lie on your left side — if still nothing in an hour, go.",
-    trending: true,
-  },
-  {
-    id: "4",
-    category: "provider",
-    anonName: "Mama N.",
-    avatarLetter: "N",
-    avatarColor: "bg-eve-teal-dark",
-    timeAgo: "1 day ago",
-    title: "Can anyone recommend a good midwife in Casablanca who speaks Darija?",
-    body: "Looking for someone warm and patient. First baby. Budget is moderate. Open to clinic or independent.",
-    hearts: 22,
-    replies: 8,
-  },
-  {
-    id: "5",
-    category: "postpartum",
-    anonName: "Mama G.",
-    avatarLetter: "G",
-    avatarColor: "bg-eve-rose",
-    timeAgo: "3 hours ago",
-    title: "I cried for 2 hours today for no reason. Is this normal? Am I okay?",
-    body: "Baby is 3 weeks old. I love her so much but I just couldn't stop crying. Husband was kind but I feel ashamed.",
-    hearts: 89,
-    replies: 44,
-    topAnswer: "You are okay and you are not alone. The baby blues are real. But if it lasts past 2 weeks please talk to someone — there is no shame in this.",
-    trending: true,
-  },
-  {
-    id: "6",
-    category: "culture",
-    anonName: "Mama F.",
-    avatarLetter: "F",
-    avatarColor: "bg-eve-terra",
-    timeAgo: "6 hours ago",
-    title: "My husband doesn't understand why I'm so tired. How do I explain it to him?",
-    body: "He's supportive but says 'you're not even that big yet'. I'm exhausted by 3pm and he doesn't get it.",
-    hearts: 41,
-    replies: 17,
-  },
-  {
-    id: "7",
-    category: "emotional",
-    anonName: "Mama A.",
-    avatarLetter: "A",
-    avatarColor: "bg-eve-teal",
-    timeAgo: "30 minutes ago",
-    title: "Had my first ultrasound today. I saw the heartbeat. I'm still shaking.",
-    body: "After two losses, I didn't dare believe. Today I saw it. I just had to share with someone who would understand.",
-    hearts: 103,
-    replies: 28,
-    topAnswer: "Congratulations mama. We are all crying with you. 💛",
-  },
-];
 
 function CommunityPage() {
   const nav = useNavigate();
@@ -208,18 +66,14 @@ function CommunityPage() {
   const { prefs } = useCarePreferences();
   const hideFamilyPromo = prefHelpers.privateFromFamily(prefs);
   // Default category from stage
-  const defaultCategory: CategoryKey = useMemo(() => {
-    const s = prefs.stage ?? profile.stage;
-    if (s === "postpartum") return "postpartum";
-    if (s === "newborn") return "newborn";
-    if (s === "pregnant") return "pregnancy";
-    if (s === "trying") return "ttc";
-    if (s === "fertility") return "ivf";
-    if (s === "family") return "culture";
-    return "all";
-  }, [prefs.stage, profile.stage]);
+  const defaultCategory: CategoryKey = useMemo(
+    () => categoryForStage(prefs.stage ?? profile.stage),
+    [prefs.stage, profile.stage],
+  );
   const [active, setActive] = useState<CategoryKey>(defaultCategory);
+  const [tab, setTab] = useState<FeedTabKey>("for_you");
   const [open, setOpen] = useState(false);
+
   const moderationEnabled = isFeatureEnabled("communityModeration");
   // Posting requires BOTH the posting flag and a verified moderation backend.
   const readOnly = isCommunityReadOnly();
@@ -265,10 +119,12 @@ function CommunityPage() {
     [partnerContent, profile],
   );
 
-  const filtered = useMemo(
-    () => (active === "all" ? SEED_POSTS : SEED_POSTS.filter((p) => p.category === active)),
-    [active],
-  );
+  const filtered = useMemo(() => {
+    const byCategory =
+      active === "all" ? SEED_POSTS : SEED_POSTS.filter((p) => p.category === active);
+    return postsForTab(byCategory, tab);
+  }, [active, tab]);
+
 
   return (
     <EveShell>
@@ -280,122 +136,39 @@ function CommunityPage() {
           <ArrowLeft className="h-3 w-3" /> Back to dashboard
         </button>
         <h1 className="font-serif text-3xl text-eve-teal-dark">Community & support</h1>
-        <p className="mt-1 italic font-sans text-sm text-eve-muted">
-          Navigator, family support, emotional support, and women like you.
+        <p className="mt-1 font-sans text-sm text-eve-muted">
+          Questions and answers from women at every stage. Support tools are below the feed.
         </p>
+
       </div>
 
-      {/* Care Navigator */}
-      <section className="mt-4 rounded-2xl border border-eve-teal/20 bg-white p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-teal-light">
-            <Sparkles className="h-4 w-4 text-eve-teal" />
-          </div>
-          <div className="flex-1">
-            <p className="font-sans text-sm font-semibold text-eve-teal-dark">Care Navigator</p>
-            <p className="mt-0.5 text-[12px] text-eve-muted">
-              A navigator can help you compare options, prepare questions, or decide what to do next.
-            </p>
-            <button
-              onClick={() => nav({ to: "/eve/ask" })}
-              className="mt-3 rounded-full bg-eve-teal px-4 py-1.5 text-[12px] font-medium text-white"
-            >
-              Talk to a navigator
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Family Support — hidden when user prefers to keep care private from family */}
-      {!hideFamilyPromo && (
-        <section className="mt-3 rounded-2xl border border-eve-muted/20 bg-white p-4">
-          <div className="flex items-start gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-cream">
-              <Users className="h-4 w-4 text-eve-terra" />
-            </div>
-            <div className="flex-1">
-              <p className="font-sans text-sm font-semibold text-eve-teal-dark">Family support</p>
-              <p className="mt-0.5 text-[12px] text-eve-muted">
-                Invite a family supporter to help pay, coordinate, or follow along.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button
-                  onClick={() => eveToast.success("Invite link copied")}
-                  className="rounded-full bg-eve-teal px-3 py-1 text-[11px] text-white"
-                >
-                  Invite family supporter
-                </button>
-                <button
-                  onClick={() => eveToast.info("Privacy settings opening soon")}
-                  className="rounded-full border border-eve-teal px-3 py-1 text-[11px] text-eve-teal"
-                >
-                  Privacy settings
-                </button>
-              </div>
-              <p className="mt-2 inline-flex items-center gap-1 text-[10px] text-eve-muted">
-                <ShieldCheck className="h-3 w-3" />
-                You choose what your family supporter can see.
-              </p>
-            </div>
-          </div>
-        </section>
-      )}
-      {hideFamilyPromo && (
-        <section className="mt-3 rounded-2xl border border-eve-teal/20 bg-white p-4">
-          <div className="flex items-start gap-3">
-            <ShieldCheck className="mt-0.5 h-4 w-4 text-eve-teal" />
-            <div className="flex-1">
-              <p className="font-sans text-sm font-semibold text-eve-teal-dark">Your privacy controls</p>
-              <p className="mt-0.5 text-[12px] text-eve-muted">
-                You asked to keep your care private from family. Family-sharing features are off — you can change this anytime in Care Preferences.
-              </p>
-              <Link
-                to="/eve/profile/care-preferences"
-                className="mt-3 inline-block rounded-full border border-eve-teal px-3 py-1 text-[11px] text-eve-teal"
+      {/* Feed tabs — only tabs backed by real data are enabled. */}
+      <div className="-mx-5 mt-4 overflow-x-auto px-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div role="tablist" aria-label="Community feed" className="flex gap-2 pb-1">
+          {FEED_TABS.map((tabDef) => {
+            const enabled = tabDef.backed;
+            const isActive = tab === tabDef.key;
+            return (
+              <button
+                key={tabDef.key}
+                role="tab"
+                aria-selected={isActive}
+                disabled={!enabled}
+                title={enabled ? undefined : UNBACKED_TAB_COPY}
+                onClick={() => enabled && setTab(tabDef.key)}
+                className={cn(
+                  "min-h-11 shrink-0 rounded-full px-4 text-[13px] font-medium transition-colors",
+                  isActive ? "bg-eve-teal text-white" : "bg-eve-cream text-eve-teal-dark/70",
+                  !enabled && "cursor-not-allowed opacity-50",
+                )}
               >
-                Privacy preferences
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Events entry */}
-      <Link
-        to="/eve/events"
-        className="mt-3 flex items-center justify-between rounded-2xl border border-eve-teal/20 bg-white p-4"
-      >
-        <div className="flex items-start gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-rose-light">
-            <Calendar className="h-4 w-4 text-eve-rose" />
-          </div>
-          <div>
-            <p className="font-sans text-sm font-semibold text-eve-teal-dark">Events & workshops</p>
-            <p className="mt-0.5 text-[12px] text-eve-muted">
-              Classes, talks, and wellness sessions for mothers and families.
-            </p>
-          </div>
+                {tabDef.label}
+              </button>
+            );
+          })}
         </div>
-        <span className="text-[12px] font-medium text-eve-teal">Browse →</span>
-      </Link>
+      </div>
 
-
-      {/* Helpful guides from trusted partners */}
-      {personalizedContent.length > 0 && (
-        <section className="mt-5">
-          <SectionLabel>Helpful guides from trusted partners</SectionLabel>
-          <p className="mt-1 text-[11px] text-eve-muted">
-            {profile.stage
-              ? "Personalized to your saved care profile."
-              : "Educational content from verified vendors and providers."}
-          </p>
-          <div className="mt-3 grid grid-cols-1 gap-3">
-            {personalizedContent.map((c) => (
-              <ContentCard key={c.id} content={c} vendorName={vendorNames[c.vendor_id]} />
-            ))}
-          </div>
-        </section>
-      )}
 
 
 
@@ -418,9 +191,9 @@ function CommunityPage() {
         </button>
         {!postingEnabled && (
           <div role="status" className="mt-2 space-y-1">
-            <p className="text-[11px] text-eve-muted">{flagOffCopy("communityPosting")}</p>
+            <p className="text-[12px] text-eve-muted">{flagOffCopy("communityPosting")}</p>
             {!moderationEnabled && (
-              <p className="text-[11px] text-eve-muted">
+              <p className="text-[12px] text-eve-muted">
                 Community is read-only until moderation is staffed. Posts below are sample
                 content written by our team, not replies from other members.
               </p>
@@ -428,7 +201,7 @@ function CommunityPage() {
           </div>
         )}
         {profile.stage && (
-          <p className="mt-2 text-[11px] text-eve-muted">
+          <p className="mt-2 text-[12px] text-eve-muted">
             Showing community posts relevant to your profile.
           </p>
         )}
@@ -461,7 +234,7 @@ function CommunityPage() {
         role="note"
         className="mt-5 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3"
       >
-        <p className="text-[11px] leading-relaxed text-eve-muted">
+        <p className="text-[12px] leading-relaxed text-eve-muted">
           <span className="font-semibold text-eve-teal-dark">Example conversations.</span>{" "}
           The threads below were written by the Eve &amp; Eden team to show how this
           space works. Real posts appear once the community pilot opens.
@@ -523,13 +296,13 @@ function CommunityPage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-medium text-eve-teal-dark">{p.anonName}</p>
-                    <p className="text-[11px] text-eve-muted">{p.timeAgo}</p>
+                    <p className="text-[12px] text-eve-muted">{p.timeAgo}</p>
                   </div>
-                  <span className="rounded-full border border-eve-sand bg-white px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-eve-muted">
+                  <span className="rounded-full border border-eve-sand bg-white px-2 py-0.5 text-[12px] font-semibold uppercase tracking-wide text-eve-muted">
                     Sample
                   </span>
                   {p.trending && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[10px] font-semibold text-eve-terra">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[12px] font-semibold text-eve-terra">
                       <Flame className="h-3 w-3" /> Trending
                     </span>
                   )}
@@ -537,7 +310,7 @@ function CommunityPage() {
 
                 <span
                   className={cn(
-                    "mt-3 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
+                    "mt-3 inline-block rounded-full px-2 py-0.5 text-[12px] font-medium",
                     toneBadge[cat.tone],
                   )}
                 >
@@ -591,13 +364,13 @@ function CommunityPage() {
                     className="inline-flex items-center gap-1 text-eve-muted underline-offset-2 hover:underline"
                   >
                     <Flag className="h-3.5 w-3.5" />
-                    <span className="text-[11px]">Report</span>
+                    <span className="text-[12px]">Report</span>
                   </button>
                 </div>
 
                 {p.topAnswer && (
                   <div className="mt-3 border-t border-eve-sand pt-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-eve-teal">
+                    <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-teal">
                       Top answer
                     </p>
                     <p className="mt-1 line-clamp-2 text-[12px] text-eve-muted">{p.topAnswer}</p>
@@ -609,10 +382,17 @@ function CommunityPage() {
         )}
       </div>
 
-
       <button className="mt-5 w-full rounded-full border border-eve-teal py-2.5 text-sm font-medium text-eve-teal transition hover:bg-eve-teal-light">
         Load more
       </button>
+
+      {/* Support resources live below the feed: the conversation comes first. */}
+      <SupportSections
+        hideFamilyPromo={hideFamilyPromo}
+        personalizedContent={personalizedContent}
+        vendorNames={vendorNames}
+        personalized={Boolean(profile.stage)}
+      />
 
       {/* New post sheet */}
       {open && <NewPostSheet onClose={() => setOpen(false)} prefs={prefs} />}
@@ -620,6 +400,134 @@ function CommunityPage() {
     </EveShell>
   );
 }
+
+function SupportSections({
+  hideFamilyPromo,
+  personalizedContent,
+  vendorNames,
+  personalized,
+}: {
+  hideFamilyPromo: boolean;
+  personalizedContent: ContentRow[];
+  vendorNames: Record<string, string>;
+  personalized: boolean;
+}) {
+  return (
+    <>
+      {/* Care Navigator */}
+      <section className="mt-6 rounded-2xl border border-eve-teal/20 bg-white p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-teal-light">
+            <Sparkles className="h-4 w-4 text-eve-teal" />
+          </div>
+          <div className="flex-1">
+            <p className="font-sans text-sm font-semibold text-eve-teal-dark">Care Navigator</p>
+            <p className="mt-0.5 text-[12px] text-eve-muted">
+              A navigator can help you compare options, prepare questions, or decide what to do next.
+            </p>
+            <Link
+              to="/eve/ask"
+              className="mt-3 inline-flex min-h-11 items-center rounded-full bg-eve-teal px-4 text-[13px] font-medium text-white"
+            >
+              Talk to a navigator
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Family Support — hidden when the mother keeps care private from family */}
+      {!hideFamilyPromo ? (
+        <section className="mt-3 rounded-2xl border border-eve-muted/20 bg-white p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-cream">
+              <Users className="h-4 w-4 text-eve-terra" />
+            </div>
+            <div className="flex-1">
+              <p className="font-sans text-sm font-semibold text-eve-teal-dark">Family support</p>
+              <p className="mt-0.5 text-[12px] text-eve-muted">
+                Inviting a family supporter opens with our pilot — there is no invite backend yet.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  className="min-h-11 rounded-full bg-eve-teal px-3 text-[12px] text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Invite family supporter — coming soon
+                </button>
+                <Link
+                  to="/eve/profile/care-preferences"
+                  className="inline-flex min-h-11 items-center rounded-full border border-eve-teal px-3 text-[12px] text-eve-teal"
+                >
+                  Privacy settings
+                </Link>
+              </div>
+              <p className="mt-2 inline-flex items-center gap-1 text-[12px] text-eve-muted">
+                <ShieldCheck className="h-3 w-3" />
+                You choose what your family supporter can see.
+              </p>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section className="mt-3 rounded-2xl border border-eve-teal/20 bg-white p-4">
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="mt-0.5 h-4 w-4 text-eve-teal" />
+            <div className="flex-1">
+              <p className="font-sans text-sm font-semibold text-eve-teal-dark">Your privacy controls</p>
+              <p className="mt-0.5 text-[12px] text-eve-muted">
+                You asked to keep your care private from family. Family-sharing features are off — you can change this anytime in Care Preferences.
+              </p>
+              <Link
+                to="/eve/profile/care-preferences"
+                className="mt-3 inline-flex min-h-11 items-center rounded-full border border-eve-teal px-3 text-[12px] text-eve-teal"
+              >
+                Privacy preferences
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Events entry */}
+      <Link
+        to="/eve/events"
+        className="mt-3 flex items-center justify-between rounded-2xl border border-eve-teal/20 bg-white p-4"
+      >
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-eve-rose-light">
+            <Calendar className="h-4 w-4 text-eve-rose" />
+          </div>
+          <div>
+            <p className="font-sans text-sm font-semibold text-eve-teal-dark">Events &amp; workshops</p>
+            <p className="mt-0.5 text-[12px] text-eve-muted">
+              Classes, talks, and wellness sessions for mothers and families.
+            </p>
+          </div>
+        </div>
+        <span className="text-[12px] font-medium text-eve-teal">Browse →</span>
+      </Link>
+
+      {personalizedContent.length > 0 && (
+        <section className="mt-5">
+          <SectionLabel>Helpful guides from trusted partners</SectionLabel>
+          <p className="mt-1 text-[12px] text-eve-muted">
+            {personalized
+              ? "Personalized to your saved care profile."
+              : "Educational content from verified vendors and providers."}
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-3">
+            {personalizedContent.map((c) => (
+              <ContentCard key={c.id} content={c} vendorName={vendorNames[c.vendor_id]} />
+            ))}
+          </div>
+        </section>
+      )}
+    </>
+  );
+}
+
 
 function NewPostSheet({
   onClose,
@@ -749,14 +657,14 @@ function NewPostSheet({
         </Field>
 
         <div className="mt-3">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-eve-muted">Tags (optional)</p>
+          <p className="text-[12px] font-medium uppercase tracking-wide text-eve-muted">Tags (optional)</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {POST_TAGS.map((t) => (
               <button
                 key={t}
                 onClick={() => toggleTag(t)}
                 className={cn(
-                  "rounded-full px-3 py-1 text-[11px] font-medium border",
+                  "rounded-full px-3 py-1 text-[12px] font-medium border",
                   tags.includes(t)
                     ? "bg-eve-teal text-white border-eve-teal"
                     : "bg-white text-eve-muted border-eve-sand",
@@ -768,7 +676,7 @@ function NewPostSheet({
           </div>
         </div>
 
-        <p className="mt-3 text-[11px] text-eve-muted">
+        <p className="mt-3 text-[12px] text-eve-muted">
           You choose what to share. Country and language help us show your post to mothers nearby — they are never used to identify you.
         </p>
 
@@ -792,7 +700,7 @@ function NewPostSheet({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mt-3">
-      <label className="block text-[11px] font-medium uppercase tracking-wide text-eve-muted">
+      <label className="block text-[12px] font-medium uppercase tracking-wide text-eve-muted">
         {label}
       </label>
       <div className="mt-1">{children}</div>

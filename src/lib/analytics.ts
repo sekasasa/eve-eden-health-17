@@ -26,7 +26,13 @@ export const ANALYTICS_EVENTS = {
   aiEscalationShown: "ai_escalation_shown",
   featureBlockedByFlag: "feature_blocked_by_flag",
   appError: "app_error",
+  homeNeedPromptSelected: "home_need_prompt_selected",
+  communityPreviewOpened: "community_preview_opened",
+  careHubOpened: "care_hub_opened",
+  providerPreviewOpened: "provider_preview_opened",
+  askIntentSelected: "ask_intent_selected",
 } as const;
+
 
 export type AnalyticsEvent =
   (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS];

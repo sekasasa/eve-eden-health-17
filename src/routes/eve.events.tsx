@@ -380,7 +380,7 @@ function EventsPage() {
             <Calendar className="h-7 w-7 text-eve-teal" />
           </div>
           <div className="p-4">
-            <span className="inline-block rounded-full bg-eve-teal px-2 py-0.5 font-sans text-[9px] font-semibold uppercase tracking-wide text-white">
+            <span className="inline-block rounded-full bg-eve-teal px-2 py-0.5 font-sans text-[12px] font-semibold uppercase tracking-wide text-white">
               Featured launch event
             </span>
             <h2 className="mt-2 font-serif text-lg leading-tight text-eve-teal-dark">
@@ -408,19 +408,19 @@ function EventsPage() {
           <SlidersHorizontal className="h-3.5 w-3.5" />
           Filters
           {activeCount > 0 && (
-            <span className="ml-1 rounded-full bg-eve-teal px-1.5 text-[10px] font-semibold text-white">
+            <span className="ml-1 rounded-full bg-eve-teal px-1.5 text-[12px] font-semibold text-white">
               {activeCount}
             </span>
           )}
         </button>
         {personalized && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-eve-teal-light px-3 py-1 text-[11px] text-eve-teal-dark">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-eve-teal-light px-3 py-1 text-[12px] text-eve-teal-dark">
             <Sparkles className="h-3 w-3" />
             Sorted by your preferences
           </span>
         )}
         {activeCount > 0 && (
-          <button onClick={clearAll} className="ml-auto text-[11px] text-eve-muted underline">
+          <button onClick={clearAll} className="ml-auto text-[12px] text-eve-muted underline">
             Clear all
           </button>
         )}
@@ -484,7 +484,7 @@ function EventsPage() {
         </div>
       ) : (
         <div className="mt-5 space-y-3">
-          <p className="text-[11px] text-eve-muted">
+          <p className="text-[12px] text-eve-muted">
             {results.length} event{results.length === 1 ? "" : "s"}
           </p>
           {results.map((e) => (
@@ -507,7 +507,7 @@ function EventsPage() {
             {directories.map((d) => (
               <li key={d.id} className="rounded-2xl border border-eve-sand bg-eve-cream/40 p-3">
                 <p className="text-sm font-medium text-eve-teal-dark">{d.resource_name}</p>
-                <p className="mt-0.5 text-[11px] text-eve-muted">
+                <p className="mt-0.5 text-[12px] text-eve-muted">
                   {[d.category, d.country, d.city_scope].filter(Boolean).join(" · ")}
                 </p>
                 {d.source_url ? (
@@ -549,7 +549,7 @@ function FilterPanel({
   return (
     <div className="mt-3 rounded-2xl border border-eve-teal/15 bg-white p-4 space-y-4">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">Region</p>
+        <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-muted">Region</p>
         <div className="mt-2 flex flex-wrap gap-1.5">
           <Chip
             active={filters.region === "any"}
@@ -585,7 +585,7 @@ function FilterPanel({
       </div>
 
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">Format</p>
+        <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-muted">Format</p>
         <div className="mt-2 flex gap-1.5">
           {(["any", "online", "in_person"] as const).map((k) => (
             <Chip
@@ -601,7 +601,7 @@ function FilterPanel({
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">
+          <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-muted">
             Language
           </p>
           <select
@@ -622,7 +622,7 @@ function FilterPanel({
           </select>
         </div>
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">
+          <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-muted">
             Life stage
           </p>
           <select
@@ -641,7 +641,7 @@ function FilterPanel({
       </div>
 
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">Price</p>
+        <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-muted">Price</p>
         <div className="mt-2 flex gap-1.5">
           {(["any", "free", "paid"] as const).map((k) => (
             <Chip
@@ -656,7 +656,7 @@ function FilterPanel({
       </div>
 
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">Topics</p>
+        <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-muted">Topics</p>
         <div className="mt-2 flex flex-wrap gap-1.5">
           {TOPIC_TAGS.map((t) => (
             <Chip
@@ -686,7 +686,7 @@ function Chip({
     <button
       onClick={onClick}
       className={cn(
-        "rounded-full px-3 py-1 text-[11px] font-medium border transition",
+        "rounded-full px-3 py-1 text-[12px] font-medium border transition",
         active
           ? "bg-eve-teal text-white border-eve-teal"
           : "bg-white text-eve-muted border-eve-sand hover:border-eve-teal/40",
@@ -710,7 +710,7 @@ function LabeledInput({
 }) {
   return (
     <div>
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-eve-muted">{label}</p>
+      <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-muted">{label}</p>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -760,7 +760,7 @@ function EventCard({ ev }: { ev: EventRow }) {
       <h3 className="font-serif text-base font-semibold leading-snug text-eve-teal-dark">
         {ev.title}
       </h3>
-      <p className="mt-1 inline-flex items-center gap-1 text-[11px] text-eve-teal">
+      <p className="mt-1 inline-flex items-center gap-1 text-[12px] text-eve-teal">
         <Users className="h-3 w-3" /> Hosted by {organizer}
       </p>
       {ev.excerpt ? (
@@ -784,7 +784,7 @@ function EventCard({ ev }: { ev: EventRow }) {
       <div className="mt-2 flex flex-wrap gap-1.5">
         <span
           className={cn(
-            "rounded-full px-2 py-0.5 text-[10px] font-medium",
+            "rounded-full px-2 py-0.5 text-[12px] font-medium",
             /free|gratis|gratuit/i.test(ev.price_label ?? "")
               ? "bg-eve-forest/10 text-eve-forest"
               : "bg-eve-terra-light text-eve-terra",
@@ -793,19 +793,19 @@ function EventCard({ ev }: { ev: EventRow }) {
           {ev.price_label || "Price on registration"}
         </span>
         {ev.category ? (
-          <span className="rounded-full bg-eve-teal-light px-2 py-0.5 text-[10px] font-medium text-eve-teal">
+          <span className="rounded-full bg-eve-teal-light px-2 py-0.5 text-[12px] font-medium text-eve-teal">
             {ev.category}
           </span>
         ) : null}
         {ev.life_stage ? (
-          <span className="rounded-full bg-eve-rose-light px-2 py-0.5 text-[10px] font-medium text-eve-rose">
+          <span className="rounded-full bg-eve-rose-light px-2 py-0.5 text-[12px] font-medium text-eve-rose">
             {ev.life_stage}
           </span>
         ) : null}
         {matchedTopics.map((t) => (
           <span
             key={t.key}
-            className="inline-flex items-center gap-1 rounded-full bg-eve-cream px-2 py-0.5 text-[10px] font-medium text-eve-muted"
+            className="inline-flex items-center gap-1 rounded-full bg-eve-cream px-2 py-0.5 text-[12px] font-medium text-eve-muted"
           >
             <Tag className="h-2.5 w-2.5" /> {t.label}
           </span>

@@ -7,7 +7,10 @@
     "community": "Communauté",
     "ask": "Demander à Eve",
     "guidance": "Conseils",
-    "profile": "Profil"
+    "profile": "Profil",
+    "care": "Soins",
+    "you": "Vous",
+    "primary": "Principal"
   },
   "common": {
     "save": "Enregistrer",
@@ -110,5 +113,14 @@
     "ar": "العربية",
     "en": "English",
     "darija": "Darija"
+  },
+  "homev2": {
+    "needTitle": "De quoi avez-vous besoin aujourd'hui ?",
+    "askCommunity": "Demander à la communauté",
+    "askCommunitySub": "Des réponses de femmes comme vous",
+    "askEve": "Demander à Eve",
+    "askEveSub": "Votre guide de soins",
+    "findCare": "Trouver des soins",
+    "findCareSub": "Praticiens vérifiés près de vous"
   }
 }
