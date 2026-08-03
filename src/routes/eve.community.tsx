@@ -124,41 +124,40 @@ function CommunityPage() {
     [partnerContent, profile],
   );
 
-  // Persisted community conversations. Nothing is published yet in the pilot,
-  // so the seeded sample feed remains the truthful fallback.
-  const [persistedPosts, setPersistedPosts] = useState<Post[]>([]);
-  const [liveLoadFailed, setLiveLoadFailed] = useState(false);
+  // Persisted community conversations, loaded through the typed service with a
+  // truthful seeded fallback. Nothing here enables posting.
+  const [feedPosts, setFeedPosts] = useState<Post[]>([]);
+  const [feedStatus, setFeedStatus] = useState<CommunityFeedStatus | "loading">("loading");
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const result = await getPublishedPosts({ limit: 30 });
+      const result = await loadCommunityFeedWithFallback({ limit: 30 });
       if (cancelled) return;
-      if (!result.ok) {
-        setLiveLoadFailed(true);
-        return;
-      }
-      const posts = adaptPosts(result.data);
-      setPersistedPosts(posts);
-      track(ANALYTICS_EVENTS.communityPersistedFeedLoaded, { count: posts.length });
+      setFeedPosts(result.posts);
+      setFeedStatus(result.status);
+      track(ANALYTICS_EVENTS.communityPersistedFeedLoaded, {
+        persisted_count: result.source === "persisted" ? result.posts.length : 0,
+        fallback_count: result.source === "seeded_fallback" ? result.posts.length : 0,
+        source: result.source,
+      });
     })();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const usingSeeded = persistedPosts.length === 0;
-
+  const loading = feedStatus === "loading";
+  const usingSeeded = feedStatus !== "live";
 
   const tabBacked = FEED_TABS.find((x) => x.key === tab)?.backed ?? false;
 
   const filtered = useMemo(() => {
     if (!tabBacked) return [];
-    const source = usingSeeded ? SEED_POSTS : persistedPosts;
     const byCategory =
-      active === "all" ? source : source.filter((p) => p.category === active);
+      active === "all" ? feedPosts : feedPosts.filter((p) => p.category === active);
     return postsForTab(byCategory, tab);
-  }, [active, tab, tabBacked, usingSeeded, persistedPosts]);
+  }, [active, tab, tabBacked, feedPosts]);
 
 
   return (
