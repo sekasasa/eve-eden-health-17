@@ -127,10 +127,7 @@ function EdenDashboard() {
       weekStart.setDate(weekStart.getDate() - weekStart.getDay());
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekEnd.getDate() + 7);
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
       const last30 = new Date(now.getTime() - 30 * 86400000);
-      const prev30 = new Date(now.getTime() - 60 * 86400000);
 
       const { data: all } = await supabase
         .from("appointments")
@@ -142,55 +139,32 @@ function EdenDashboard() {
 
       const list = (all as unknown as Appt[]) ?? [];
 
-      const active30 = new Set(
-        list
-          .filter((a) => new Date(a.scheduled_at) >= last30)
-          .map((a) => a.mother_id),
-      ).size;
-      const activePrev = new Set(
-        list
-          .filter((a) => {
-            const d = new Date(a.scheduled_at);
-            return d >= prev30 && d < last30;
-          })
-          .map((a) => a.mother_id),
+      const peopleSeen30d = new Set(
+        list.filter((a) => new Date(a.scheduled_at) >= last30).map((a) => a.mother_id),
       ).size;
 
-      const week = list.filter((a) => {
-        const d = new Date(a.scheduled_at);
-        return d >= weekStart && d < weekEnd;
-      }).length;
-      const weekPrev = list.filter((a) => {
-        const d = new Date(a.scheduled_at);
-        const ws = new Date(weekStart);
-        ws.setDate(ws.getDate() - 7);
-        return d >= ws && d < weekStart;
-      }).length;
-
-      const pending = list.filter(
+      const pendingList = list.filter(
         (a) => a.status === "pending" && new Date(a.scheduled_at) >= now,
+      );
+      const upcomingConfirmed = list.filter(
+        (a) => a.status === "confirmed" && new Date(a.scheduled_at) >= now,
       ).length;
 
-      const noShows = list.filter((a) => {
-        const d = new Date(a.scheduled_at);
-        return a.status === "cancelled" && d >= monthStart && d < monthEnd;
-      }).length;
-      const noShowsPrev = list.filter((a) => {
-        const d = new Date(a.scheduled_at);
-        const ps = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const pe = monthStart;
-        return a.status === "cancelled" && d >= ps && d < pe;
-      }).length;
-
-      const pct = (cur: number, prev: number) =>
-        prev === 0 ? (cur > 0 ? 100 : 0) : Math.round(((cur - prev) / prev) * 100);
-
-      setKpis([
-        { label: "Active patients", value: active30, delta: pct(active30, activePrev) },
-        { label: "Appointments this week", value: week, delta: pct(week, weekPrev) },
-        { label: "Pending confirmations", value: pending, delta: 0 },
-        { label: "No-shows this month", value: noShows, delta: pct(noShows, noShowsPrev) },
+      setMetrics([
+        { key: "pendingRequests", value: pendingList.length },
+        { key: "upcomingConfirmed", value: upcomingConfirmed },
+        { key: "peopleSeen30d", value: peopleSeen30d },
       ]);
+
+      setOpportunities(
+        pendingList.slice(0, 5).map((a) => ({
+          id: a.id,
+          scheduledAt: a.scheduled_at,
+          status: a.status,
+          type: a.type,
+        })),
+      );
+
 
       setToday(
         list.filter((a) => {
