@@ -236,5 +236,44 @@
     "contact": "Cabinet et localisation",
     "contactEmpty": "Les coordonnées n'ont pas été partagées ici. Vous pourrez les demander en envoyant une demande.",
     "aboutEmpty": "Ce prestataire n'a pas encore décrit son approche de soin. Demandez-lui lors de votre prise de contact."
+  },
+  "providerDashboard": {
+    "headerSubtitle": "Développez votre visibilité et gérez les demandes entrantes",
+    "growthTitle": "Aperçu de la croissance",
+    "growthSubtitle": "Basé sur l'activité enregistrée dans Eve & Eden.",
+    "metric": {
+      "pendingRequests": "Demandes de rendez-vous en attente",
+      "upcomingConfirmed": "Rendez-vous confirmés à venir",
+      "peopleSeen30d": "Personnes reçues ces 30 derniers jours"
+    },
+    "metricNote": {
+      "pendingRequests": "Demandes auxquelles vous n'avez pas encore répondu.",
+      "upcomingConfirmed": "Planifiés et confirmés à partir de maintenant.",
+      "peopleSeen30d": "Personnes distinctes ayant eu un rendez-vous sur cette période."
+    },
+    "growthComingSoon": "Les vues de profil, les abonnés et les sources de recommandation ne sont pas encore suivis. Ils apparaîtront ici dès que cette activité sera enregistrée — nous n'affichons pas d'estimations.",
+    "actionsTitle": "Actions prioritaires",
+    "actionsSubtitle": "Des étapes qui aident les patientes à vous trouver et à vous faire confiance.",
+    "action": {
+      "getVerified": "Faites vérifier votre fiche",
+      "completeProfile": "Complétez votre profil de prestataire",
+      "addServices": "Ajoutez les services que vous proposez",
+      "respondRequests": "Répondez aux demandes de rendez-vous",
+      "publishContent": "Publiez du contenu dans le studio"
+    },
+    "open": "Ouvrir",
+    "opportunitiesTitle": "Demandes entrantes",
+    "manageRequests": "Gérer les demandes",
+    "opportunitiesEmpty": "Aucune nouvelle demande de rendez-vous pour l'instant. Compléter et partager votre profil aide les patientes à vous joindre.",
+    "requestGeneric": "Demande de rendez-vous",
+    "practiceTitle": "Gestion du cabinet",
+    "link": {
+      "appointments": "Rendez-vous",
+      "patients": "Patientes",
+      "referrals": "Orientations",
+      "sharedDocs": "Documents partagés",
+      "profile": "Profil et paramètres",
+      "contentStudio": "Studio de contenu"
+    }
   }
 }

@@ -228,5 +228,44 @@
     "contact": "العيادة والموقع",
     "contactEmpty": "لم تتم مشاركة بيانات التواصل هنا. يمكنك السؤال عند إرسال الطلب.",
     "aboutEmpty": "لم يكتب مقدّم الرعاية فلسفته في الرعاية بعد. اسأليه عن نهجه عند التواصل."
+  },
+  "providerDashboard": {
+    "headerSubtitle": "وسّعي انتشارك وأديري الطلبات الواردة",
+    "growthTitle": "نظرة على النمو",
+    "growthSubtitle": "استنادًا إلى النشاط المسجّل في Eve & Eden.",
+    "metric": {
+      "pendingRequests": "طلبات مواعيد قيد الانتظار",
+      "upcomingConfirmed": "مواعيد مؤكدة قادمة",
+      "peopleSeen30d": "أشخاص تمت رؤيتهم خلال 30 يومًا"
+    },
+    "metricNote": {
+      "pendingRequests": "طلبات لم تردّي عليها بعد.",
+      "upcomingConfirmed": "مجدولة ومؤكدة من الآن فصاعدًا.",
+      "peopleSeen30d": "أشخاص مختلفون لديهم موعد في هذه الفترة."
+    },
+    "growthComingSoon": "لا يتم بعد تتبّع مشاهدات الملف والمتابعين ومصادر الإحالة. ستظهر هنا فور تسجيل هذا النشاط — نحن لا نعرض تقديرات.",
+    "actionsTitle": "إجراءات ذات أولوية",
+    "actionsSubtitle": "خطوات تساعد الناس على إيجادك والثقة بك.",
+    "action": {
+      "getVerified": "وثّقي بطاقتك",
+      "completeProfile": "أكملي ملفك كمقدّم رعاية",
+      "addServices": "أضيفي الخدمات التي تقدّمينها",
+      "respondRequests": "ردّي على طلبات المواعيد",
+      "publishContent": "انشري محتوى في الاستوديو"
+    },
+    "open": "فتح",
+    "opportunitiesTitle": "الطلبات الواردة",
+    "manageRequests": "إدارة الطلبات",
+    "opportunitiesEmpty": "لا توجد طلبات مواعيد جديدة بعد. إكمال ملفك ومشاركته يساعد الناس على الوصول إليك.",
+    "requestGeneric": "طلب موعد",
+    "practiceTitle": "إدارة العيادة",
+    "link": {
+      "appointments": "المواعيد",
+      "patients": "المريضات",
+      "referrals": "الإحالات",
+      "sharedDocs": "المستندات المشتركة",
+      "profile": "الملف والإعدادات",
+      "contentStudio": "استوديو المحتوى"
+    }
   }
 }

@@ -236,5 +236,44 @@
     "contact": "Clinic & location",
     "contactEmpty": "Contact details have not been shared here. You can ask when you send a request.",
     "aboutEmpty": "This provider has not written a care philosophy yet. Ask what their approach looks like when you get in touch."
+  },
+  "providerDashboard": {
+    "headerSubtitle": "Grow your reach and manage incoming requests",
+    "growthTitle": "Growth overview",
+    "growthSubtitle": "Based on activity recorded in Eve & Eden.",
+    "metric": {
+      "pendingRequests": "Appointment requests waiting",
+      "upcomingConfirmed": "Confirmed upcoming appointments",
+      "peopleSeen30d": "People seen in the last 30 days"
+    },
+    "metricNote": {
+      "pendingRequests": "Requests you have not answered yet.",
+      "upcomingConfirmed": "Scheduled and confirmed from now on.",
+      "peopleSeen30d": "Distinct people with an appointment in this period."
+    },
+    "growthComingSoon": "Profile views, followers and referral sources are not tracked yet. These will appear here once that activity is recorded — we do not show estimates.",
+    "actionsTitle": "Priority actions",
+    "actionsSubtitle": "Steps that help people find and trust your practice.",
+    "action": {
+      "getVerified": "Get your listing verified",
+      "completeProfile": "Complete your provider profile",
+      "addServices": "Add the services you offer",
+      "respondRequests": "Respond to appointment requests",
+      "publishContent": "Publish content in the studio"
+    },
+    "open": "Open",
+    "opportunitiesTitle": "Incoming requests",
+    "manageRequests": "Manage requests",
+    "opportunitiesEmpty": "No new appointment requests yet. Completing your profile and sharing it helps people reach you.",
+    "requestGeneric": "Appointment request",
+    "practiceTitle": "Practice management",
+    "link": {
+      "appointments": "Appointments",
+      "patients": "Patients",
+      "referrals": "Referrals",
+      "sharedDocs": "Shared documents",
+      "profile": "Profile & settings",
+      "contentStudio": "Content studio"
+    }
   }
 }
