@@ -34,6 +34,12 @@ import type { LifeStage } from "@/lib/match-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/eve/providers")({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { source?: "community"; topic?: CareTopic } => ({
+    source: search.source === "community" ? "community" : undefined,
+    topic: isCareTopic(search.topic) ? search.topic : undefined,
+  }),
   component: EveProviders,
 });
 
