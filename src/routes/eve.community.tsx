@@ -121,6 +121,32 @@ function CommunityPage() {
     [partnerContent, profile],
   );
 
+  // Persisted community conversations. Nothing is published yet in the pilot,
+  // so the seeded sample feed remains the truthful fallback.
+  const [persistedPosts, setPersistedPosts] = useState<Post[]>([]);
+  const [liveLoadFailed, setLiveLoadFailed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const result = await getPublishedPosts({ limit: 30 });
+      if (cancelled) return;
+      if (!result.ok) {
+        setLiveLoadFailed(true);
+        return;
+      }
+      const posts = adaptPosts(result.data);
+      setPersistedPosts(posts);
+      track(ANALYTICS_EVENTS.communityPersistedFeedLoaded, { count: posts.length });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const usingSeeded = persistedPosts.length === 0;
+
+
   const tabBacked = FEED_TABS.find((x) => x.key === tab)?.backed ?? false;
 
   const filtered = useMemo(() => {
