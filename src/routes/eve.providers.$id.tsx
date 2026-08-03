@@ -130,46 +130,22 @@ function ProviderProfilePage() {
         <ArrowLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" /> Back
       </button>
 
-      {/* Hero */}
-      <section className="-mx-5 rounded-b-3xl bg-eve-cream px-5 pb-6 pt-4 rtl:text-right">
-        <div className="flex gap-3 rtl:flex-row-reverse">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-eve-teal font-sans text-lg font-medium text-white">
-            {initials(p.full_name)}
-          </div>
-          <div className="min-w-0 flex-1">
-            <h1 className="font-serif text-[24px] leading-tight text-eve-forest">{p.full_name}</h1>
-            <p className="mt-0.5 font-sans text-[14px] text-eve-teal-dark/80">
-              {p.specialty ?? "General"}
-              {p.clinic_name ? ` • ${p.clinic_name}` : ""}
-            </p>
-            {p.is_verified && <TrustBadge className="mt-1.5" />}
-          </div>
-        </div>
+      <ProviderProfileHeader
+        name={p.full_name}
+        specialty={p.specialty}
+        clinicName={p.clinic_name}
+        city={p.city}
+        country={p.country}
+        languages={p.languages}
+        isVerified={p.is_verified}
+        acceptingPatients={p.accepting_patients}
+        consultationFee={p.consultation_fee_mad}
+        bio={p.bio}
+        onRequestAppointment={() =>
+          navigate({ to: "/eve/providers/$id", params: { id }, search: { book: 1 } })
+        }
+      />
 
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-[14px] text-eve-teal-dark/80 rtl:flex-row-reverse">
-          {p.city && (
-            <span className="inline-flex items-center gap-1 rtl:flex-row-reverse">
-              <MapPin className="h-4 w-4" aria-hidden="true" /> {p.city}
-              {p.country ? `, ${p.country}` : ""}
-            </span>
-          )}
-          {p.languages?.length ? (
-            <span className="inline-flex items-center gap-1 rtl:flex-row-reverse">
-              <LanguagesIcon className="h-4 w-4" aria-hidden="true" /> {p.languages.join(", ")}
-            </span>
-          ) : null}
-        </div>
-
-        {p.accepting_patients && (
-          <p className="mt-2 inline-flex rounded-full bg-emerald-50 px-3 py-1 font-sans text-[13px] text-emerald-700">
-            Accepting patients
-          </p>
-        )}
-
-        <div className="mt-3">
-          <ProviderFollowButton providerId={p.id} size="md" />
-        </div>
-      </section>
 
       <ProviderProfileTabs value={tab} onChange={setTab} />
 
