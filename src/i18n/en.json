@@ -205,5 +205,15 @@
     "emptyTopic": "No example conversations in this topic yet.",
     "personalized": "Showing example conversations relevant to your saved stage.",
     "supportLabel": "Support & resources"
+  },
+  "providerCard": {
+    "verified": "Verified",
+    "accepting": "Accepting patients",
+    "notAccepting": "Not accepting new patients",
+    "fee": "Consultation fee",
+    "viewProfile": "View profile",
+    "clinic": "Clinic",
+    "languages": "Languages",
+    "noDetails": "Details not shared yet"
   }
 }

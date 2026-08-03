@@ -205,5 +205,15 @@
     "emptyTopic": "Aucune conversation d'exemple dans ce thème pour l'instant.",
     "personalized": "Conversations d'exemple liées à l'étape enregistrée dans votre profil.",
     "supportLabel": "Soutien et ressources"
+  },
+  "providerCard": {
+    "verified": "Vérifié",
+    "accepting": "Accepte des patientes",
+    "notAccepting": "N'accepte pas de nouvelles patientes",
+    "fee": "Tarif de consultation",
+    "viewProfile": "Voir le profil",
+    "clinic": "Clinique",
+    "languages": "Langues",
+    "noDetails": "Détails non encore communiqués"
   }
 }
