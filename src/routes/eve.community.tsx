@@ -10,6 +10,7 @@ import { CommunityTabs } from "@/components/community/CommunityTabs";
 import { CommunityFilterSheet } from "@/components/community/CommunityFilterSheet";
 import { CommunityPostCard } from "@/components/community/CommunityPostCard";
 import { CommunityReadOnlyNotice } from "@/components/community/CommunityReadOnlyNotice";
+import { CommunityCirclesPreview } from "@/components/community/CommunityCirclesPreview";
 import { useSavedProfile } from "@/hooks/useSavedProfile";
 import { useCarePreferences } from "@/hooks/useCarePreferences";
 import { prefHelpers } from "@/lib/personalization";
