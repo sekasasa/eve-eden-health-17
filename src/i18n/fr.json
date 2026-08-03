@@ -225,7 +225,39 @@
       "liveUnavailableShort": "Impossible de charger la communauté en direct pour le moment. Voici des exemples."
     },
     "loading": "Chargement des conversations de la communauté…",
-    "liveLabel": "Conversations en direct de la communauté"
+    "liveLabel": "Conversations en direct de la communauté",
+    "circles": {
+      "title": "Cercles",
+      "intro": "Des espaces sélectionnés autour de l'étape de vie, du lieu, de l'expérience et de la culture.",
+      "filtersLabel": "Filtres de cercles",
+      "filters": {
+        "all": "Tous",
+        "nearYou": "Près de vous",
+        "journey": "Parcours",
+        "experience": "Expérience",
+        "culture": "Culture et langue"
+      },
+      "explore": "Explorer les cercles",
+      "view": "Voir le cercle",
+      "join": "Rejoindre",
+      "joined": "Membre",
+      "leave": "Quitter",
+      "loading": "Chargement des cercles",
+      "empty": "Aucun cercle pour ce filtre pour l'instant.",
+      "loadError": "Impossible de charger les cercles pour le moment. Réessayez plus tard.",
+      "membershipLabel": "Votre adhésion",
+      "membershipUnavailable": "L'adhésion ouvrira pendant le pilote modéré. Vous pouvez déjà parcourir les cercles.",
+      "stateJoined": "Vous avez rejoint ce cercle.",
+      "stateNotJoined": "Vous n'avez pas rejoint ce cercle.",
+      "conversationsClosed": "Les conversations et publications des cercles ne sont pas encore ouvertes. La consultation est disponible pendant le pilote.",
+      "browseOnlyNotice": "Les cercles sont sélectionnés par l'équipe Eve & Eden. Les cercles créés par les membres ne sont pas encore ouverts.",
+      "backToDirectory": "Tous les cercles",
+      "backToCommunity": "Retour à la communauté",
+      "notFound": "Ce cercle n'est pas disponible.",
+      "previewTitle": "Cercles",
+      "previewNearYou": "Cercles sélectionnés dans votre pays.",
+      "previewGeneric": "Cercles sélectionnés à parcourir."
+    }
   },
   "providerCard": {
     "verified": "Vérifié",
