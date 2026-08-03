@@ -155,25 +155,25 @@ function ProviderProfilePage() {
           />
           <ProviderAbout
             name={p.full_name}
-            bio={
-              bio ||
-              "This provider has not written a care philosophy yet. Ask what their approach looks like when you get in touch."
-            }
+            bio={bio || t("providerProfile.aboutEmpty")}
+          />
+          <ProviderAppointmentInfo
+            acceptingPatients={p.accepting_patients}
+            consultationFee={p.consultation_fee_mad}
+            city={p.city}
+            country={p.country}
+          />
+          <ProviderContactSection
+            clinicName={p.clinic_name}
+            city={p.city}
+            country={p.country}
           />
           <ProviderReviewsNotice avgRating={p.avg_rating} reviewCount={p.review_count} />
         </>
       )}
 
-      {tab === "services" && (
-        <section className="mt-2 rtl:text-right">
-          <h2 className="mt-4 font-serif text-lg text-eve-forest">Services</h2>
-          <ProviderServices services={p.services} />
-          <p className="mt-3 font-sans text-[13px] leading-relaxed text-eve-teal-dark/70">
-            Services come from the provider's own listing. Confirm scope and price with them
-            directly — we do not verify availability.
-          </p>
-        </section>
-      )}
+      {tab === "services" && <ProviderServicesSection services={p.services} />}
+
 
       {tab === "community" && (
         <section className="mt-4 rtl:text-right">
