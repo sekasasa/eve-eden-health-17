@@ -212,8 +212,12 @@
       "pendingModeration": "في انتظار مراجعة المشرف.",
       "postingUnavailable": "النشر غير متاح خلال التجربة.",
       "liveUnavailable": "تعذّر تحميل محادثات المجتمع المباشرة الآن — نعرض أمثلة بدلاً من ذلك.",
-      "repliesTitle": "الردود"
-    }
+      "repliesTitle": "الردود",
+      "noPublishedShort": "لا توجد محادثات منشورة بعد. نعرض أمثلة.",
+      "liveUnavailableShort": "يتعذّر تحميل محادثات المجتمع المباشرة الآن. نعرض أمثلة."
+    },
+    "loading": "جارٍ تحميل محادثات المجتمع…",
+    "liveLabel": "محادثات المجتمع المباشرة"
   },
   "providerCard": {
     "verified": "موثّق",

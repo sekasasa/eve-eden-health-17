@@ -220,8 +220,12 @@
       "pendingModeration": "En attente de la révision d'un modérateur.",
       "postingUnavailable": "La publication n'est pas disponible pendant le pilote.",
       "liveUnavailable": "Impossible de charger les conversations en direct pour le moment — voici des exemples.",
-      "repliesTitle": "Réponses"
-    }
+      "repliesTitle": "Réponses",
+      "noPublishedShort": "Aucune conversation publiée pour l'instant. Voici des exemples.",
+      "liveUnavailableShort": "Impossible de charger la communauté en direct pour le moment. Voici des exemples."
+    },
+    "loading": "Chargement des conversations de la communauté…",
+    "liveLabel": "Conversations en direct de la communauté"
   },
   "providerCard": {
     "verified": "Vérifié",
