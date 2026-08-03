@@ -33,11 +33,7 @@ export function ProviderSection({
 }
 
 /** Label/value rows rendered only for fields that actually exist. */
-export function ProviderFactList({
-  items,
-}: {
-  items: { label: string; value: string }[];
-}) {
+export function ProviderFactList({ items }: { items: { label: string; value: string }[] }) {
   if (items.length === 0) return null;
   return (
     <dl className="mt-3 grid gap-2">

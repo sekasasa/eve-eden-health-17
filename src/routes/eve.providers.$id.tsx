@@ -157,27 +157,19 @@ function ProviderProfilePage() {
             clinicName={p.clinic_name}
             yearsInPractice={p.years_in_practice}
           />
-          <ProviderAbout
-            name={p.full_name}
-            bio={bio || t("providerProfile.aboutEmpty")}
-          />
+          <ProviderAbout name={p.full_name} bio={bio || t("providerProfile.aboutEmpty")} />
           <ProviderAppointmentInfo
             acceptingPatients={p.accepting_patients}
             consultationFee={p.consultation_fee_mad}
             city={p.city}
             country={p.country}
           />
-          <ProviderContactSection
-            clinicName={p.clinic_name}
-            city={p.city}
-            country={p.country}
-          />
+          <ProviderContactSection clinicName={p.clinic_name} city={p.city} country={p.country} />
           <ProviderReviewsNotice avgRating={p.avg_rating} reviewCount={p.review_count} />
         </>
       )}
 
       {tab === "services" && <ProviderServicesSection services={p.services} />}
-
 
       {tab === "community" && (
         <section className="mt-4 rtl:text-right">

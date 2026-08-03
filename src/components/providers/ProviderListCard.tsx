@@ -150,7 +150,10 @@ export function ProviderListCard(p: ProviderListCardProps) {
           to="/eve/providers/$id"
           params={{ id: p.id }}
           onClick={() =>
-            track(ANALYTICS_EVENTS.providerCardOpened, { provider_id: p.id, source: "provider_list" })
+            track(ANALYTICS_EVENTS.providerCardOpened, {
+              provider_id: p.id,
+              source: "provider_list",
+            })
           }
           aria-label={`${t("providerCard.viewProfile")} — ${p.name}`}
           className="ms-auto inline-flex min-h-11 items-center rounded-full bg-eve-teal px-5 font-sans text-[15px] font-medium text-white transition hover:bg-eve-teal-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eve-teal focus-visible:ring-offset-2 active:scale-95"
