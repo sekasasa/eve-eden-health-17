@@ -24,6 +24,9 @@ export function CommunityPostCard({
 }) {
   const { t } = useTranslation();
   const cat = CATEGORIES.find((c) => c.key === post.category);
+  // No metrics backend exists for persisted rows — hide the controls entirely
+  // rather than rendering zeros that look measured.
+  const showMetrics = post.metricsAvailable !== false && !post.persisted;
 
   return (
     <article className="relative overflow-hidden rounded-2xl bg-eve-cream p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md rtl:text-right">
@@ -47,7 +50,7 @@ export function CommunityPostCard({
             {t("community.sample")}
           </span>
         )}
-        {post.trending && (
+        {showMetrics && post.trending && (
           <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[12px] font-semibold text-eve-terra">
             <Flame className="h-3 w-3" /> {t("community.trending")}
           </span>
@@ -103,8 +106,8 @@ export function CommunityPostCard({
       {/* Hearts/saves/reports are local-only and only meaningful for seeded
           samples. Persisted posts have no such backend yet, so we show nothing
           rather than fake counts or a fake moderation queue. */}
-      {!post.persisted && (
-      <div className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[13px] text-eve-teal-dark/75 rtl:flex-row-reverse">
+      {showMetrics && (
+      <div data-testid="community-post-metrics" className="mt-3 flex items-center gap-4 border-t border-eve-sand pt-3 text-[13px] text-eve-teal-dark/75 rtl:flex-row-reverse">
         <button
           type="button"
           onClick={onHeart}
@@ -146,7 +149,7 @@ export function CommunityPostCard({
       </div>
       )}
 
-      {post.topAnswer && (
+      {showMetrics && post.topAnswer && (
         <div className="mt-3 border-t border-eve-sand pt-3">
           <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-teal">
             {t("community.topAnswer")}
