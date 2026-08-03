@@ -207,5 +207,17 @@
     "clinic": "العيادة",
     "languages": "اللغات",
     "noDetails": "لم تتم مشاركة التفاصيل بعد"
+  },
+  "providerProfile": {
+    "about": "نبذة",
+    "verifiedCredentials": "مؤهلات موثّقة",
+    "verifiedCredentialsValue": "تحقق فريقنا من هوية هذه البطاقة وبيانات التواصل.",
+    "location": "الموقع",
+    "acceptingValue": "يقبل حاليًا مريضات جدد.",
+    "notAcceptingValue": "لا يقبل مريضات جدد حاليًا.",
+    "noDetails": "لم يشارك مقدّم الرعاية تفاصيل إضافية بعد. اسأليه مباشرة قبل الحجز.",
+    "requestAppointment": "طلب موعد",
+    "requestNote": "تُرسل الطلبات إلى مقدّم الرعاية. لا يتم تأكيد أي شيء قبل رده.",
+    "unnamed": "مقدّم رعاية"
   }
 }
