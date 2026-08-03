@@ -2,16 +2,17 @@
  * Maps persisted community rows onto the UI model used by the seeded feed.
  *
  * Rules:
- * - Persisted rows never fabricate hearts, saves, replies counts, trending or
- *   "top answer" — those metrics do not exist in the schema yet, so the UI
- *   hides them (`persisted: true`).
  * - `author_id` is never selected nor mapped, so it can never reach the UI.
+ * - Persisted rows never fabricate hearts, saves, trending or "top answer" —
+ *   those metrics do not exist in the schema, so the UI hides them
+ *   (`persisted: true` / `metricsAvailable: false`).
+ * - Provider identity is never inferred from `provider_id`.
  * - Seeded posts keep `persisted: false` and stay labelled as samples.
  */
 
 import type { Post, CategoryKey } from "@/lib/community-seed";
 import { CATEGORIES } from "@/lib/community-seed";
-import type { CommunityPostRow, CommunityReplyRow } from "../services/communityService";
+import type { PersistedCommunityPost, PersistedCommunityReply } from "../types";
 
 const KNOWN_CATEGORIES = new Set(CATEGORIES.map((c) => c.key));
 
@@ -36,10 +37,12 @@ export function relativeTime(minutes: number): string {
 
 const DEFAULT_ALIAS = "Community member";
 
-export function adaptPost(row: CommunityPostRow, now: Date = new Date()): Post {
-  const alias = row.is_anonymous
-    ? (row.anonymous_alias?.trim() || DEFAULT_ALIAS)
-    : (row.anonymous_alias?.trim() || DEFAULT_ALIAS);
+/** Feed model for a persisted post — no metrics, no sample label. */
+export function adaptPersistedPostToFeedModel(
+  row: PersistedCommunityPost,
+  now: Date = new Date(),
+): Post & { metricsAvailable: false } {
+  const alias = row.anonymous_alias?.trim() || DEFAULT_ALIAS;
   const minutesAgo = minutesSince(row.created_at, now);
 
   return {
@@ -52,36 +55,66 @@ export function adaptPost(row: CommunityPostRow, now: Date = new Date()): Post {
     minutesAgo,
     title: row.title,
     body: row.body,
-    // No social metrics exist for persisted rows — never invent them.
+    // Social metrics do not exist for persisted rows. `metricsAvailable:false`
+    // tells the UI these numbers are unavailable, not measured as zero.
     hearts: 0,
     replies: 0,
+    metricsAvailable: false,
     persisted: true,
   };
 }
 
-export function adaptPosts(rows: CommunityPostRow[], now: Date = new Date()): Post[] {
-  return rows.map((r) => adaptPost(r, now));
+/** Back-compat aliases used by existing routes. */
+export const adaptPost = adaptPersistedPostToFeedModel;
+
+export function adaptPosts(rows: PersistedCommunityPost[], now: Date = new Date()): Post[] {
+  return rows.map((r) => adaptPersistedPostToFeedModel(r, now));
 }
 
 export type CommunityReplyView = {
   id: string;
   body: string;
+  /** Reply type as stored — never inferred from provider_id. */
   isProvider: boolean;
   timeAgo: string;
+  displayAlias: string;
 };
 
-export function adaptReply(row: CommunityReplyRow, now: Date = new Date()): CommunityReplyView {
+export function adaptPersistedReplyToThreadModel(
+  row: PersistedCommunityReply,
+  now: Date = new Date(),
+): CommunityReplyView {
+  const isProvider = row.reply_type === "provider";
   return {
     id: row.id,
     body: row.body,
-    isProvider: row.reply_type === "provider",
+    isProvider,
     timeAgo: relativeTime(minutesSince(row.created_at, now)),
+    displayAlias: isProvider ? "Verified provider" : DEFAULT_ALIAS,
   };
 }
 
+export const adaptReply = adaptPersistedReplyToThreadModel;
+
 export function adaptReplies(
-  rows: CommunityReplyRow[],
+  rows: PersistedCommunityReply[],
   now: Date = new Date(),
 ): CommunityReplyView[] {
-  return rows.map((r) => adaptReply(r, now));
+  return rows.map((r) => adaptPersistedReplyToThreadModel(r, now));
+}
+
+/**
+ * Merges persisted posts with seeded samples. Persisted posts always come
+ * first; seeded posts keep their sample labelling.
+ */
+export function combinePersistedAndSeededPosts(
+  persisted: PersistedCommunityPost[],
+  seeded: Post[],
+  options: { includeSeeded?: boolean; now?: Date; limit?: number } = {},
+): Post[] {
+  const now = options.now ?? new Date();
+  const live = persisted.map((r) => adaptPersistedPostToFeedModel(r, now));
+  const rest = options.includeSeeded === false ? [] : seeded.map((p) => ({ ...p, persisted: false }));
+  const merged = [...live, ...rest];
+  return options.limit ? merged.slice(0, options.limit) : merged;
 }
