@@ -204,7 +204,18 @@
     "expertNote": "Threads with an answer written by our team. Verified clinician answers arrive with the pilot.",
     "emptyTopic": "No example conversations in this topic yet.",
     "personalized": "Showing example conversations relevant to your saved stage.",
-    "supportLabel": "Support & resources"
+    "supportLabel": "Support & resources",
+    "detail": {
+      "open": "Open conversation",
+      "back": "Back to community",
+      "disclosure": "This is an example conversation written by the Eve & Eden team to show how this space works. It is not a real member thread.",
+      "sampleAnswerTitle": "Team-written sample answer",
+      "repliesClosedTitle": "Replies are closed for now",
+      "repliesClosedBody": "Replies open during the moderated community pilot. Until then you can read, save, and report example conversations.",
+      "related": "Related conversations",
+      "notFoundTitle": "Conversation not found",
+      "notFoundBody": "This conversation does not exist or is no longer available."
+    }
   },
   "providerCard": {
     "verified": "Verified",
