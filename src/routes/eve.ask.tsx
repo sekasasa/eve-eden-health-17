@@ -281,7 +281,7 @@ function AskEveInner() {
             </h1>
             <span
               className="mt-0.5 rounded-full bg-eve-rose/10 px-2 py-[1px] font-sans text-eve-rose"
-              style={{ fontSize: "9px" }}
+              style={{ fontSize: "12px" }}
             >
               AI-assisted
             </span>
@@ -348,7 +348,7 @@ function AskEveInner() {
               role="alert"
               className="mb-2 flex items-center justify-between gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2"
             >
-              <p className="font-sans text-amber-800" style={{ fontSize: "11px" }}>
+              <p className="font-sans text-amber-800" style={{ fontSize: "12px" }}>
                 {sendError === "offline"
                   ? "You're offline. Your question is saved here — send it when you're back online."
                   : sendError === "rate_limit"
@@ -362,7 +362,7 @@ function AskEveInner() {
                   if (lastPrompt) void send(lastPrompt);
                 }}
                 className="min-h-11 shrink-0 rounded-full bg-eve-teal px-3 font-sans text-white"
-                style={{ fontSize: "11px" }}
+                style={{ fontSize: "12px" }}
               >
                 Retry
               </button>
@@ -437,7 +437,7 @@ function WelcomeState({
           </p>
           <p
             className="mt-2 font-sans italic text-eve-muted"
-            style={{ fontSize: "10px" }}
+            style={{ fontSize: "12px" }}
           >
             Eve provides general information only. Always consult your provider for medical decisions.
           </p>
@@ -519,7 +519,7 @@ function MessageBubble({
         </div>
         <span
           className="mt-1 font-sans text-eve-muted"
-          style={{ fontSize: "10px" }}
+          style={{ fontSize: "12px" }}
         >
           {fmtTime(msg.createdAt)}
         </span>
@@ -543,7 +543,7 @@ function MessageBubble({
             {msg.system && (
               <p
                 className="mb-1 font-sans font-medium uppercase tracking-wide text-amber-700"
-                style={{ fontSize: "9px" }}
+                style={{ fontSize: "12px" }}
               >
                 Eve & Eden notice — not a clinical answer
               </p>
@@ -571,7 +571,7 @@ function MessageBubble({
               </span>
               <span
                 className="rounded-full bg-eve-teal px-3 py-1 font-sans text-white"
-                style={{ fontSize: "11px" }}
+                style={{ fontSize: "12px" }}
               >
                 Find
               </span>
@@ -581,7 +581,7 @@ function MessageBubble({
       </div>
       <span
         className="ml-10 mt-1 font-sans text-eve-muted"
-        style={{ fontSize: "10px" }}
+        style={{ fontSize: "12px" }}
       >
         {fmtTime(msg.createdAt)}
       </span>
@@ -624,14 +624,14 @@ function UrgencyCard({
             <a
               href={`tel:${dialNumber}`}
               className="mt-2 inline-flex items-center rounded-full bg-eve-rose px-3 py-1.5 font-sans font-medium text-white"
-              style={{ fontSize: "11px" }}
+              style={{ fontSize: "12px" }}
             >
               {buttonLabel}
             </a>
           ) : (
             <p
               className="mt-2 font-sans font-medium text-red-700"
-              style={{ fontSize: "11px" }}
+              style={{ fontSize: "12px" }}
             >
               Contact your local emergency service or go to the nearest emergency department.
             </p>

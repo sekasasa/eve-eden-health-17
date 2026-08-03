@@ -191,9 +191,9 @@ function CommunityPage() {
         </button>
         {!postingEnabled && (
           <div role="status" className="mt-2 space-y-1">
-            <p className="text-[11px] text-eve-muted">{flagOffCopy("communityPosting")}</p>
+            <p className="text-[12px] text-eve-muted">{flagOffCopy("communityPosting")}</p>
             {!moderationEnabled && (
-              <p className="text-[11px] text-eve-muted">
+              <p className="text-[12px] text-eve-muted">
                 Community is read-only until moderation is staffed. Posts below are sample
                 content written by our team, not replies from other members.
               </p>
@@ -201,7 +201,7 @@ function CommunityPage() {
           </div>
         )}
         {profile.stage && (
-          <p className="mt-2 text-[11px] text-eve-muted">
+          <p className="mt-2 text-[12px] text-eve-muted">
             Showing community posts relevant to your profile.
           </p>
         )}
@@ -234,7 +234,7 @@ function CommunityPage() {
         role="note"
         className="mt-5 rounded-2xl border border-eve-sand bg-eve-cream/60 px-4 py-3"
       >
-        <p className="text-[11px] leading-relaxed text-eve-muted">
+        <p className="text-[12px] leading-relaxed text-eve-muted">
           <span className="font-semibold text-eve-teal-dark">Example conversations.</span>{" "}
           The threads below were written by the Eve &amp; Eden team to show how this
           space works. Real posts appear once the community pilot opens.
@@ -296,13 +296,13 @@ function CommunityPage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-medium text-eve-teal-dark">{p.anonName}</p>
-                    <p className="text-[11px] text-eve-muted">{p.timeAgo}</p>
+                    <p className="text-[12px] text-eve-muted">{p.timeAgo}</p>
                   </div>
-                  <span className="rounded-full border border-eve-sand bg-white px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-eve-muted">
+                  <span className="rounded-full border border-eve-sand bg-white px-2 py-0.5 text-[12px] font-semibold uppercase tracking-wide text-eve-muted">
                     Sample
                   </span>
                   {p.trending && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[10px] font-semibold text-eve-terra">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-eve-terra-light px-2 py-0.5 text-[12px] font-semibold text-eve-terra">
                       <Flame className="h-3 w-3" /> Trending
                     </span>
                   )}
@@ -310,7 +310,7 @@ function CommunityPage() {
 
                 <span
                   className={cn(
-                    "mt-3 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
+                    "mt-3 inline-block rounded-full px-2 py-0.5 text-[12px] font-medium",
                     toneBadge[cat.tone],
                   )}
                 >
@@ -364,13 +364,13 @@ function CommunityPage() {
                     className="inline-flex items-center gap-1 text-eve-muted underline-offset-2 hover:underline"
                   >
                     <Flag className="h-3.5 w-3.5" />
-                    <span className="text-[11px]">Report</span>
+                    <span className="text-[12px]">Report</span>
                   </button>
                 </div>
 
                 {p.topAnswer && (
                   <div className="mt-3 border-t border-eve-sand pt-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-eve-teal">
+                    <p className="text-[12px] font-semibold uppercase tracking-wide text-eve-teal">
                       Top answer
                     </p>
                     <p className="mt-1 line-clamp-2 text-[12px] text-eve-muted">{p.topAnswer}</p>
@@ -463,7 +463,7 @@ function SupportSections({
                   Privacy settings
                 </Link>
               </div>
-              <p className="mt-2 inline-flex items-center gap-1 text-[11px] text-eve-muted">
+              <p className="mt-2 inline-flex items-center gap-1 text-[12px] text-eve-muted">
                 <ShieldCheck className="h-3 w-3" />
                 You choose what your family supporter can see.
               </p>
@@ -657,14 +657,14 @@ function NewPostSheet({
         </Field>
 
         <div className="mt-3">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-eve-muted">Tags (optional)</p>
+          <p className="text-[12px] font-medium uppercase tracking-wide text-eve-muted">Tags (optional)</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {POST_TAGS.map((t) => (
               <button
                 key={t}
                 onClick={() => toggleTag(t)}
                 className={cn(
-                  "rounded-full px-3 py-1 text-[11px] font-medium border",
+                  "rounded-full px-3 py-1 text-[12px] font-medium border",
                   tags.includes(t)
                     ? "bg-eve-teal text-white border-eve-teal"
                     : "bg-white text-eve-muted border-eve-sand",
@@ -676,7 +676,7 @@ function NewPostSheet({
           </div>
         </div>
 
-        <p className="mt-3 text-[11px] text-eve-muted">
+        <p className="mt-3 text-[12px] text-eve-muted">
           You choose what to share. Country and language help us show your post to mothers nearby — they are never used to identify you.
         </p>
 
@@ -700,7 +700,7 @@ function NewPostSheet({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mt-3">
-      <label className="block text-[11px] font-medium uppercase tracking-wide text-eve-muted">
+      <label className="block text-[12px] font-medium uppercase tracking-wide text-eve-muted">
         {label}
       </label>
       <div className="mt-1">{children}</div>
