@@ -63,8 +63,8 @@ export function ProviderServices({ services }: { services?: string | null }) {
   if (items.length === 0) {
     return (
       <p className="mt-4 font-sans text-[14px] leading-relaxed text-eve-teal-dark/75">
-        This provider has not listed individual services yet. Ask what they offer
-        when you contact them.
+        This provider has not listed individual services yet. Ask what they offer when you contact
+        them.
       </p>
     );
   }

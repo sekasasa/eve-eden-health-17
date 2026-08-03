@@ -131,9 +131,7 @@ export function ProviderListCard(p: ProviderListCardProps) {
         <Link
           to="/eve/providers/$id"
           params={{ id: p.id }}
-          onClick={() =>
-            track(ANALYTICS_EVENTS.providerProfileOpened, { source: "list" })
-          }
+          onClick={() => track(ANALYTICS_EVENTS.providerProfileOpened, { source: "list" })}
           className="ms-auto inline-flex min-h-11 items-center rounded-full px-3 font-sans text-[14px] font-medium text-eve-teal hover:bg-eve-teal-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eve-teal focus-visible:ring-offset-2"
         >
           View profile

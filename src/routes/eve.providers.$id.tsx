@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-  useParams,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Check,
@@ -34,12 +29,7 @@ import {
   ProviderServices,
   type ProviderTabKey,
 } from "@/components/providers/ProviderProfileTabs";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
 import { supabase } from "@/integrations/supabase/client";
@@ -147,9 +137,7 @@ function ProviderProfilePage() {
             {initials(p.full_name)}
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className="font-serif text-[24px] leading-tight text-eve-forest">
-              {p.full_name}
-            </h1>
+            <h1 className="font-serif text-[24px] leading-tight text-eve-forest">{p.full_name}</h1>
             <p className="mt-0.5 font-sans text-[14px] text-eve-teal-dark/80">
               {p.specialty ?? "General"}
               {p.clinic_name ? ` • ${p.clinic_name}` : ""}
@@ -167,8 +155,7 @@ function ProviderProfilePage() {
           )}
           {p.languages?.length ? (
             <span className="inline-flex items-center gap-1 rtl:flex-row-reverse">
-              <LanguagesIcon className="h-4 w-4" aria-hidden="true" />{" "}
-              {p.languages.join(", ")}
+              <LanguagesIcon className="h-4 w-4" aria-hidden="true" /> {p.languages.join(", ")}
             </span>
           ) : null}
         </div>
@@ -210,8 +197,8 @@ function ProviderProfilePage() {
           <h2 className="mt-4 font-serif text-lg text-eve-forest">Services</h2>
           <ProviderServices services={p.services} />
           <p className="mt-3 font-sans text-[13px] leading-relaxed text-eve-teal-dark/70">
-            Services come from the provider's own listing. Confirm scope and price
-            with them directly — we do not verify availability.
+            Services come from the provider's own listing. Confirm scope and price with them
+            directly — we do not verify availability.
           </p>
         </section>
       )}
@@ -220,8 +207,8 @@ function ProviderProfilePage() {
         <section className="mt-4 rtl:text-right">
           <h2 className="font-serif text-lg text-eve-forest">Community</h2>
           <p className="mt-2 font-sans text-[14px] leading-relaxed text-eve-teal-dark/80">
-            Provider answers in the community open with our pilot. Nothing on this
-            profile is a recorded reply from this provider.
+            Provider answers in the community open with our pilot. Nothing on this profile is a
+            recorded reply from this provider.
           </p>
           <Link
             to="/eve/community"
@@ -237,8 +224,8 @@ function ProviderProfilePage() {
         <section className="mt-4 rtl:text-right">
           <h2 className="font-serif text-lg text-eve-forest">Events</h2>
           <p className="mt-2 font-sans text-[14px] leading-relaxed text-eve-teal-dark/80">
-            This provider has no events listed with us. Browse everything currently
-            scheduled instead.
+            This provider has no events listed with us. Browse everything currently scheduled
+            instead.
           </p>
           <Link
             to="/eve/events"
@@ -293,7 +280,6 @@ function ProviderProfilePage() {
     </EveShell>
   );
 }
-
 
 // ──────────────────────────────────────────────────────────────
 // Booking sheet
@@ -416,9 +402,7 @@ function BookingSheet({
 
           {step === 1 && (
             <div>
-              <p className="mb-3 font-sans text-sm text-eve-muted">
-                What kind of appointment?
-              </p>
+              <p className="mb-3 font-sans text-sm text-eve-muted">What kind of appointment?</p>
               <div className="grid grid-cols-2 gap-3">
                 {TYPES.map(({ value, icon: Icon }) => {
                   const active = type === value;
@@ -434,18 +418,12 @@ function BookingSheet({
                       )}
                     >
                       <Icon className="h-5 w-5 text-eve-teal" />
-                      <span className="font-sans text-sm font-medium text-eve-forest">
-                        {value}
-                      </span>
+                      <span className="font-sans text-sm font-medium text-eve-forest">{value}</span>
                     </button>
                   );
                 })}
               </div>
-              <PrimaryButton
-                disabled={!type}
-                onClick={() => setStep(2)}
-                className="mt-6 w-full"
-              >
+              <PrimaryButton disabled={!type} onClick={() => setStep(2)} className="mt-6 w-full">
                 Continue
               </PrimaryButton>
             </div>
@@ -455,9 +433,7 @@ function BookingSheet({
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <button
-                  onClick={() =>
-                    setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))
-                  }
+                  onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
                   className="rounded-full p-1.5 text-eve-muted hover:bg-eve-cream"
                   aria-label="Previous month"
                 >
@@ -470,9 +446,7 @@ function BookingSheet({
                   })}
                 </p>
                 <button
-                  onClick={() =>
-                    setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))
-                  }
+                  onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
                   className="rounded-full p-1.5 text-eve-muted hover:bg-eve-cream"
                   aria-label="Next month"
                 >
@@ -489,8 +463,7 @@ function BookingSheet({
                 {days.map((d, i) => {
                   if (!d) return <span key={i} />;
                   const past = d < today;
-                  const selected =
-                    date?.toDateString() === d.toDateString();
+                  const selected = date?.toDateString() === d.toDateString();
                   const available = !past;
                   return (
                     <button
@@ -525,7 +498,8 @@ function BookingSheet({
               {/* Real availability is not wired yet — show a clearly labeled state instead of fake slots. */}
               <div className="mt-2 rounded-xl border border-dashed border-eve-muted/30 bg-white p-3">
                 <p className="font-sans text-xs text-eve-muted">
-                  Live availability coming soon. For now, share a preferred time below and we'll confirm with the provider.
+                  Live availability coming soon. For now, share a preferred time below and we'll
+                  confirm with the provider.
                 </p>
               </div>
               <div className="mt-3">
@@ -586,9 +560,7 @@ function BookingSheet({
 
               <div className="mt-4 flex items-center justify-between rounded-2xl bg-white p-3">
                 <div>
-                  <p className="font-sans text-sm font-medium text-eve-forest">
-                    WhatsApp reminder
-                  </p>
+                  <p className="font-sans text-sm font-medium text-eve-forest">WhatsApp reminder</p>
                   <p className="font-sans text-xs text-eve-muted">
                     We'll message you the day before.
                   </p>
@@ -600,11 +572,7 @@ function BookingSheet({
                 <SecondaryButton onClick={() => setStep(2)} className="flex-1">
                   Back
                 </SecondaryButton>
-                <PrimaryButton
-                  disabled={saving}
-                  onClick={confirm}
-                  className="flex-1"
-                >
+                <PrimaryButton disabled={saving} onClick={confirm} className="flex-1">
                   {saving ? "Saving…" : "Confirm booking"}
                 </PrimaryButton>
               </div>
@@ -616,9 +584,7 @@ function BookingSheet({
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-eve-teal text-white">
                 <Check className="h-8 w-8" strokeWidth={3} />
               </div>
-              <h3 className="mt-4 font-serif text-2xl text-eve-forest">
-                Appointment confirmed!
-              </h3>
+              <h3 className="mt-4 font-serif text-2xl text-eve-forest">Appointment confirmed!</h3>
               <p className="mt-1 font-sans text-sm text-eve-muted">
                 We've sent the details to your inbox.
               </p>
@@ -648,10 +614,7 @@ function BookingSheet({
                   Add to calendar
                 </SecondaryButton>
                 <Link to="/eve/home" className="flex-1">
-                  <PrimaryButton
-                    onClick={() => onOpenChange(false)}
-                    className="w-full"
-                  >
+                  <PrimaryButton onClick={() => onOpenChange(false)} className="w-full">
                     Back to home
                   </PrimaryButton>
                 </Link>
@@ -664,15 +627,7 @@ function BookingSheet({
   );
 }
 
-function SummaryRow({
-  label,
-  value,
-  last,
-}: {
-  label: string;
-  value: string;
-  last?: boolean;
-}) {
+function SummaryRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
   return (
     <div
       className={cn(
@@ -680,9 +635,7 @@ function SummaryRow({
         !last && "border-b border-eve-muted/10",
       )}
     >
-      <span className="font-sans text-xs uppercase tracking-widest text-eve-muted">
-        {label}
-      </span>
+      <span className="font-sans text-xs uppercase tracking-widest text-eve-muted">{label}</span>
       <span className="font-sans text-sm text-eve-forest">{value}</span>
     </div>
   );
@@ -703,7 +656,10 @@ function buildMonth(month: Date): (Date | null)[] {
 function downloadIcs(p: Provider, type: string, when: Date) {
   const end = new Date(when.getTime() + 30 * 60 * 1000);
   const fmt = (d: Date) =>
-    d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+    d
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace(/\.\d{3}/, "");
   const ics = `BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT

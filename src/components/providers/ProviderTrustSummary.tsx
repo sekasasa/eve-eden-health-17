@@ -43,8 +43,8 @@ export function ProviderTrustSummary({
       <h2 className="font-serif text-lg text-eve-forest">Trust summary</h2>
       {rows.length === 0 ? (
         <p className="mt-2 font-sans text-[14px] leading-relaxed text-eve-teal-dark/75">
-          This provider has not shared verified credentials or clinic details with us
-          yet. Ask them directly before booking.
+          This provider has not shared verified credentials or clinic details with us yet. Ask them
+          directly before booking.
         </p>
       ) : (
         <ul className="mt-2 space-y-2">
@@ -55,9 +55,7 @@ export function ProviderTrustSummary({
             >
               <r.icon className="mt-0.5 h-4 w-4 shrink-0 text-eve-teal" aria-hidden="true" />
               <div className="min-w-0">
-                <p className="font-sans text-[13px] font-semibold text-eve-forest">
-                  {r.label}
-                </p>
+                <p className="font-sans text-[13px] font-semibold text-eve-forest">{r.label}</p>
                 <p className="font-sans text-[14px] leading-relaxed text-eve-teal-dark/80">
                   {r.value}
                 </p>
@@ -70,8 +68,8 @@ export function ProviderTrustSummary({
       <div className="mt-2 flex items-start gap-2.5 rounded-2xl border border-dashed border-eve-muted/30 bg-eve-cream/50 p-3 rtl:flex-row-reverse">
         <Users className="mt-0.5 h-4 w-4 shrink-0 text-eve-teal" aria-hidden="true" />
         <p className="font-sans text-[13px] leading-relaxed text-eve-teal-dark/80">
-          Community participation opens with our pilot. No answers, follows, or
-          community activity are recorded for this provider yet.
+          Community participation opens with our pilot. No answers, follows, or community activity
+          are recorded for this provider yet.
         </p>
       </div>
     </section>
@@ -96,8 +94,7 @@ export function ProviderReviewsNotice({
         </p>
       ) : (
         <p className="mt-2 font-sans text-[14px] leading-relaxed text-eve-teal-dark/75">
-          Reviews coming after launch. We do not show ratings until real mothers
-          have left them.
+          Reviews coming after launch. We do not show ratings until real mothers have left them.
         </p>
       )}
     </section>
