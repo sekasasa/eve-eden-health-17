@@ -298,3 +298,18 @@ export function previewPostsForStage(stage: string | null | undefined, limit = 3
   );
   return [...preferred, ...rest].slice(0, limit);
 }
+
+/** Look up one seeded thread by its id. Returns undefined when unknown. */
+export function postById(id: string): Post | undefined {
+  return SEED_POSTS.find((p) => p.id === id);
+}
+
+/**
+ * Up to `limit` other seeded threads in the same category. No fabricated
+ * similarity score — plain category matching, most-hearted first.
+ */
+export function relatedPosts(post: Post, limit = 3): Post[] {
+  return SEED_POSTS.filter((p) => p.id !== post.id && p.category === post.category)
+    .sort((a, b) => b.hearts - a.hearts)
+    .slice(0, limit);
+}

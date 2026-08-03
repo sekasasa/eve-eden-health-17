@@ -204,7 +204,18 @@
     "expertNote": "Fils avec une réponse rédigée par notre équipe. Les réponses de cliniciens vérifiés arriveront avec le pilote.",
     "emptyTopic": "Aucune conversation d'exemple dans ce thème pour l'instant.",
     "personalized": "Conversations d'exemple liées à l'étape enregistrée dans votre profil.",
-    "supportLabel": "Soutien et ressources"
+    "supportLabel": "Soutien et ressources",
+    "detail": {
+      "open": "Ouvrir la conversation",
+      "back": "Retour à la communauté",
+      "disclosure": "Ceci est une conversation d'exemple rédigée par l'équipe Eve & Eden pour montrer comment cet espace fonctionne. Ce n'est pas un fil publié par un membre.",
+      "sampleAnswerTitle": "Réponse d'exemple rédigée par notre équipe",
+      "repliesClosedTitle": "Les réponses sont fermées pour le moment",
+      "repliesClosedBody": "Les réponses ouvriront pendant le pilote communautaire modéré. En attendant, vous pouvez lire, enregistrer et signaler les conversations d'exemple.",
+      "related": "Conversations similaires",
+      "notFoundTitle": "Conversation introuvable",
+      "notFoundBody": "Cette conversation n'existe pas ou n'est plus disponible."
+    }
   },
   "providerCard": {
     "verified": "Vérifié",
