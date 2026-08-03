@@ -10,12 +10,9 @@ import {
   Stethoscope,
   Activity,
   Repeat,
-  MapPin,
-  Languages as LanguagesIcon,
   BookOpen,
 } from "lucide-react";
 import { EveShell } from "@/components/shells/EveShell";
-import { TrustBadge } from "@/components/ui/TrustBadge";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { SecondaryButton } from "@/components/ui/SecondaryButton";
 import { ProviderProfileHeader } from "@/components/providers/ProviderProfileHeader";
